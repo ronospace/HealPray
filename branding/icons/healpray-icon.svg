@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <defs>
+    <!-- Gradient definitions -->
+    <linearGradient id="iconSunriseGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
+      <stop offset="30%" style="stop-color:#FFA500;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FF6B6B;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="iconHealingGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4ECDC4;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#45B7B8;stop-opacity:1" />
+    </linearGradient>
+    
+    <radialGradient id="iconGlowEffect" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:0.9" />
+      <stop offset="60%" style="stop-color:#FFD700;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#4ECDC4;stop-opacity:0.1" />
+    </radialGradient>
+    
+    <!-- iOS app icon background -->
+    <linearGradient id="appIconBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#F8F9FA;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#E9ECEF;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Shadow filter -->
+    <filter id="iconShadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="1" dy="2" stdDeviation="2" flood-color="#000000" flood-opacity="0.3"/>
+    </filter>
+    
+    <!-- Inner shadow -->
+    <filter id="innerShadow">
+      <feOffset dx="0" dy="1"/>
+      <feGaussianBlur stdDeviation="1" result="offset-blur"/>
+      <feFlood flood-color="#FFFFFF" flood-opacity="0.4"/>
+      <feComposite in2="offset-blur" operator="in"/>
+    </filter>
+  </defs>
+  
+  <!-- App icon rounded rectangle background -->
+  <rect x="0" y="0" width="120" height="120" rx="26" ry="26" fill="url(#appIconBg)" stroke="rgba(0,0,0,0.1)" stroke-width="0.5"/>
+  
+  <!-- Background glow -->
+  <circle cx="60" cy="60" r="50" fill="url(#iconGlowEffect)" opacity="0.7"/>
+  
+  <!-- Main symbol container -->
+  <g transform="translate(35, 35)">
+    <!-- Heart shape base (larger for app icon) -->
+    <path d="M25 35 C25 28, 18 22, 12 22 C6 22, 0 28, 0 35 C0 48, 25 65, 25 65 C25 65, 50 48, 50 35 C50 28, 43 22, 37 22 C31 22, 25 28, 25 35 Z" 
+          fill="url(#iconHealingGradient)" 
+          filter="url(#iconShadow)" 
+          opacity="0.95"/>
+    
+    <!-- Cross intertwined with heart (larger) -->
+    <g opacity="1">
+      <!-- Vertical beam -->
+      <rect x="21" y="8" width="8" height="45" 
+            fill="url(#iconSunriseGradient)" 
+            rx="4" 
+            filter="url(#iconShadow)"/>
+      
+      <!-- Horizontal beam -->
+      <rect x="8" y="21" width="34" height="8" 
+            fill="url(#iconSunriseGradient)" 
+            rx="4" 
+            filter="url(#iconShadow)"/>
+    </g>
+    
+    <!-- Sacred geometry accents (enhanced for app icon) -->
+    <circle cx="25" cy="25" r="3" fill="#FFFFFF" opacity="0.9" filter="url(#innerShadow)"/>
+    <circle cx="12" cy="18" r="2" fill="#FFFFFF" opacity="0.7"/>
+    <circle cx="38" cy="18" r="2" fill="#FFFFFF" opacity="0.7"/>
+    <circle cx="18" cy="38" r="2" fill="#FFFFFF" opacity="0.7"/>
+    <circle cx="32" cy="38" r="2" fill="#FFFFFF" opacity="0.7"/>
+    
+    <!-- Additional sparkle effects -->
+    <circle cx="15" cy="35" r="1" fill="#FFD700" opacity="0.8"/>
+    <circle cx="35" cy="35" r="1" fill="#FFD700" opacity="0.8"/>
+    <circle cx="25" cy="45" r="1.5" fill="#FFFFFF" opacity="0.9"/>
+  </g>
+  
+  <!-- iOS reflection effect -->
+  <rect x="0" y="0" width="120" height="60" rx="26" ry="26" fill="url(#iconGlowEffect)" opacity="0.2"/>
+</svg>

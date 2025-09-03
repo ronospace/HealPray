@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 120" width="400" height="120">
+  <defs>
+    <!-- Gradient definitions -->
+    <linearGradient id="sunriseGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#FFA500;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FF6B6B;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="healingGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4ECDC4;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#45B7B8;stop-opacity:1" />
+    </linearGradient>
+    
+    <radialGradient id="glowEffect" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:0.8" />
+      <stop offset="70%" style="stop-color:#FFD700;stop-opacity:0.3" />
+      <stop offset="100%" style="stop-color:#FFD700;stop-opacity:0" />
+    </radialGradient>
+    
+    <!-- Drop shadow filter -->
+    <filter id="dropShadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="2" dy="4" stdDeviation="3" flood-color="#000000" flood-opacity="0.2"/>
+    </filter>
+  </defs>
+  
+  <!-- Background glow circle -->
+  <circle cx="60" cy="60" r="45" fill="url(#glowEffect)" opacity="0.6"/>
+  
+  <!-- Main symbol container -->
+  <g transform="translate(30, 30)">
+    <!-- Heart shape base -->
+    <path d="M30 45 C30 40, 25 35, 20 35 C15 35, 10 40, 10 45 C10 55, 30 70, 30 70 C30 70, 50 55, 50 45 C50 40, 45 35, 40 35 C35 35, 30 40, 30 45 Z" 
+          fill="url(#healingGradient)" 
+          filter="url(#dropShadow)" 
+          opacity="0.9"/>
+    
+    <!-- Cross intertwined with heart -->
+    <g opacity="0.95">
+      <!-- Vertical beam -->
+      <rect x="27" y="15" width="6" height="40" 
+            fill="url(#sunriseGradient)" 
+            rx="3" 
+            filter="url(#dropShadow)"/>
+      
+      <!-- Horizontal beam -->
+      <rect x="15" y="27" width="30" height="6" 
+            fill="url(#sunriseGradient)" 
+            rx="3" 
+            filter="url(#dropShadow)"/>
+    </g>
+    
+    <!-- Sacred geometry accents -->
+    <circle cx="30" cy="30" r="2" fill="#FFFFFF" opacity="0.8"/>
+    <circle cx="20" cy="25" r="1.5" fill="#FFFFFF" opacity="0.6"/>
+    <circle cx="40" cy="25" r="1.5" fill="#FFFFFF" opacity="0.6"/>
+    <circle cx="25" cy="45" r="1.5" fill="#FFFFFF" opacity="0.6"/>
+    <circle cx="35" cy="45" r="1.5" fill="#FFFFFF" opacity="0.6"/>
+  </g>
+  
+  <!-- HealPray wordmark -->
+  <g transform="translate(140, 35)">
+    <!-- "Heal" part -->
+    <text x="0" y="30" 
+          font-family="Poppins, Arial, sans-serif" 
+          font-size="32" 
+          font-weight="700" 
+          fill="url(#healingGradient)" 
+          filter="url(#dropShadow)">Heal</text>
+    
+    <!-- "Pray" part -->
+    <text x="85" y="30" 
+          font-family="Poppins, Arial, sans-serif" 
+          font-size="32" 
+          font-weight="700" 
+          fill="url(#sunriseGradient)" 
+          filter="url(#dropShadow)">Pray</text>
+    
+    <!-- Tagline -->
+    <text x="0" y="50" 
+          font-family="Nunito Sans, Arial, sans-serif" 
+          font-size="12" 
+          font-weight="300" 
+          fill="#2C3E50" 
+          opacity="0.8">Your Daily Healing &amp; Prayer Companion</text>
+  </g>
+</svg>
