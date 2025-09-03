@@ -1,0 +1,9 @@
+{
+  "projects": {
+    "default": "healpray-dev",
+    "development": "healpray-dev",
+    "production": "healpray-app"
+  },
+  "targets": {},
+  "etags": {}
+}

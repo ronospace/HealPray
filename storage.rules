@@ -1,0 +1,65 @@
+rules_version = '2';
+
+// Firebase Storage Security Rules for HealPray
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function isValidImageFile() {
+      return request.resource.contentType.matches('image/.*');
+    }
+    
+    function isValidAudioFile() {
+      return request.resource.contentType.matches('audio/.*');
+    }
+    
+    function isValidFileSize() {
+      return request.resource.size < 10 * 1024 * 1024; // 10MB limit
+    }
+    
+    // User profile images
+    match /users/{userId}/profile/{imageId} {
+      allow read: if isAuthenticated();
+      allow write: if isOwner(userId) && isValidImageFile() && isValidFileSize();
+      allow delete: if isOwner(userId);
+    }
+    
+    // User's prayer audio recordings
+    match /users/{userId}/audio/{audioId} {
+      allow read, write: if isOwner(userId) && isValidAudioFile() && isValidFileSize();
+      allow delete: if isOwner(userId);
+    }
+    
+    // Shared community images (for prayer circles, etc.)
+    match /community/images/{imageId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && isValidImageFile() && isValidFileSize();
+      allow delete: if false; // Only admin can delete community content
+    }
+    
+    // Prayer background images and assets
+    match /assets/{allPaths=**} {
+      allow read: if isAuthenticated();
+      allow write: if false; // Only admin can modify assets
+    }
+    
+    // Temporary uploads (24 hour expiry)
+    match /temp/{userId}/{uploadId} {
+      allow read, write: if isOwner(userId) && isValidFileSize();
+      allow delete: if isOwner(userId);
+    }
+    
+    // System backups and exports (admin only)
+    match /backups/{allPaths=**} {
+      allow read, write: if false; // Admin SDK only
+    }
+  }
+}

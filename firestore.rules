@@ -1,0 +1,112 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function isOwnerOfResource() {
+      return isAuthenticated() && request.auth.uid == resource.data.userId;
+    }
+    
+    // User profile and settings
+    match /users/{userId} {
+      allow read, write: if isOwner(userId);
+      
+      // User's mood entries (subcollection)
+      match /moodEntries/{entryId} {
+        allow read, write: if isOwner(userId);
+      }
+      
+      // User's prayers (subcollection)
+      match /prayers/{prayerId} {
+        allow read, write: if isOwner(userId);
+      }
+      
+      // User's conversations (subcollection)
+      match /conversations/{conversationId} {
+        allow read, write: if isOwner(userId);
+      }
+      
+      // User's analytics (subcollection)
+      match /analytics/{analyticsId} {
+        allow read, write: if isOwner(userId);
+      }
+    }
+    
+    // Global prayers collection (for sharing and discovery)
+    match /prayers/{prayerId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && 
+        (request.auth.uid == resource.data.userId || !exists(/databases/$(database)/documents/prayers/$(prayerId)));
+      allow create: if isAuthenticated() && request.auth.uid == request.resource.data.userId;
+      allow update: if isAuthenticated() && isOwnerOfResource();
+      allow delete: if isAuthenticated() && isOwnerOfResource();
+    }
+    
+    // Community features
+    match /community/{document=**} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && 
+        request.auth.uid == request.resource.data.createdBy;
+    }
+    
+    // Prayer circles
+    match /prayerCircles/{circleId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && 
+        request.auth.uid == request.resource.data.createdBy;
+      allow update: if isAuthenticated() && 
+        (request.auth.uid == resource.data.createdBy || 
+         request.auth.uid in resource.data.members);
+      allow delete: if isAuthenticated() && 
+        request.auth.uid == resource.data.createdBy;
+    }
+    
+    // Shared prayers (public)
+    match /sharedPrayers/{prayerId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && 
+        request.auth.uid == request.resource.data.sharedBy;
+      allow update: if isAuthenticated() && 
+        request.auth.uid == resource.data.sharedBy;
+      allow delete: if isAuthenticated() && 
+        request.auth.uid == resource.data.sharedBy;
+    }
+    
+    // Prayer requests (community support)
+    match /prayerRequests/{requestId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && 
+        request.auth.uid == request.resource.data.requestedBy;
+      allow update: if isAuthenticated() && 
+        request.auth.uid == resource.data.requestedBy;
+      allow delete: if isAuthenticated() && 
+        request.auth.uid == resource.data.requestedBy;
+    }
+    
+    // System configuration (read-only for authenticated users)
+    match /system/{document=**} {
+      allow read: if isAuthenticated();
+      allow write: if false; // Only admin SDK can write to system
+    }
+    
+    // Crisis events (admin only)
+    match /crisisEvents/{eventId} {
+      allow read: if isAuthenticated() && request.auth.uid == resource.data.userId;
+      allow write: if false; // Only server-side functions can write
+    }
+    
+    // Admin collections (admin only)
+    match /admin/{document=**} {
+      allow read, write: if false; // Only admin SDK
+    }
+  }
+}
