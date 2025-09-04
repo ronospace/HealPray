@@ -3,9 +3,26 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  audioplayers_windows
+  cloud_firestore
+  connectivity_plus
+  dynamic_color
+  file_selector_windows
+  firebase_auth
+  firebase_core
+  firebase_storage
+  flutter_secure_storage_windows
+  flutter_tts
+  geolocator_windows
+  permission_handler_windows
+  rive_common
+  share_plus
+  speech_to_text_windows
+  url_launcher_windows
 )
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST
+  flutter_local_notifications_windows
 )
 
 set(PLUGIN_BUNDLED_LIBRARIES)

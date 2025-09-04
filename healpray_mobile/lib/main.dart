@@ -1,141 +1,219 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:timezone/data/latest.dart' as tz;
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
+import 'firebase_options.dart';
 import 'core/config/app_config.dart';
-import 'core/services/notification_service.dart';
-import 'core/services/analytics_service.dart';
-import 'core/theme/app_theme.dart';
 import 'core/utils/logger.dart';
 import 'shared/services/firebase_service.dart';
-import 'shared/services/local_storage_service.dart';
 import 'app.dart';
 
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    FlutterLocalNotificationsPlugin();
-
 void main() async {
-  // Ensure Flutter binding is initialized
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize services and configuration
   await _initializeApp();
 
-  // Run the app with proper error handling
   runApp(
-    ProviderScope(
-      child: const HealPrayApp(),
+    const ProviderScope(
+      child: HealPrayApp(),
     ),
   );
 }
 
+/// Initialize the application
 Future<void> _initializeApp() async {
   try {
-    // Load environment variables
-    await dotenv.load(fileName: ".env");
-    AppLogger.info('Environment configuration loaded');
+    AppLogger.info('🚀 Initializing HealPray app...');
 
     // Initialize app configuration
     await AppConfig.initialize();
-    AppLogger.info('App configuration initialized');
-
-    // Initialize local storage (Hive)
-    await Hive.initFlutter();
-    await LocalStorageService.initialize();
-    AppLogger.info('Local storage initialized');
-
-    // Initialize Firebase
-    await Firebase.initializeApp();
-    AppLogger.info('Firebase initialized');
-
-    // Initialize timezone data for scheduling
-    tz.initializeTimeZones();
-    AppLogger.info('Timezone data initialized');
-
-    // Initialize notification service
-    await NotificationService.initialize();
-    AppLogger.info('Notification service initialized');
-
-    // Set up Firebase Crashlytics
-    await _setupCrashlytics();
-
-    // Set up Firebase Analytics
-    await _setupAnalytics();
+    AppLogger.info('✅ App configuration loaded');
 
     // Set system UI overlay style
-    _setupSystemUI();
+    _configureSystemUI();
 
-    // Lock orientation to portrait
-    await SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-    ]);
+    // Initialize Firebase
+    try {
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+      AppLogger.info('✅ Firebase initialized');
+      
+      // Initialize Firebase services
+      await FirebaseService.initialize();
+      AppLogger.info('✅ Firebase services initialized');
+    } catch (firebaseError) {
+      AppLogger.warning('Firebase initialization failed, running in offline mode: $firebaseError');
+      // Continue without Firebase - the app should work in offline mode
+    }
 
-    AppLogger.info('HealPray app initialization completed successfully');
+    AppLogger.info('🎉 App initialization complete');
 
   } catch (error, stackTrace) {
-    AppLogger.error('Failed to initialize app', error, stackTrace);
+    AppLogger.error('💥 App initialization failed', error, stackTrace);
     
-    // Report to crashlytics if available
-    try {
-      await FirebaseCrashlytics.instance.recordError(
-        error,
-        stackTrace,
-        fatal: true,
-      );
-    } catch (_) {
-      // Ignore crashlytics errors during initialization
-    }
-    
-    rethrow;
+    // Show critical error to user
+    runApp(
+      MaterialApp(
+        title: 'HealPray - Error',
+        home: _ErrorScreen(
+          error: error.toString(),
+          onRetry: () {
+            main(); // Restart app
+          },
+        ),
+      ),
+    );
+    return;
   }
 }
 
-Future<void> _setupCrashlytics() async {
-  try {
-    // Pass all uncaught "fatal" errors from the framework to Crashlytics
-    FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
-    
-    // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework
-    PlatformDispatcher.instance.onError = (error, stack) {
-      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-      return true;
-    };
-    
-    AppLogger.info('Crashlytics configured successfully');
-  } catch (error) {
-    AppLogger.error('Failed to setup Crashlytics: $error');
-  }
-}
-
-Future<void> _setupAnalytics() async {
-  try {
-    if (AppConfig.enableAnalytics) {
-      await FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true);
-      await AnalyticsService.initialize();
-      AppLogger.info('Analytics configured successfully');
-    } else {
-      AppLogger.info('Analytics disabled in configuration');
-    }
-  } catch (error) {
-    AppLogger.error('Failed to setup Analytics: $error');
-  }
-}
-
-void _setupSystemUI() {
+/// Configure system UI overlay style
+void _configureSystemUI() {
+  // Set status bar style
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
       statusBarIconBrightness: Brightness.dark,
       statusBarBrightness: Brightness.light,
-      systemNavigationBarColor: AppColors.backgroundLight,
+      systemNavigationBarColor: Colors.white,
       systemNavigationBarIconBrightness: Brightness.dark,
     ),
   );
+
+  // Set preferred orientations
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
+}
+
+/// Error screen shown when app initialization fails
+class _ErrorScreen extends StatelessWidget {
+  final String error;
+  final VoidCallback onRetry;
+
+  const _ErrorScreen({
+    required this.error,
+    required this.onRetry,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Error icon
+              Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  color: Colors.red.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(40),
+                ),
+                child: const Icon(
+                  Icons.error_outline,
+                  color: Colors.red,
+                  size: 40,
+                ),
+              ),
+
+              const SizedBox(height: 24),
+
+              // Error title
+              const Text(
+                'Oops! Something went wrong',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+                textAlign: TextAlign.center,
+              ),
+
+              const SizedBox(height: 16),
+
+              // Error message
+              Text(
+                'HealPray encountered an error while starting up. '
+                'Please try again or contact support if the problem persists.',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.grey[600],
+                  height: 1.5,
+                ),
+                textAlign: TextAlign.center,
+              ),
+
+              if (AppConfig.isDevelopment) ...[
+                const SizedBox(height: 24),
+
+                // Developer error details
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[100],
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    'Error Details:\n$error',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey[700],
+                      fontFamily: 'monospace',
+                    ),
+                  ),
+                ),
+              ],
+
+              const SizedBox(height: 32),
+
+              // Retry button
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: ElevatedButton(
+                  onPressed: onRetry,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF6366F1),
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: const Text(
+                    'Try Again',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 16),
+
+              // Version info
+              if (AppConfig.isDevelopment)
+                Text(
+                  'HealPray v${AppConfig.appVersion} (${AppConfig.environment})',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey[500],
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
