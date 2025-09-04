@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_theme.dart';
 import '../models/mood_entry.dart';
 import '../providers/mood_providers.dart';
@@ -32,11 +33,22 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen> {
         elevation: 0,
         actions: [
           IconButton(
+            onPressed: () => context.push('/mood/calendar'),
+            icon: const Icon(
+              Icons.calendar_month,
+              color: AppTheme.textPrimary,
+            ),
+          ),
+          IconButton(
             onPressed: () {
-              // Navigate to mood history
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const MoodAnalyticsScreen(),
+                ),
+              );
             },
             icon: const Icon(
-              Icons.history,
+              Icons.analytics,
               color: AppTheme.textPrimary,
             ),
           ),
@@ -99,18 +111,21 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen> {
                     title: 'Quick Mood Check',
                     subtitle: 'Record your current mood',
                     icon: Icons.mood,
-                    onTap: () {
-                      // Show quick mood entry
-                    },
+                    onTap: () => context.push('/mood/entry'),
                   ),
                   const SizedBox(height: 12),
                   _buildMoodOptionCard(
                     title: 'Detailed Entry',
                     subtitle: 'Add notes and context',
                     icon: Icons.edit_note,
-                    onTap: () {
-                      // Navigate to detailed mood entry
-                    },
+                    onTap: () => context.push('/mood/entry'),
+                  ),
+                  const SizedBox(height: 12),
+                  _buildMoodOptionCard(
+                    title: 'Calendar View',
+                    subtitle: 'See your mood history',
+                    icon: Icons.calendar_month,
+                    onTap: () => context.push('/mood/calendar'),
                   ),
                   const SizedBox(height: 12),
                   _buildMoodOptionCard(

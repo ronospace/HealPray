@@ -16,6 +16,8 @@ import 'features/onboarding/screens/spiritual_preferences_screen.dart';
 import 'features/main/screens/app_shell.dart';
 import 'features/mood/screens/mood_tracking_screen.dart';
 import 'features/mood/screens/mood_analytics_screen.dart';
+import 'features/mood/screens/mood_calendar_screen.dart';
+import 'features/mood/screens/enhanced_mood_entry_screen.dart';
 import 'features/prayer/screens/prayer_screen.dart';
 import 'features/chat/screens/chat_screen.dart';
 import 'features/settings/screens/settings_screen.dart';
@@ -103,6 +105,18 @@ class _HealPrayAppState extends ConsumerState<HealPrayApp>
               path: '/mood',
               name: 'mood',
               builder: (context, state) => const MoodTrackingScreen(),
+              routes: [
+                GoRoute(
+                  path: '/calendar',
+                  name: 'mood-calendar',
+                  builder: (context, state) => const MoodCalendarScreen(),
+                ),
+                GoRoute(
+                  path: '/entry',
+                  name: 'mood-entry',
+                  builder: (context, state) => const EnhancedMoodEntryScreen(),
+                ),
+              ],
             ),
 
             // Prayer Generation
