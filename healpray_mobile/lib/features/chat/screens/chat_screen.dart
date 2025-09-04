@@ -1,158 +1,181 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../core/theme/app_theme.dart';
+import 'package:go_router/go_router.dart';
 
-/// AI chat screen for conversations
+import '../../../core/theme/app_theme.dart';
+import '../models/chat_message.dart';
+import '../services/chat_service.dart';
+import '../widgets/message_bubble.dart';
+import '../widgets/chat_input_field.dart';
+import '../widgets/conversation_context_selector.dart';
+
+/// Main chat screen for AI spiritual guidance
 class ChatScreen extends ConsumerStatefulWidget {
-  const ChatScreen({super.key});
+  const ChatScreen({super.key, this.conversationId});
+  
+  final String? conversationId;
 
   @override
   ConsumerState<ChatScreen> createState() => _ChatScreenState();
 }
 
 class _ChatScreenState extends ConsumerState<ChatScreen> {
-  final TextEditingController _messageController = TextEditingController();
+  final ChatService _chatService = ChatService.instance;
   final ScrollController _scrollController = ScrollController();
-  final List<ChatMessage> _messages = [];
+  final TextEditingController _messageController = TextEditingController();
+  
+  List<ChatMessage> _messages = [];
+  Conversation? _currentConversation;
+  bool _isLoading = false;
+  bool _isInitialized = false;
+  bool _showContextSelector = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeChat();
+  }
 
   @override
   void dispose() {
-    _messageController.dispose();
     _scrollController.dispose();
+    _messageController.dispose();
     super.dispose();
+  }
+
+  Future<void> _initializeChat() async {
+    setState(() => _isLoading = true);
+    
+    try {
+      await _chatService.initialize();
+      
+      if (widget.conversationId != null) {
+        // Load existing conversation
+        _currentConversation = _chatService.getConversation(widget.conversationId!);
+        if (_currentConversation != null) {
+          _messages = _chatService.getMessagesForConversation(widget.conversationId!);
+          _chatService.switchConversation(widget.conversationId!);
+        }
+      } else {
+        // Start new conversation with spiritual context
+        _currentConversation = await _chatService.startConversation(
+          context: ChatContext.spiritual,
+        );
+        _messages = _chatService.getMessagesForConversation(_currentConversation!.id);
+      }
+      
+      setState(() => _isInitialized = true);
+      _scrollToBottom();
+      
+    } catch (e) {
+      debugPrint('Error initializing chat: $e');
+      _showErrorSnackBar('Failed to initialize chat. Please try again.');
+    } finally {
+      setState(() => _isLoading = false);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.lightBackground,
-      appBar: AppBar(
-        title: Row(
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: AppTheme.healingTeal.withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.psychology,
-                color: AppTheme.healingTeal,
-                size: 20,
-              ),
-            ),
-            const SizedBox(width: 12),
-            const Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'HealPray AI',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16,
-                    color: AppTheme.textPrimary,
-                  ),
-                ),
-                Text(
-                  'Your spiritual companion',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: AppTheme.textSecondary,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-        backgroundColor: Colors.white,
-        elevation: 1,
-        actions: [
-          IconButton(
-            onPressed: () {
-              // Clear chat or show options
-            },
-            icon: const Icon(
-              Icons.more_vert,
+      appBar: _buildAppBar(),
+      body: _isLoading
+          ? _buildLoadingState()
+          : _isInitialized
+              ? _buildChatInterface()
+              : _buildErrorState(),
+    );
+  }
+
+  PreferredSizeWidget _buildAppBar() {
+    return AppBar(
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            _currentConversation?.title ?? 'Spiritual Companion',
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
               color: AppTheme.textPrimary,
             ),
           ),
+          if (_currentConversation != null)
+            Text(
+              _getContextDisplayName(_currentConversation!.context),
+              style: const TextStyle(
+                fontSize: 12,
+                color: AppTheme.textSecondary,
+              ),
+            ),
         ],
       ),
-      body: Column(
-        children: [
-          // Messages list
-          Expanded(
-            child: _messages.isEmpty
-                ? _buildEmptyState()
-                : ListView.builder(
-                    controller: _scrollController,
-                    padding: const EdgeInsets.all(16),
-                    itemCount: _messages.length,
-                    itemBuilder: (context, index) {
-                      return _buildMessageBubble(_messages[index]);
-                    },
-                  ),
+      backgroundColor: Colors.white,
+      elevation: 1,
+      leading: IconButton(
+        onPressed: () => context.pop(),
+        icon: const Icon(
+          Icons.arrow_back_ios,
+          color: AppTheme.textPrimary,
+        ),
+      ),
+      actions: [
+        IconButton(
+          onPressed: () => setState(() => _showContextSelector = !_showContextSelector),
+          icon: Icon(
+            _showContextSelector ? Icons.close : Icons.tune,
+            color: AppTheme.healingTeal,
           ),
-
-          // Message input area
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black12,
-                  blurRadius: 4,
-                  offset: Offset(0, -1),
-                ),
-              ],
-            ),
-            child: SafeArea(
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: AppTheme.lightBackground,
-                        borderRadius: BorderRadius.circular(24),
-                        border: Border.all(
-                          color: Colors.grey.shade300,
-                        ),
-                      ),
-                      child: TextField(
-                        controller: _messageController,
-                        decoration: const InputDecoration(
-                          hintText: 'Type your message...',
-                          border: InputBorder.none,
-                          contentPadding: EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 12,
-                          ),
-                        ),
-                        maxLines: null,
-                        textCapitalization: TextCapitalization.sentences,
-                        onSubmitted: (_) => _sendMessage(),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Container(
-                    decoration: const BoxDecoration(
-                      color: AppTheme.healingTeal,
-                      shape: BoxShape.circle,
-                    ),
-                    child: IconButton(
-                      onPressed: _sendMessage,
-                      icon: const Icon(
-                        Icons.send,
-                        color: Colors.white,
-                        size: 20,
-                      ),
-                    ),
-                  ),
-                ],
+        ),
+        PopupMenuButton<String>(
+          icon: const Icon(Icons.more_vert, color: AppTheme.textPrimary),
+          onSelected: _handleMenuAction,
+          itemBuilder: (context) => [
+            const PopupMenuItem(
+              value: 'new_conversation',
+              child: ListTile(
+                leading: Icon(Icons.add_circle_outline),
+                title: Text('New Conversation'),
+                contentPadding: EdgeInsets.zero,
               ),
+            ),
+            const PopupMenuItem(
+              value: 'conversation_history',
+              child: ListTile(
+                leading: Icon(Icons.history),
+                title: Text('Conversation History'),
+                contentPadding: EdgeInsets.zero,
+              ),
+            ),
+            const PopupMenuItem(
+              value: 'crisis_support',
+              child: ListTile(
+                leading: Icon(Icons.support_agent, color: Colors.red),
+                title: Text('Crisis Support'),
+                contentPadding: EdgeInsets.zero,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLoadingState() {
+    return const Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(AppTheme.healingTeal),
+          ),
+          SizedBox(height: 16),
+          Text(
+            'Preparing your spiritual companion...',
+            style: TextStyle(
+              color: AppTheme.textSecondary,
+              fontSize: 16,
             ),
           ),
         ],
@@ -160,180 +183,336 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildErrorState() {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              color: AppTheme.healingTeal.withOpacity(0.1),
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(
-              Icons.psychology,
-              color: AppTheme.healingTeal,
-              size: 40,
-            ),
+          const Icon(
+            Icons.error_outline,
+            size: 64,
+            color: AppTheme.textSecondary,
           ),
           const SizedBox(height: 16),
-          Text(
-            'Welcome to HealPray AI',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+          const Text(
+            'Unable to connect',
+            style: TextStyle(
+              fontSize: 20,
               fontWeight: FontWeight.w600,
               color: AppTheme.textPrimary,
             ),
           ),
           const SizedBox(height: 8),
-          Text(
-            'I\'m here to provide spiritual guidance and support.\nHow can I help you today?',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+          const Text(
+            'Please check your connection and try again',
+            style: TextStyle(
               color: AppTheme.textSecondary,
             ),
-            textAlign: TextAlign.center,
           ),
           const SizedBox(height: 24),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              _buildSuggestedPrompt('How should I pray today?'),
-              _buildSuggestedPrompt('I\'m feeling anxious'),
-              _buildSuggestedPrompt('Help me with forgiveness'),
-              _buildSuggestedPrompt('Daily Bible verse'),
-            ],
+          ElevatedButton(
+            onPressed: _initializeChat,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.healingTeal,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Retry'),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildSuggestedPrompt(String prompt) {
-    return InkWell(
-      onTap: () {
-        _messageController.text = prompt;
-        _sendMessage();
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          color: AppTheme.healingTeal.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: AppTheme.healingTeal.withOpacity(0.3),
+  Widget _buildChatInterface() {
+    return Column(
+      children: [
+        // Context selector
+        if (_showContextSelector)
+          ConversationContextSelector(
+            currentContext: _currentConversation?.context ?? ChatContext.spiritual,
+            onContextChanged: _switchContext,
+          ),
+        
+        // Messages area
+        Expanded(
+          child: _messages.isEmpty
+              ? _buildEmptyState()
+              : _buildMessagesList(),
+        ),
+        
+        // Input area
+        Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            border: Border(
+              top: BorderSide(color: AppTheme.borderColor, width: 1),
+            ),
+          ),
+          child: SafeArea(
+            child: ChatInputField(
+              controller: _messageController,
+              onSendMessage: _sendMessage,
+              isLoading: _isLoading,
+            ),
           ),
         ),
-        child: Text(
-          prompt,
-          style: const TextStyle(
-            color: AppTheme.healingTeal,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ),
+      ],
     );
   }
 
-  Widget _buildMessageBubble(ChatMessage message) {
-    final isUser = message.isUser;
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        mainAxisAlignment: isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (!isUser) ...[
+  Widget _buildEmptyState() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
             Container(
-              width: 32,
-              height: 32,
+              width: 80,
+              height: 80,
               decoration: BoxDecoration(
                 color: AppTheme.healingTeal.withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
-                Icons.psychology,
+                Icons.chat_bubble_outline,
+                size: 40,
                 color: AppTheme.healingTeal,
-                size: 16,
               ),
             ),
-            const SizedBox(width: 8),
-          ],
-          Flexible(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: BoxDecoration(
-                color: isUser ? AppTheme.healingTeal : Colors.grey.shade100,
-                borderRadius: BorderRadius.circular(18).copyWith(
-                  bottomLeft: isUser ? const Radius.circular(18) : const Radius.circular(4),
-                  bottomRight: isUser ? const Radius.circular(4) : const Radius.circular(18),
-                ),
-              ),
-              child: Text(
-                message.content,
-                style: TextStyle(
-                  color: isUser ? Colors.white : AppTheme.textPrimary,
-                ),
+            const SizedBox(height: 24),
+            const Text(
+              'Welcome to Your Spiritual Companion',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.w700,
+                color: AppTheme.textPrimary,
               ),
             ),
-          ),
-          if (isUser) ...[
-            const SizedBox(width: 8),
-            Container(
-              width: 32,
-              height: 32,
-              decoration: BoxDecoration(
-                color: Colors.grey.shade200,
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.person,
+            const SizedBox(height: 12),
+            const Text(
+              'I\'m here to provide spiritual guidance, support, and companionship on your journey. Share what\'s on your heart.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 16,
                 color: AppTheme.textSecondary,
-                size: 16,
+                height: 1.5,
               ),
             ),
+            const SizedBox(height: 32),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              alignment: WrapAlignment.center,
+              children: [
+                _buildSuggestionChip('How can I find peace?'),
+                _buildSuggestionChip('I need prayer guidance'),
+                _buildSuggestionChip('Feeling anxious today'),
+                _buildSuggestionChip('Seeking spiritual direction'),
+              ],
+            ),
           ],
-        ],
+        ),
       ),
     );
   }
 
-  void _sendMessage() {
-    final text = _messageController.text.trim();
-    if (text.isEmpty) return;
+  Widget _buildSuggestionChip(String text) {
+    return ActionChip(
+      label: Text(text),
+      onPressed: () => _sendMessage(text),
+      backgroundColor: AppTheme.healingTeal.withOpacity(0.1),
+      labelStyle: const TextStyle(
+        color: AppTheme.healingTeal,
+        fontWeight: FontWeight.w500,
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+        side: const BorderSide(color: AppTheme.healingTeal, width: 1),
+      ),
+    );
+  }
 
-    setState(() {
-      _messages.add(ChatMessage(content: text, isUser: true));
-      _messageController.clear();
-    });
+  Widget _buildMessagesList() {
+    return ListView.builder(
+      controller: _scrollController,
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      itemCount: _messages.length,
+      itemBuilder: (context, index) {
+        final message = _messages[index];
+        final isLast = index == _messages.length - 1;
+        
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: isLast ? 16 : 8,
+          ),
+          child: MessageBubble(
+            message: message,
+            onRetry: message.isError == true ? () => _retryMessage(message) : null,
+          ),
+        );
+      },
+    );
+  }
 
-    // Simulate AI response
-    Future.delayed(const Duration(seconds: 1), () {
+  // ============= ACTIONS =============
+
+  Future<void> _sendMessage(String content) async {
+    if (content.trim().isEmpty || _currentConversation == null) return;
+    
+    setState(() => _isLoading = true);
+    
+    try {
+      final newMessages = await _chatService.sendMessage(
+        content.trim(),
+        conversationId: _currentConversation!.id,
+      );
+      
       setState(() {
-        _messages.add(ChatMessage(
-          content: 'Thank you for sharing that with me. I\'m here to listen and provide guidance. Let me pray for you and offer some spiritual insight.',
-          isUser: false,
-        ));
+        _messages.addAll(newMessages);
       });
       
-      _scrollController.animateTo(
-        _scrollController.position.maxScrollExtent,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOut,
+      _messageController.clear();
+      _scrollToBottom();
+      
+    } catch (e) {
+      debugPrint('Error sending message: $e');
+      _showErrorSnackBar('Failed to send message. Please try again.');
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _retryMessage(ChatMessage failedMessage) async {
+    setState(() => _isLoading = true);
+    
+    try {
+      // Find the user message that preceded this failed AI response
+      final messageIndex = _messages.indexOf(failedMessage);
+      if (messageIndex > 0) {
+        final userMessage = _messages[messageIndex - 1];
+        if (userMessage.type == MessageType.user) {
+          // Retry with the original user message
+          final newMessages = await _chatService.sendMessage(
+            userMessage.content,
+            conversationId: _currentConversation!.id,
+          );
+          
+          // Remove the failed message and add the new response
+          setState(() {
+            _messages.removeAt(messageIndex);
+            _messages.add(newMessages.last); // Add only the AI response
+          });
+          
+          _scrollToBottom();
+        }
+      }
+      
+    } catch (e) {
+      debugPrint('Error retrying message: $e');
+      _showErrorSnackBar('Retry failed. Please try again.');
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _switchContext(ChatContext newContext) async {
+    setState(() => _showContextSelector = false);
+    
+    if (_currentConversation?.context == newContext) return;
+    
+    // Start new conversation with different context
+    try {
+      setState(() => _isLoading = true);
+      
+      _currentConversation = await _chatService.startConversation(
+        context: newContext,
       );
+      
+      _messages = _chatService.getMessagesForConversation(_currentConversation!.id);
+      
+      setState(() {});
+      _scrollToBottom();
+      
+    } catch (e) {
+      debugPrint('Error switching context: $e');
+      _showErrorSnackBar('Failed to switch context. Please try again.');
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  void _handleMenuAction(String action) {
+    switch (action) {
+      case 'new_conversation':
+        _startNewConversation();
+        break;
+      case 'conversation_history':
+        _showConversationHistory();
+        break;
+      case 'crisis_support':
+        _startCrisisSupport();
+        break;
+    }
+  }
+
+  // ============= UTILITY METHODS =============
+
+  void _scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
     });
   }
-}
 
-class ChatMessage {
-  final String content;
-  final bool isUser;
-  final DateTime timestamp;
+  void _showErrorSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
+        action: SnackBarAction(
+          label: 'Dismiss',
+          textColor: Colors.white,
+          onPressed: () {},
+        ),
+      ),
+    );
+  }
 
-  ChatMessage({
-    required this.content,
-    required this.isUser,
-    DateTime? timestamp,
-  }) : timestamp = timestamp ?? DateTime.now();
+  String _getContextDisplayName(ChatContext context) {
+    switch (context) {
+      case ChatContext.spiritual:
+        return 'Spiritual Guidance';
+      case ChatContext.prayer:
+        return 'Prayer Support';
+      case ChatContext.mood:
+        return 'Emotional Support';
+      case ChatContext.crisis:
+        return 'Crisis Support';
+      case ChatContext.meditation:
+        return 'Meditation Guide';
+      case ChatContext.guidance:
+        return 'Life Guidance';
+      default:
+        return 'General Chat';
+    }
+  }
+
+  Future<void> _startNewConversation() async {
+    // Implementation for starting new conversation
+  }
+
+  void _showConversationHistory() {
+    // Implementation for showing conversation history
+  }
+
+  Future<void> _startCrisisSupport() async {
+    // Implementation for crisis support
+  }
 }
