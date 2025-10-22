@@ -6,7 +6,10 @@ import '../../core/utils/logger.dart';
 /// Analytics service for tracking user events
 class AnalyticsService {
   AnalyticsService._();
-  
+
+  static final AnalyticsService _instance = AnalyticsService._();
+  static AnalyticsService get instance => _instance;
+
   static final FirebaseAnalytics _analytics = FirebaseAnalytics.instance;
   static bool _initialized = false;
 
@@ -17,13 +20,13 @@ class AnalyticsService {
     try {
       if (AppConfig.enableAnalytics) {
         await _analytics.setAnalyticsCollectionEnabled(true);
-        
+
         // Set app info
         await _analytics.setUserProperty(
           name: 'app_version',
           value: AppConfig.appVersion,
         );
-        
+
         await _analytics.setUserProperty(
           name: 'environment',
           value: AppConfig.environment,
@@ -40,7 +43,7 @@ class AnalyticsService {
   /// Track app launch
   static Future<void> trackAppLaunch() async {
     if (!_initialized) return;
-    
+
     try {
       await _analytics.logAppOpen();
       AppLogger.debug('App launch tracked');
@@ -52,7 +55,7 @@ class AnalyticsService {
   /// Track app resumed
   static Future<void> trackAppResumed() async {
     if (!_initialized) return;
-    
+
     try {
       await _analytics.logEvent(
         name: 'app_resumed',
@@ -68,7 +71,7 @@ class AnalyticsService {
   /// Track app paused
   static Future<void> trackAppPaused() async {
     if (!_initialized) return;
-    
+
     try {
       await _analytics.logEvent(
         name: 'app_paused',
@@ -84,7 +87,7 @@ class AnalyticsService {
   /// Track user sign in
   static Future<void> trackSignIn(String method) async {
     if (!_initialized) return;
-    
+
     try {
       await _analytics.logLogin(loginMethod: method);
       AppLogger.debug('Sign in tracked: $method');
@@ -96,7 +99,7 @@ class AnalyticsService {
   /// Track user sign up
   static Future<void> trackSignUp(String method) async {
     if (!_initialized) return;
-    
+
     try {
       await _analytics.logSignUp(signUpMethod: method);
       AppLogger.debug('Sign up tracked: $method');
@@ -113,7 +116,7 @@ class AnalyticsService {
     required int generationTimeMs,
   }) async {
     if (!_initialized) return;
-    
+
     try {
       await _analytics.logEvent(
         name: 'prayer_generated',
@@ -137,7 +140,7 @@ class AnalyticsService {
     List<String>? activities,
   }) async {
     if (!_initialized) return;
-    
+
     try {
       await _analytics.logEvent(
         name: 'mood_entry',
@@ -156,7 +159,7 @@ class AnalyticsService {
   /// Track AI conversation start
   static Future<void> trackConversationStart(String conversationType) async {
     if (!_initialized) return;
-    
+
     try {
       await _analytics.logEvent(
         name: 'conversation_start',
@@ -172,7 +175,7 @@ class AnalyticsService {
   /// Track screen view
   static Future<void> trackScreenView(String screenName) async {
     if (!_initialized) return;
-    
+
     try {
       await _analytics.logScreenView(screenName: screenName);
     } catch (error) {
@@ -186,7 +189,7 @@ class AnalyticsService {
     required String riskLevel,
   }) async {
     if (!_initialized) return;
-    
+
     try {
       await _analytics.logEvent(
         name: 'crisis_detected',
@@ -203,7 +206,7 @@ class AnalyticsService {
   /// Track feature usage
   static Future<void> trackFeatureUsage(String featureName) async {
     if (!_initialized) return;
-    
+
     try {
       await _analytics.logEvent(
         name: 'feature_used',
@@ -223,7 +226,7 @@ class AnalyticsService {
     String? screen,
   }) async {
     if (!_initialized) return;
-    
+
     try {
       await _analytics.logEvent(
         name: 'app_error',
@@ -248,30 +251,35 @@ class AnalyticsService {
     int? currentStreak,
   }) async {
     if (!_initialized) return;
-    
+
     try {
       if (denomination != null) {
-        await _analytics.setUserProperty(name: 'denomination', value: denomination);
+        await _analytics.setUserProperty(
+            name: 'denomination', value: denomination);
       }
-      
+
       if (language != null) {
         await _analytics.setUserProperty(name: 'language', value: language);
       }
-      
+
       if (spiritualTone != null) {
-        await _analytics.setUserProperty(name: 'spiritual_tone', value: spiritualTone);
+        await _analytics.setUserProperty(
+            name: 'spiritual_tone', value: spiritualTone);
       }
-      
+
       if (totalPrayers != null) {
-        await _analytics.setUserProperty(name: 'total_prayers', value: totalPrayers.toString());
+        await _analytics.setUserProperty(
+            name: 'total_prayers', value: totalPrayers.toString());
       }
-      
+
       if (totalMoodEntries != null) {
-        await _analytics.setUserProperty(name: 'total_mood_entries', value: totalMoodEntries.toString());
+        await _analytics.setUserProperty(
+            name: 'total_mood_entries', value: totalMoodEntries.toString());
       }
-      
+
       if (currentStreak != null) {
-        await _analytics.setUserProperty(name: 'current_streak', value: currentStreak.toString());
+        await _analytics.setUserProperty(
+            name: 'current_streak', value: currentStreak.toString());
       }
     } catch (error) {
       AppLogger.error('Failed to set user properties', error);
@@ -279,5 +287,30 @@ class AnalyticsService {
   }
 
   /// Get analytics instance
-  static FirebaseAnalytics get instance => _analytics;
+  static FirebaseAnalytics get firebase => _analytics;
+
+  // Instance methods for compatibility
+  Future<void> logEvent(String name, [Map<String, dynamic>? parameters]) async {
+    if (!_initialized) return;
+
+    try {
+      await _analytics.logEvent(
+        name: name,
+        parameters: parameters?.cast<String, Object>(),
+      );
+    } catch (error) {
+      AppLogger.error('Failed to log event: $name', error);
+    }
+  }
+
+  Future<void> logScreenView(String screenName,
+      [Map<String, dynamic>? parameters]) async {
+    await trackScreenView(screenName);
+  }
+
+  // Alias for backward compatibility
+  Future<void> trackEvent(String name,
+      [Map<String, dynamic>? parameters]) async {
+    await logEvent(name, parameters);
+  }
 }

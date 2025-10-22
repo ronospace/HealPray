@@ -15,5 +15,6 @@ class MoodPrediction with _$MoodPrediction {
     Map<String, dynamic>? metadata,
   }) = _MoodPrediction;
 
-  factory MoodPrediction.fromJson(Map<String, dynamic> json) => _$MoodPredictionFromJson(json);
+  factory MoodPrediction.fromJson(Map<String, dynamic> json) =>
+      _$MoodPredictionFromJson(json);
 }

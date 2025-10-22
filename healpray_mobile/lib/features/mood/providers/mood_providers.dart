@@ -7,13 +7,15 @@ import '../models/mood_analytics.dart';
 import '../services/mood_tracking_service.dart';
 
 /// Provider for mood entries stream (real-time updates)
-final moodEntriesStreamProvider = StreamProvider.autoDispose<List<MoodEntry>>((ref) {
+final moodEntriesStreamProvider =
+    StreamProvider.autoDispose<List<MoodEntry>>((ref) {
   final service = ref.read(moodTrackingServiceProvider);
   return service.getMoodEntriesStream(limit: 100);
 });
 
 /// Provider for recent mood entries (last 30 days)
-final recentMoodEntriesProvider = FutureProvider.autoDispose<List<MoodEntry>>((ref) {
+final recentMoodEntriesProvider =
+    FutureProvider.autoDispose<List<MoodEntry>>((ref) {
   final service = ref.read(moodTrackingServiceProvider);
   final thirtyDaysAgo = DateTime.now().subtract(const Duration(days: 30));
   return service.getMoodEntries(startDate: thirtyDaysAgo);
@@ -60,13 +62,15 @@ final customMoodAnalyticsProvider = FutureProvider.autoDispose
 });
 
 /// Provider for distress entries stream (for crisis support)
-final distressEntriesStreamProvider = StreamProvider.autoDispose<List<MoodEntry>>((ref) {
+final distressEntriesStreamProvider =
+    StreamProvider.autoDispose<List<MoodEntry>>((ref) {
   final service = ref.read(moodTrackingServiceProvider);
   return service.getDistressEntriesStream();
 });
 
 /// Provider for suggested spiritual practices
-final suggestedPracticesProvider = FutureProvider.autoDispose<List<String>>((ref) {
+final suggestedPracticesProvider =
+    FutureProvider.autoDispose<List<String>>((ref) {
   final service = ref.read(moodTrackingServiceProvider);
   return service.getSuggestedPractices();
 });
@@ -153,14 +157,16 @@ class MoodEntryFormNotifier extends StateNotifier<MoodEntryFormState> {
         location: state.location?.isNotEmpty == true ? state.location : null,
         tags: state.tags.isNotEmpty ? state.tags : null,
         context: state.context,
-        gratitudeList: state.gratitudeList.isNotEmpty ? state.gratitudeList : null,
-        prayerRequests: state.prayerRequests.isNotEmpty ? state.prayerRequests : null,
+        gratitudeList:
+            state.gratitudeList.isNotEmpty ? state.gratitudeList : null,
+        prayerRequests:
+            state.prayerRequests.isNotEmpty ? state.prayerRequests : null,
         verse: state.verse?.isNotEmpty == true ? state.verse : null,
         isPrivate: state.isPrivate,
       );
 
       state = state.copyWith(status: MoodEntryFormStatus.success);
-      
+
       // Reset form after successful submission
       reset();
     } catch (error) {
@@ -192,8 +198,10 @@ class MoodEntryFormNotifier extends StateNotifier<MoodEntryFormState> {
         location: state.location?.isNotEmpty == true ? state.location : null,
         tags: state.tags.isNotEmpty ? state.tags : null,
         context: state.context,
-        gratitudeList: state.gratitudeList.isNotEmpty ? state.gratitudeList : null,
-        prayerRequests: state.prayerRequests.isNotEmpty ? state.prayerRequests : null,
+        gratitudeList:
+            state.gratitudeList.isNotEmpty ? state.gratitudeList : null,
+        prayerRequests:
+            state.prayerRequests.isNotEmpty ? state.prayerRequests : null,
         verse: state.verse?.isNotEmpty == true ? state.verse : null,
         isPrivate: state.isPrivate,
       );
@@ -320,7 +328,8 @@ enum MoodEntryFormStatus {
 }
 
 /// Provider for mood entry form notifier
-final moodEntryFormProvider = StateNotifierProvider.autoDispose<MoodEntryFormNotifier, MoodEntryFormState>((ref) {
+final moodEntryFormProvider = StateNotifierProvider.autoDispose<
+    MoodEntryFormNotifier, MoodEntryFormState>((ref) {
   final service = ref.read(moodTrackingServiceProvider);
   return MoodEntryFormNotifier(service);
 });
@@ -352,7 +361,8 @@ class QuickMoodState {
 }
 
 /// Provider for mood analytics filters
-final moodAnalyticsFiltersProvider = StateProvider.autoDispose<MoodAnalyticsFilters>((ref) {
+final moodAnalyticsFiltersProvider =
+    StateProvider.autoDispose<MoodAnalyticsFilters>((ref) {
   return MoodAnalyticsFilters(
     dateRange: DateRange(
       start: DateTime.now().subtract(const Duration(days: 30)),
@@ -386,17 +396,17 @@ class MoodAnalyticsFilters {
   }
 }
 
-
 /// Notifier for managing mood entry operations
 class MoodEntryOperationsNotifier extends StateNotifier<AsyncValue<void>> {
-  MoodEntryOperationsNotifier(this._service) : super(const AsyncValue.data(null));
+  MoodEntryOperationsNotifier(this._service)
+      : super(const AsyncValue.data(null));
 
   final MoodTrackingService _service;
 
   /// Delete mood entry
   Future<void> deleteMoodEntry(String entryId) async {
     state = const AsyncValue.loading();
-    
+
     try {
       await _service.deleteMoodEntry(entryId);
       state = const AsyncValue.data(null);
@@ -407,7 +417,8 @@ class MoodEntryOperationsNotifier extends StateNotifier<AsyncValue<void>> {
 }
 
 /// Provider for mood entry operations
-final moodEntryOperationsProvider = StateNotifierProvider.autoDispose<MoodEntryOperationsNotifier, AsyncValue<void>>((ref) {
+final moodEntryOperationsProvider = StateNotifierProvider.autoDispose<
+    MoodEntryOperationsNotifier, AsyncValue<void>>((ref) {
   final service = ref.read(moodTrackingServiceProvider);
   return MoodEntryOperationsNotifier(service);
 });

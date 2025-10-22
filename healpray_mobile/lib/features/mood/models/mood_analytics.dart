@@ -1,5 +1,4 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'mood_entry.dart';
 import 'mood_prediction.dart';
 
 part 'mood_analytics.freezed.dart';
@@ -25,19 +24,20 @@ class MoodAnalytics with _$MoodAnalytics {
     @Default({}) Map<String, int> triggerCategoryCounts,
   }) = _MoodAnalytics;
 
-  factory MoodAnalytics.fromJson(Map<String, dynamic> json) => _$MoodAnalyticsFromJson(json);
-  
+  factory MoodAnalytics.fromJson(Map<String, dynamic> json) =>
+      _$MoodAnalyticsFromJson(json);
+
   factory MoodAnalytics.empty() => MoodAnalytics(
-    period: DateRange(start: DateTime.now(), end: DateTime.now()),
-    averageMood: 0.0,
-    moodDistribution: {},
-    trends: [],
-    patterns: [],
-    insights: [],
-    correlations: [],
-    recommendations: [],
-    predictions: [],
-  );
+        period: DateRange(start: DateTime.now(), end: DateTime.now()),
+        averageMood: 0.0,
+        moodDistribution: {},
+        trends: [],
+        patterns: [],
+        insights: [],
+        correlations: [],
+        recommendations: [],
+        predictions: [],
+      );
 }
 
 @freezed
@@ -47,7 +47,8 @@ class DateRange with _$DateRange {
     required DateTime end,
   }) = _DateRange;
 
-  factory DateRange.fromJson(Map<String, dynamic> json) => _$DateRangeFromJson(json);
+  factory DateRange.fromJson(Map<String, dynamic> json) =>
+      _$DateRangeFromJson(json);
 }
 
 @freezed
@@ -59,7 +60,8 @@ class MoodTrend with _$MoodTrend {
     required double significance,
   }) = _MoodTrend;
 
-  factory MoodTrend.fromJson(Map<String, dynamic> json) => _$MoodTrendFromJson(json);
+  factory MoodTrend.fromJson(Map<String, dynamic> json) =>
+      _$MoodTrendFromJson(json);
 }
 
 enum TrendPeriod {
@@ -78,7 +80,8 @@ class MoodPattern with _$MoodPattern {
     required Map<dynamic, dynamic> data,
   }) = _MoodPattern;
 
-  factory MoodPattern.fromJson(Map<String, dynamic> json) => _$MoodPatternFromJson(json);
+  factory MoodPattern.fromJson(Map<String, dynamic> json) =>
+      _$MoodPatternFromJson(json);
 }
 
 enum PatternType {
@@ -103,7 +106,8 @@ class MoodInsight with _$MoodInsight {
     List<String>? tags,
   }) = _MoodInsight;
 
-  factory MoodInsight.fromJson(Map<String, dynamic> json) => _$MoodInsightFromJson(json);
+  factory MoodInsight.fromJson(Map<String, dynamic> json) =>
+      _$MoodInsightFromJson(json);
 }
 
 enum InsightCategory {
@@ -129,7 +133,8 @@ class MoodCorrelation with _$MoodCorrelation {
     required Map<String, double> data,
   }) = _MoodCorrelation;
 
-  factory MoodCorrelation.fromJson(Map<String, dynamic> json) => _$MoodCorrelationFromJson(json);
+  factory MoodCorrelation.fromJson(Map<String, dynamic> json) =>
+      _$MoodCorrelationFromJson(json);
 }
 
 @freezed
@@ -144,7 +149,8 @@ class MoodRecommendation with _$MoodRecommendation {
     bool? completed,
   }) = _MoodRecommendation;
 
-  factory MoodRecommendation.fromJson(Map<String, dynamic> json) => _$MoodRecommendationFromJson(json);
+  factory MoodRecommendation.fromJson(Map<String, dynamic> json) =>
+      _$MoodRecommendationFromJson(json);
 }
 
 enum RecommendationPriority {

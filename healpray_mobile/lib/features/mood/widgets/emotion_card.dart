@@ -24,10 +24,10 @@ class EmotionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    
+
     final cardSize = _getCardSize();
     final emojiSize = _getEmojiSize();
-    
+
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
@@ -42,27 +42,27 @@ class EmotionCard extends StatelessWidget {
               width: cardSize,
               height: cardSize,
               decoration: BoxDecoration(
-                color: isSelected 
-                    ? emotion.color.withOpacity(0.2) 
+                color: isSelected
+                    ? emotion.color.withValues(alpha: 0.2)
                     : colorScheme.surface,
                 border: Border.all(
-                  color: isSelected 
-                      ? emotion.color 
-                      : colorScheme.outline.withOpacity(0.3),
+                  color: isSelected
+                      ? emotion.color
+                      : colorScheme.outline.withValues(alpha: 0.3),
                   width: isSelected ? 2 : 1,
                 ),
                 borderRadius: BorderRadius.circular(cardSize / 2),
                 boxShadow: isSelected
                     ? [
                         BoxShadow(
-                          color: emotion.color.withOpacity(0.3),
+                          color: emotion.color.withValues(alpha: 0.3),
                           blurRadius: 8,
                           spreadRadius: 2,
                         ),
                       ]
                     : [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
+                          color: Colors.black.withValues(alpha: 0.05),
                           blurRadius: 4,
                           offset: const Offset(0, 2),
                         ),
@@ -75,15 +75,14 @@ class EmotionCard extends StatelessWidget {
                 ),
               ),
             ),
-            
+
             if (showLabel) ...[
               const SizedBox(height: 8),
               Text(
                 emotion.displayName,
                 style: theme.textTheme.bodySmall?.copyWith(
-                  color: isSelected 
-                      ? emotion.color 
-                      : colorScheme.onSurfaceVariant,
+                  color:
+                      isSelected ? emotion.color : colorScheme.onSurfaceVariant,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                 ),
                 textAlign: TextAlign.center,
@@ -145,7 +144,7 @@ class EmotionGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final defaultCrossAxisCount = screenWidth > 600 ? 5 : 4;
-    
+
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -159,7 +158,7 @@ class EmotionGrid extends StatelessWidget {
       itemBuilder: (context, index) {
         final emotion = emotions[index];
         final isSelected = selectedEmotions.contains(emotion);
-        
+
         return EmotionCard(
           emotion: emotion,
           isSelected: isSelected,
@@ -179,7 +178,8 @@ class EmotionGrid extends StatelessWidget {
       if (!allowMultiSelect && selectedEmotions.isNotEmpty) {
         // Single select mode - replace selection
         onEmotionToggled(emotion);
-      } else if (maxSelections != null && selectedEmotions.length >= maxSelections!) {
+      } else if (maxSelections != null &&
+          selectedEmotions.length >= maxSelections!) {
         // Max selections reached
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -213,12 +213,12 @@ class CategorizedEmotionSelector extends StatefulWidget {
   final EmotionCategory? initialCategory;
 
   @override
-  State<CategorizedEmotionSelector> createState() => _CategorizedEmotionSelectorState();
+  State<CategorizedEmotionSelector> createState() =>
+      _CategorizedEmotionSelectorState();
 }
 
 class _CategorizedEmotionSelectorState extends State<CategorizedEmotionSelector>
     with TickerProviderStateMixin {
-  
   late TabController _tabController;
   late EmotionCategory _selectedCategory;
 
@@ -231,7 +231,7 @@ class _CategorizedEmotionSelectorState extends State<CategorizedEmotionSelector>
       vsync: this,
       initialIndex: EmotionCategory.values.indexOf(_selectedCategory),
     );
-    
+
     _tabController.addListener(() {
       if (_tabController.indexIsChanging) {
         setState(() {
@@ -250,13 +250,14 @@ class _CategorizedEmotionSelectorState extends State<CategorizedEmotionSelector>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Column(
       children: [
         // Category tabs
         Container(
           decoration: BoxDecoration(
-            color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
+            color: theme.colorScheme.surfaceContainerHighest
+                .withValues(alpha: 0.3),
             borderRadius: BorderRadius.circular(25),
           ),
           child: TabBar(
@@ -272,15 +273,17 @@ class _CategorizedEmotionSelectorState extends State<CategorizedEmotionSelector>
               fontWeight: FontWeight.w600,
             ),
             unselectedLabelStyle: theme.textTheme.bodySmall,
-            tabs: EmotionCategory.values.map((category) => Tab(
-              icon: Icon(category.icon, size: 20),
-              text: category.displayName,
-            )).toList(),
+            tabs: EmotionCategory.values
+                .map((category) => Tab(
+                      icon: Icon(category.icon, size: 20),
+                      text: category.displayName,
+                    ))
+                .toList(),
           ),
         ),
-        
+
         const SizedBox(height: 24),
-        
+
         // Emotions for selected category
         EmotionGrid(
           emotions: _getEmotionsForCategory(_selectedCategory),
@@ -327,7 +330,7 @@ class HorizontalEmotionSelector extends StatelessWidget {
         itemBuilder: (context, index) {
           final emotion = emotions[index];
           final isSelected = selectedEmotions.contains(emotion);
-          
+
           return EmotionCard(
             emotion: emotion,
             isSelected: isSelected,

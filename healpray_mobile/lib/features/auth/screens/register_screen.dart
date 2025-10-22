@@ -22,7 +22,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  
+
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
   bool _acceptTerms = false;
@@ -69,7 +69,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       child: Column(
         children: [
           const SizedBox(height: 40),
-          
+
           // Back button
           Row(
             children: [
@@ -82,42 +82,42 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               ),
             ],
           ),
-          
+
           const SizedBox(height: 20),
-          
+
           // Header
           _buildHeader(context),
-          
+
           const SizedBox(height: 32),
-          
+
           // Registration form
           _buildRegistrationForm(context),
-          
+
           const SizedBox(height: 24),
-          
+
           // Terms and conditions
           _buildTermsCheckbox(context),
-          
+
           const SizedBox(height: 24),
-          
+
           // Create account button
           _buildCreateAccountButton(context),
-          
+
           const SizedBox(height: 32),
-          
+
           // Divider
           _buildDivider(),
-          
+
           const SizedBox(height: 24),
-          
+
           // Social options
           _buildSocialOptions(context),
-          
+
           const SizedBox(height: 24),
-          
+
           // Sign in link
           _buildSignInLink(context),
-          
+
           const SizedBox(height: 24),
         ],
       ),
@@ -130,18 +130,16 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         Text(
           'Join HealPray',
           style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
         ),
-        
         const SizedBox(height: 12),
-        
         Text(
           'Begin your spiritual healing journey today',
           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-            color: Colors.white.withOpacity(0.8),
-          ),
+                color: Colors.white.withValues(alpha: 0.8),
+              ),
           textAlign: TextAlign.center,
         ),
       ],
@@ -161,9 +159,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             prefixIcon: Icons.person_outlined,
             validator: _validateName,
           ),
-          
+
           const SizedBox(height: 20),
-          
+
           // Email field
           AuthTextField(
             controller: _emailController,
@@ -173,9 +171,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             prefixIcon: Icons.email_outlined,
             validator: _validateEmail,
           ),
-          
+
           const SizedBox(height: 20),
-          
+
           // Password field
           AuthTextField(
             controller: _passwordController,
@@ -191,14 +189,14 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               },
               icon: Icon(
                 _isPasswordVisible ? Icons.visibility_off : Icons.visibility,
-                color: Colors.white.withOpacity(0.7),
+                color: Colors.white.withValues(alpha: 0.7),
               ),
             ),
             validator: _validatePassword,
           ),
-          
+
           const SizedBox(height: 20),
-          
+
           // Confirm password field
           AuthTextField(
             controller: _confirmPasswordController,
@@ -213,8 +211,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 });
               },
               icon: Icon(
-                _isConfirmPasswordVisible ? Icons.visibility_off : Icons.visibility,
-                color: Colors.white.withOpacity(0.7),
+                _isConfirmPasswordVisible
+                    ? Icons.visibility_off
+                    : Icons.visibility,
+                color: Colors.white.withValues(alpha: 0.7),
               ),
             ),
             validator: _validateConfirmPassword,
@@ -238,20 +238,18 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           activeColor: AppTheme.sunriseGold,
           checkColor: AppTheme.midnightBlue,
           side: BorderSide(
-            color: Colors.white.withOpacity(0.7),
+            color: Colors.white.withValues(alpha: 0.7),
             width: 2,
           ),
         ),
-        
         const SizedBox(width: 8),
-        
         Expanded(
           child: RichText(
             text: TextSpan(
               text: 'I accept the ',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Colors.white.withOpacity(0.8),
-              ),
+                    color: Colors.white.withValues(alpha: 0.8),
+                  ),
               children: [
                 TextSpan(
                   text: 'Terms of Service',
@@ -269,7 +267,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   ),
                 ),
                 const TextSpan(
-                  text: '. I understand that HealPray is a spiritual wellness app and not a substitute for professional medical or mental health care.',
+                  text:
+                      '. I understand that HealPray is a spiritual wellness app and not a substitute for professional medical or mental health care.',
                 ),
               ],
             ),
@@ -288,9 +287,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         style: ElevatedButton.styleFrom(
           backgroundColor: AppTheme.healingTeal,
           foregroundColor: Colors.white,
-          disabledBackgroundColor: Colors.grey.withOpacity(0.3),
+          disabledBackgroundColor: Colors.grey.withValues(alpha: 0.3),
           elevation: 8,
-          shadowColor: AppTheme.healingTeal.withOpacity(0.3),
+          shadowColor: AppTheme.healingTeal.withValues(alpha: 0.3),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -298,9 +297,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         child: Text(
           'Create Account',
           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-            color: Colors.white,
-            fontWeight: FontWeight.w600,
-          ),
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+              ),
         ),
       ),
     );
@@ -311,7 +310,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       children: [
         Expanded(
           child: Divider(
-            color: Colors.white.withOpacity(0.3),
+            color: Colors.white.withValues(alpha: 0.3),
             thickness: 1,
           ),
         ),
@@ -320,13 +319,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           child: Text(
             'Or sign up with',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Colors.white.withOpacity(0.7),
-            ),
+                  color: Colors.white.withValues(alpha: 0.7),
+                ),
           ),
         ),
         Expanded(
           child: Divider(
-            color: Colors.white.withOpacity(0.3),
+            color: Colors.white.withValues(alpha: 0.3),
             thickness: 1,
           ),
         ),
@@ -357,16 +356,16 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               Text(
                 'Sign up with Google',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
+                      fontWeight: FontWeight.w500,
+                    ),
               ),
             ],
           ),
         ),
-        
+
         if (Theme.of(context).platform == TargetPlatform.iOS) ...[
           const SizedBox(height: 16),
-          
+
           // Apple sign up
           OutlinedButton(
             onPressed: _handleAppleSignUp,
@@ -387,8 +386,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 Text(
                   'Sign up with Apple',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w500,
-                  ),
+                        fontWeight: FontWeight.w500,
+                      ),
                 ),
               ],
             ),
@@ -405,18 +404,18 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         Text(
           'Already have an account? ',
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: Colors.white.withOpacity(0.7),
-          ),
+                color: Colors.white.withValues(alpha: 0.7),
+              ),
         ),
         TextButton(
           onPressed: () => context.pushReplacement('/auth/login'),
           child: Text(
             'Sign In',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: AppTheme.sunriseGold,
-              fontWeight: FontWeight.w600,
-              decoration: TextDecoration.underline,
-            ),
+                  color: AppTheme.sunriseGold,
+                  fontWeight: FontWeight.w600,
+                  decoration: TextDecoration.underline,
+                ),
           ),
         ),
       ],
@@ -470,10 +469,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     await ref.read(authProvider.notifier).createAccountWithEmail(
-      email: _emailController.text.trim(),
-      password: _passwordController.text,
-      displayName: _nameController.text.trim(),
-    );
+          email: _emailController.text.trim(),
+          password: _passwordController.text,
+          displayName: _nameController.text.trim(),
+        );
   }
 
   Future<void> _handleGoogleSignUp() async {

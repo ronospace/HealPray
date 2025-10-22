@@ -25,7 +25,7 @@ class MoodChartWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -52,7 +52,7 @@ class MoodChartWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -82,14 +82,19 @@ class MoodChartWidget extends StatelessWidget {
   }
 
   Widget _buildChartHeader() {
-    final averageScore = entries.fold<double>(0, (sum, entry) => sum + entry.score) / entries.length;
-    final highestScore = entries.map((e) => e.score).reduce((a, b) => a > b ? a : b);
-    final lowestScore = entries.map((e) => e.score).reduce((a, b) => a < b ? a : b);
-    
+    final averageScore =
+        entries.fold<double>(0, (sum, entry) => sum + entry.score) /
+            entries.length;
+    final highestScore =
+        entries.map((e) => e.score).reduce((a, b) => a > b ? a : b);
+    final lowestScore =
+        entries.map((e) => e.score).reduce((a, b) => a < b ? a : b);
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
-        _buildChartStat('Avg', averageScore.toStringAsFixed(1), AppTheme.healingTeal),
+        _buildChartStat(
+            'Avg', averageScore.toStringAsFixed(1), AppTheme.healingTeal),
         _buildChartStat('High', highestScore.toString(), AppTheme.sunriseGold),
         _buildChartStat('Low', lowestScore.toString(), Colors.orange),
       ],
@@ -134,7 +139,7 @@ class MoodChartWidget extends StatelessWidget {
 /// Custom painter for the mood chart
 class MoodChartPainter extends CustomPainter {
   final List<SimpleMoodEntry> entries;
-  
+
   MoodChartPainter(this.entries);
 
   @override
@@ -152,8 +157,8 @@ class MoodChartPainter extends CustomPainter {
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
         colors: [
-          AppTheme.healingTeal.withOpacity(0.3),
-          AppTheme.healingTeal.withOpacity(0.05),
+          AppTheme.healingTeal.withValues(alpha: 0.3),
+          AppTheme.healingTeal.withValues(alpha: 0.05),
         ],
       ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
 
@@ -169,8 +174,10 @@ class MoodChartPainter extends CustomPainter {
 
     for (int i = 0; i < entries.length; i++) {
       final x = (i / (entries.length - 1)) * size.width;
-      final y = size.height - ((entries[i].score - 1) / 9) * size.height; // Scale 1-10 to chart height
-      
+      final y = size.height -
+          ((entries[i].score - 1) / 9) *
+              size.height; // Scale 1-10 to chart height
+
       points.add(Offset(x, y));
       fillPoints.add(Offset(x, y));
     }
@@ -195,7 +202,13 @@ class MoodChartPainter extends CustomPainter {
     // Draw dots
     for (final point in points) {
       canvas.drawCircle(point, 4, dotPaint);
-      canvas.drawCircle(point, 6, Paint()..color = Colors.white..style = PaintingStyle.stroke..strokeWidth = 2);
+      canvas.drawCircle(
+          point,
+          6,
+          Paint()
+            ..color = Colors.white
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = 2);
     }
 
     // Draw grid lines (optional)

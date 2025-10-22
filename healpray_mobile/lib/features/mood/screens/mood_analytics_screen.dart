@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 import '../../../core/theme/app_theme.dart';
-import '../models/mood_entry.dart';
 import '../models/mood_analytics.dart';
 import '../models/mood_prediction.dart';
 import '../providers/mood_providers.dart';
@@ -14,12 +13,14 @@ class MoodAnalyticsScreen extends ConsumerStatefulWidget {
   const MoodAnalyticsScreen({super.key});
 
   @override
-  ConsumerState<MoodAnalyticsScreen> createState() => _MoodAnalyticsScreenState();
+  ConsumerState<MoodAnalyticsScreen> createState() =>
+      _MoodAnalyticsScreenState();
 }
 
-class _MoodAnalyticsScreenState extends ConsumerState<MoodAnalyticsScreen> with SingleTickerProviderStateMixin {
+class _MoodAnalyticsScreenState extends ConsumerState<MoodAnalyticsScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  DateRange _selectedRange = DateRange(
+  final DateRange _selectedRange = DateRange(
     start: DateTime.now().subtract(const Duration(days: 30)),
     end: DateTime.now(),
   );
@@ -38,7 +39,8 @@ class _MoodAnalyticsScreenState extends ConsumerState<MoodAnalyticsScreen> with 
 
   @override
   Widget build(BuildContext context) {
-    final analyticsAsync = ref.watch(customMoodAnalyticsProvider(_selectedRange));
+    final analyticsAsync =
+        ref.watch(customMoodAnalyticsProvider(_selectedRange));
 
     return Scaffold(
       backgroundColor: AppTheme.lightBackground,
@@ -98,15 +100,15 @@ class _MoodAnalyticsScreenState extends ConsumerState<MoodAnalyticsScreen> with 
               Text(
                 'Failed to load analytics',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: AppTheme.textSecondary,
-                ),
+                      color: AppTheme.textSecondary,
+                    ),
               ),
               const SizedBox(height: 8),
               Text(
                 error.toString(),
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: AppTheme.textSecondary,
-                ),
+                      color: AppTheme.textSecondary,
+                    ),
                 textAlign: TextAlign.center,
               ),
             ],
@@ -118,7 +120,7 @@ class _MoodAnalyticsScreenState extends ConsumerState<MoodAnalyticsScreen> with 
             _buildOverviewTab(analytics),
             _buildTrendsTab(analytics),
             _buildInsightsTab(analytics),
-_buildPredictionsTab(analytics),
+            _buildPredictionsTab(analytics),
           ],
         ),
       ),
@@ -175,14 +177,14 @@ _buildPredictionsTab(analytics),
               ),
             ],
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Mood Score Over Time Chart
           _buildMoodTrendChart(analytics),
-          
+
           const SizedBox(height: 24),
-          
+
           // Emotion Categories Distribution
           _buildEmotionCategoriesChart(analytics),
         ],
@@ -200,9 +202,10 @@ _buildPredictionsTab(analytics),
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: AppTheme.healingTeal.withOpacity(0.1),
+              color: AppTheme.healingTeal.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppTheme.healingTeal.withOpacity(0.2)),
+              border: Border.all(
+                  color: AppTheme.healingTeal.withValues(alpha: 0.2)),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -218,9 +221,9 @@ _buildPredictionsTab(analytics),
                     Text(
                       'Trend Analysis',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: AppTheme.healingTeal,
-                      ),
+                            fontWeight: FontWeight.w600,
+                            color: AppTheme.healingTeal,
+                          ),
                     ),
                   ],
                 ),
@@ -228,15 +231,15 @@ _buildPredictionsTab(analytics),
                 Text(
                   'Trend analysis would appear here once implemented',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppTheme.textPrimary,
-                  ),
+                        color: AppTheme.textPrimary,
+                      ),
                 ),
               ],
             ),
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Simplified placeholder content
           _buildSectionHeader('Trends & Patterns'),
           const SizedBox(height: 12),
@@ -249,8 +252,8 @@ _buildPredictionsTab(analytics),
             child: Text(
               'Advanced trend analysis and pattern detection features will be available here.',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: AppTheme.textSecondary,
-              ),
+                    color: AppTheme.textSecondary,
+                  ),
             ),
           ),
         ],
@@ -266,97 +269,111 @@ _buildPredictionsTab(analytics),
         children: [
           _buildSectionHeader('AI-Powered Insights'),
           const SizedBox(height: 16),
-          
+
           // Generated Insights
           ...analytics.insights.map((insight) => Container(
-            margin: const EdgeInsets.only(bottom: 12),
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
+                margin: const EdgeInsets.only(bottom: 12),
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.05),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-            child: Row(
-              children: [
-                Container(
-                  width: 8,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: AppTheme.healingTeal,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        insight.title,
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          color: AppTheme.textPrimary,
-                          fontWeight: FontWeight.w600,
-                        ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 8,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: AppTheme.healingTeal,
+                        borderRadius: BorderRadius.circular(4),
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        insight.description,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: AppTheme.textSecondary,
-                          height: 1.4,
-                        ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            insight.title,
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleSmall
+                                ?.copyWith(
+                                  color: AppTheme.textPrimary,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            insight.description,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: AppTheme.textSecondary,
+                                  height: 1.4,
+                                ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          )).toList(),
-          
+              )),
+
           const SizedBox(height: 24),
-          
+
           // Recommendations
           _buildSectionHeader('Personalized Recommendations'),
           const SizedBox(height: 16),
-          
+
           FutureBuilder<List<String>>(
             future: ref.read(suggestedPracticesProvider.future),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 return Column(
-                  children: snapshot.data!.map((practice) => Container(
-                    margin: const EdgeInsets.only(bottom: 8),
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: AppTheme.sunriseGold.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: AppTheme.sunriseGold.withOpacity(0.3)),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.lightbulb_outline,
-                          color: AppTheme.sunriseGold,
-                          size: 16,
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            practice,
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: AppTheme.textPrimary,
+                  children: snapshot.data!
+                      .map((practice) => Container(
+                            margin: const EdgeInsets.only(bottom: 8),
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color:
+                                  AppTheme.sunriseGold.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                  color: AppTheme.sunriseGold
+                                      .withValues(alpha: 0.3)),
                             ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  )).toList(),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.lightbulb_outline,
+                                  color: AppTheme.sunriseGold,
+                                  size: 16,
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    practice,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall
+                                        ?.copyWith(
+                                          color: AppTheme.textPrimary,
+                                        ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ))
+                      .toList(),
                 );
               }
               return const SizedBox.shrink();
@@ -376,7 +393,7 @@ _buildPredictionsTab(analytics),
             child: CircularProgressIndicator(color: AppTheme.healingTeal),
           );
         }
-        
+
         if (snapshot.hasError) {
           return Center(
             child: Column(
@@ -391,16 +408,16 @@ _buildPredictionsTab(analytics),
                 Text(
                   'Unable to generate predictions',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: AppTheme.textSecondary,
-                  ),
+                        color: AppTheme.textSecondary,
+                      ),
                 ),
               ],
             ),
           );
         }
-        
+
         final predictions = snapshot.data ?? [];
-        
+
         return SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -410,16 +427,20 @@ _buildPredictionsTab(analytics),
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [AppTheme.healingTeal.withOpacity(0.1), AppTheme.calmBlue.withOpacity(0.1)],
+                    colors: [
+                      AppTheme.healingTeal.withValues(alpha: 0.1),
+                      AppTheme.calmBlue.withValues(alpha: 0.1)
+                    ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppTheme.healingTeal.withOpacity(0.2)),
+                  border: Border.all(
+                      color: AppTheme.healingTeal.withValues(alpha: 0.2)),
                 ),
                 child: Column(
                   children: [
-                      Icon(
+                    Icon(
                       Icons.analytics,
                       color: AppTheme.healingTeal,
                       size: 32,
@@ -428,99 +449,113 @@ _buildPredictionsTab(analytics),
                     Text(
                       '7-Day Mood Forecast',
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: AppTheme.textPrimary,
-                      ),
+                            fontWeight: FontWeight.w600,
+                            color: AppTheme.textPrimary,
+                          ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       'AI-powered predictions based on your patterns',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppTheme.textSecondary,
-                      ),
+                            color: AppTheme.textSecondary,
+                          ),
                     ),
                   ],
                 ),
               ),
-              
               const SizedBox(height: 24),
-              
               ...predictions.map((prediction) => Container(
-                margin: const EdgeInsets.only(bottom: 12),
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          _formatDate(prediction.date),
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
-                            color: AppTheme.textPrimary,
-                          ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: _getConfidenceColor(prediction.confidence).withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: _getConfidenceColor(prediction.confidence).withOpacity(0.3),
-                            ),
-                          ),
-                          child: Text(
-                            '${(prediction.confidence * 100).toInt()}% confidence',
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: _getConfidenceColor(prediction.confidence),
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
+                    margin: const EdgeInsets.only(bottom: 12),
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.05),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 8),
-                    Row(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Icon(
-                          _getMoodIcon(prediction.predictedMood),
-                          color: _getMoodColor(prediction.predictedMood),
-                          size: 20,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              _formatDate(prediction.date),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                    color: AppTheme.textPrimary,
+                                  ),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color:
+                                    _getConfidenceColor(prediction.confidence)
+                                        .withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color:
+                                      _getConfidenceColor(prediction.confidence)
+                                          .withValues(alpha: 0.3),
+                                ),
+                              ),
+                              child: Text(
+                                '${(prediction.confidence * 100).toInt()}% confidence',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodySmall
+                                    ?.copyWith(
+                                      color: _getConfidenceColor(
+                                          prediction.confidence),
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'Predicted mood: ${prediction.predictedMood.toStringAsFixed(1)}',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AppTheme.textPrimary,
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            Icon(
+                              _getMoodIcon(prediction.predictedMood),
+                              color: _getMoodColor(prediction.predictedMood),
+                              size: 20,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              'Predicted mood: ${prediction.predictedMood.toStringAsFixed(1)}',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    color: AppTheme.textPrimary,
+                                  ),
+                            ),
+                          ],
+                        ),
+                        if (prediction.explanation?.isNotEmpty == true) ...[
+                          const SizedBox(height: 8),
+                          Text(
+                            prediction.explanation!,
+                            style:
+                                Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: AppTheme.textSecondary,
+                                      height: 1.3,
+                                    ),
                           ),
-                        ),
+                        ],
                       ],
                     ),
-                    if (prediction.explanation?.isNotEmpty == true) ...[
-                      const SizedBox(height: 8),
-                      Text(
-                        prediction.explanation!,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppTheme.textSecondary,
-                          height: 1.3,
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-              )).toList(),
+                  )),
             ],
           ),
         );
@@ -541,7 +576,7 @@ _buildPredictionsTab(analytics),
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -555,7 +590,7 @@ _buildPredictionsTab(analytics),
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
+                  color: color.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(
@@ -571,16 +606,16 @@ _buildPredictionsTab(analytics),
           Text(
             value,
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.w700,
-              color: AppTheme.textPrimary,
-            ),
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.textPrimary,
+                ),
           ),
           const SizedBox(height: 4),
           Text(
             title,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: AppTheme.textSecondary,
-            ),
+                  color: AppTheme.textSecondary,
+                ),
           ),
         ],
       ),
@@ -591,9 +626,9 @@ _buildPredictionsTab(analytics),
     return Text(
       title,
       style: Theme.of(context).textTheme.titleLarge?.copyWith(
-        fontWeight: FontWeight.w600,
-        color: AppTheme.textPrimary,
-      ),
+            fontWeight: FontWeight.w600,
+            color: AppTheme.textPrimary,
+          ),
     );
   }
 
@@ -606,7 +641,7 @@ _buildPredictionsTab(analytics),
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -618,9 +653,9 @@ _buildPredictionsTab(analytics),
           Text(
             'Mood Distribution',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-              color: AppTheme.textPrimary,
-            ),
+                  fontWeight: FontWeight.w600,
+                  color: AppTheme.textPrimary,
+                ),
           ),
           const SizedBox(height: 16),
           Expanded(
@@ -628,8 +663,8 @@ _buildPredictionsTab(analytics),
               child: Text(
                 'Mood trend chart will be available once there are mood entries to analyze.',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppTheme.textSecondary,
-                ),
+                      color: AppTheme.textSecondary,
+                    ),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -651,7 +686,7 @@ _buildPredictionsTab(analytics),
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -663,15 +698,16 @@ _buildPredictionsTab(analytics),
           Text(
             'Emotion Categories Distribution',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-              color: AppTheme.textPrimary,
-            ),
+                  fontWeight: FontWeight.w600,
+                  color: AppTheme.textPrimary,
+                ),
           ),
           const SizedBox(height: 16),
           ...analytics.emotionCategoryCounts.entries.map((entry) {
-            final total = analytics.emotionCategoryCounts.values.fold(0, (a, b) => a + b);
+            final total =
+                analytics.emotionCategoryCounts.values.fold(0, (a, b) => a + b);
             final percentage = (entry.value / total * 100);
-            
+
             return Container(
               margin: const EdgeInsets.only(bottom: 8),
               child: Column(
@@ -683,14 +719,14 @@ _buildPredictionsTab(analytics),
                       Text(
                         entry.key.displayName,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: AppTheme.textPrimary,
-                        ),
+                              color: AppTheme.textPrimary,
+                            ),
                       ),
                       Text(
                         '${percentage.toStringAsFixed(1)}%',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppTheme.textSecondary,
-                        ),
+                              color: AppTheme.textSecondary,
+                            ),
                       ),
                     ],
                   ),
@@ -705,7 +741,7 @@ _buildPredictionsTab(analytics),
                 ],
               ),
             );
-          }).toList(),
+          }),
         ],
       ),
     );
@@ -727,7 +763,7 @@ _buildPredictionsTab(analytics),
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -746,7 +782,7 @@ _buildPredictionsTab(analytics),
               dotData: FlDotData(show: false),
               belowBarData: BarAreaData(
                 show: true,
-                color: AppTheme.sunriseGold.withOpacity(0.1),
+                color: AppTheme.sunriseGold.withValues(alpha: 0.1),
               ),
             ),
           ],
@@ -765,36 +801,39 @@ _buildPredictionsTab(analytics),
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
         ],
       ),
       child: Column(
-        children: topEmotions.map((emotion) => Container(
-          margin: const EdgeInsets.only(bottom: 8),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          decoration: BoxDecoration(
-            color: AppTheme.healingTeal.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Row(
-            children: [
-              Text(
-                emotion.emoji,
-                style: const TextStyle(fontSize: 16),
-              ),
-              const SizedBox(width: 8),
-              Text(
-                emotion.displayName,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppTheme.textPrimary,
-                ),
-              ),
-            ],
-          ),
-        )).toList(),
+        children: topEmotions
+            .map((emotion) => Container(
+                  margin: const EdgeInsets.only(bottom: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: AppTheme.healingTeal.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    children: [
+                      Text(
+                        emotion.emoji,
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        emotion.displayName,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppTheme.textPrimary,
+                            ),
+                      ),
+                    ],
+                  ),
+                ))
+            .toList(),
       ),
     );
   }
@@ -807,37 +846,40 @@ _buildPredictionsTab(analytics),
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
         ],
       ),
       child: Column(
-        children: topTriggers.map((trigger) => Container(
-          margin: const EdgeInsets.only(bottom: 8),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          decoration: BoxDecoration(
-            color: AppTheme.sunriseGold.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Row(
-            children: [
-              Icon(
-                trigger.icon,
-                color: AppTheme.sunriseGold,
-                size: 16,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                trigger.displayName,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppTheme.textPrimary,
-                ),
-              ),
-            ],
-          ),
-        )).toList(),
+        children: topTriggers
+            .map((trigger) => Container(
+                  margin: const EdgeInsets.only(bottom: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: AppTheme.sunriseGold.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        trigger.icon,
+                        color: AppTheme.sunriseGold,
+                        size: 16,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        trigger.displayName,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppTheme.textPrimary,
+                            ),
+                      ),
+                    ],
+                  ),
+                ))
+            .toList(),
       ),
     );
   }
@@ -869,9 +911,21 @@ _buildPredictionsTab(analytics),
 
   String _formatDate(DateTime date) {
     final weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    final months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-                    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    
+    final months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec'
+    ];
+
     return '${weekdays[date.weekday - 1]}, ${months[date.month - 1]} ${date.day}';
   }
 
@@ -905,7 +959,8 @@ _buildPredictionsTab(analytics),
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: const Icon(Icons.file_download, color: AppTheme.healingTeal),
+              leading:
+                  const Icon(Icons.file_download, color: AppTheme.healingTeal),
               title: const Text('Export as PDF'),
               onTap: () {
                 Navigator.pop(context);
@@ -913,7 +968,8 @@ _buildPredictionsTab(analytics),
               },
             ),
             ListTile(
-              leading: const Icon(Icons.table_chart, color: AppTheme.healingTeal),
+              leading:
+                  const Icon(Icons.table_chart, color: AppTheme.healingTeal),
               title: const Text('Export as CSV'),
               onTap: () {
                 Navigator.pop(context);
@@ -938,9 +994,13 @@ _buildPredictionsTab(analytics),
 // Extension to add display names to enums
 extension EmotionCategoryExtension on dynamic {
   String get displayName {
-    return toString().split('.').last.replaceAllMapped(
-      RegExp(r'([A-Z])'),
-      (match) => ' ${match.group(0)}',
-    ).trim();
+    return toString()
+        .split('.')
+        .last
+        .replaceAllMapped(
+          RegExp(r'([A-Z])'),
+          (match) => ' ${match.group(0)}',
+        )
+        .trim();
   }
 }

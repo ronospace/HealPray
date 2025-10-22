@@ -17,20 +17,20 @@ class OnboardingWelcomeScreen extends StatelessWidget {
             child: Column(
               children: [
                 const SizedBox(height: 60),
-                
+
                 // Header
                 _buildHeader(context),
-                
+
                 const Spacer(),
-                
+
                 // Content
                 _buildContent(context),
-                
+
                 const Spacer(),
-                
+
                 // Continue button
                 _buildContinueButton(context),
-                
+
                 const SizedBox(height: 32),
               ],
             ),
@@ -52,7 +52,7 @@ class OnboardingWelcomeScreen extends StatelessWidget {
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
-                color: AppTheme.healingTeal.withOpacity(0.3),
+                color: AppTheme.healingTeal.withValues(alpha: 0.3),
                 blurRadius: 20,
                 spreadRadius: 5,
               ),
@@ -64,9 +64,9 @@ class OnboardingWelcomeScreen extends StatelessWidget {
             color: AppTheme.healingTeal,
           ),
         ),
-        
+
         const SizedBox(height: 24),
-        
+
         Text(
           'Welcome to HealPray',
           style: Theme.of(context).textTheme.headlineLarge?.copyWith(
@@ -74,7 +74,7 @@ class OnboardingWelcomeScreen extends StatelessWidget {
             fontWeight: FontWeight.bold,
             shadows: [
               Shadow(
-                color: Colors.black.withOpacity(0.3),
+                color: Colors.black.withValues(alpha: 0.3),
                 offset: const Offset(0, 2),
                 blurRadius: 4,
               ),
@@ -92,10 +92,10 @@ class OnboardingWelcomeScreen extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.1),
+            color: Colors.white.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: Colors.white.withOpacity(0.3),
+              color: Colors.white.withValues(alpha: 0.3),
               width: 1,
             ),
           ),
@@ -104,28 +104,26 @@ class OnboardingWelcomeScreen extends StatelessWidget {
               Text(
                 'Your Spiritual Journey Begins',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                ),
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
                 textAlign: TextAlign.center,
               ),
-              
               const SizedBox(height: 16),
-              
               Text(
                 'Let us personalize your experience to support your unique path of healing, prayer, and spiritual growth.',
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: Colors.white.withOpacity(0.9),
-                  height: 1.6,
-                ),
+                      color: Colors.white.withValues(alpha: 0.9),
+                      height: 1.6,
+                    ),
                 textAlign: TextAlign.center,
               ),
             ],
           ),
         ),
-        
+
         const SizedBox(height: 32),
-        
+
         // Features preview
         Row(
           children: [
@@ -162,10 +160,10 @@ class OnboardingWelcomeScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.15),
+        color: Colors.white.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: Colors.white.withOpacity(0.2),
+          color: Colors.white.withValues(alpha: 0.2),
           width: 1,
         ),
       ),
@@ -180,9 +178,9 @@ class OnboardingWelcomeScreen extends StatelessWidget {
           Text(
             label,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Colors.white.withOpacity(0.9),
-              fontWeight: FontWeight.w500,
-            ),
+                  color: Colors.white.withValues(alpha: 0.9),
+                  fontWeight: FontWeight.w500,
+                ),
             textAlign: TextAlign.center,
           ),
         ],
@@ -203,7 +201,7 @@ class OnboardingWelcomeScreen extends StatelessWidget {
               backgroundColor: AppTheme.sunriseGold,
               foregroundColor: AppTheme.midnightBlue,
               elevation: 8,
-              shadowColor: AppTheme.sunriseGold.withOpacity(0.3),
+              shadowColor: AppTheme.sunriseGold.withValues(alpha: 0.3),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(27),
               ),
@@ -214,9 +212,9 @@ class OnboardingWelcomeScreen extends StatelessWidget {
                 Text(
                   'Begin Your Journey',
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: AppTheme.midnightBlue,
-                    fontWeight: FontWeight.w700,
-                  ),
+                        color: AppTheme.midnightBlue,
+                        fontWeight: FontWeight.w700,
+                      ),
                 ),
                 const SizedBox(width: 8),
                 const Icon(
@@ -227,18 +225,18 @@ class OnboardingWelcomeScreen extends StatelessWidget {
             ),
           ),
         ),
-        
+
         const SizedBox(height: 16),
-        
+
         // Skip option
         TextButton(
           onPressed: () => context.go('/'),
           child: Text(
             'Skip for now',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Colors.white.withOpacity(0.7),
-              decoration: TextDecoration.underline,
-            ),
+                  color: Colors.white.withValues(alpha: 0.7),
+                  decoration: TextDecoration.underline,
+                ),
           ),
         ),
       ],

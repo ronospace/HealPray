@@ -30,7 +30,7 @@ class SocialAuthButton extends StatelessWidget {
           backgroundColor: backgroundColor,
           foregroundColor: textColor,
           elevation: 8,
-          shadowColor: backgroundColor.withOpacity(0.3),
+          shadowColor: backgroundColor.withValues(alpha: 0.3),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -60,9 +60,9 @@ class SocialAuthButton extends StatelessWidget {
                   Text(
                     label,
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: textColor,
-                      fontWeight: FontWeight.w600,
-                    ),
+                          color: textColor,
+                          fontWeight: FontWeight.w600,
+                        ),
                   ),
                 ],
               ),

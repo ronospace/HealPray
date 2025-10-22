@@ -18,13 +18,13 @@ class MoodExportScreen extends ConsumerStatefulWidget {
 
 class _MoodExportScreenState extends ConsumerState<MoodExportScreen> {
   final MoodService _moodService = MoodService.instance;
-  
+
   TimePeriod _selectedPeriod = TimePeriod.last30Days;
   ExportFormat _selectedFormat = ExportFormat.json;
   bool _includeAnalytics = true;
   bool _includeMetadata = true;
   bool _isExporting = false;
-  
+
   List<SimpleMoodEntry> _entries = [];
   int _entryCount = 0;
 
@@ -45,7 +45,7 @@ class _MoodExportScreenState extends ConsumerState<MoodExportScreen> {
   List<SimpleMoodEntry> _filterEntriesByPeriod(List<SimpleMoodEntry> entries) {
     final now = DateTime.now();
     DateTime startDate;
-    
+
     switch (_selectedPeriod) {
       case TimePeriod.thisWeek:
         startDate = now.subtract(Duration(days: now.weekday - 1));
@@ -57,9 +57,13 @@ class _MoodExportScreenState extends ConsumerState<MoodExportScreen> {
         final lastMonth = DateTime(now.year, now.month - 1, 1);
         startDate = lastMonth;
         final endDate = DateTime(now.year, now.month, 0);
-        return entries.where((entry) => 
-          entry.timestamp.isAfter(startDate.subtract(const Duration(seconds: 1))) &&
-          entry.timestamp.isBefore(endDate.add(const Duration(seconds: 1)))).toList();
+        return entries
+            .where((entry) =>
+                entry.timestamp
+                    .isAfter(startDate.subtract(const Duration(seconds: 1))) &&
+                entry.timestamp
+                    .isBefore(endDate.add(const Duration(seconds: 1))))
+            .toList();
       case TimePeriod.last30Days:
         startDate = now.subtract(const Duration(days: 30));
         break;
@@ -70,8 +74,10 @@ class _MoodExportScreenState extends ConsumerState<MoodExportScreen> {
         startDate = DateTime(now.year, 1, 1);
         break;
     }
-    
-    return entries.where((entry) => entry.timestamp.isAfter(startDate)).toList();
+
+    return entries
+        .where((entry) => entry.timestamp.isAfter(startDate))
+        .toList();
   }
 
   @override
@@ -124,7 +130,7 @@ class _MoodExportScreenState extends ConsumerState<MoodExportScreen> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: AppTheme.healingTeal.withOpacity(0.3),
+            color: AppTheme.healingTeal.withValues(alpha: 0.3),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -199,7 +205,7 @@ class _MoodExportScreenState extends ConsumerState<MoodExportScreen> {
       children: [
         Icon(
           icon,
-          color: Colors.white.withOpacity(0.8),
+          color: Colors.white.withValues(alpha: 0.8),
           size: 20,
         ),
         const SizedBox(height: 4),
@@ -215,7 +221,7 @@ class _MoodExportScreenState extends ConsumerState<MoodExportScreen> {
           label,
           style: TextStyle(
             fontSize: 12,
-            color: Colors.white.withOpacity(0.8),
+            color: Colors.white.withValues(alpha: 0.8),
           ),
         ),
       ],
@@ -241,7 +247,7 @@ class _MoodExportScreenState extends ConsumerState<MoodExportScreen> {
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withValues(alpha: 0.05),
                 blurRadius: 10,
                 offset: const Offset(0, 2),
               ),
@@ -255,7 +261,9 @@ class _MoodExportScreenState extends ConsumerState<MoodExportScreen> {
                   _getPeriodDisplayName(period),
                   style: TextStyle(
                     fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                    color: isSelected ? AppTheme.healingTeal : AppTheme.textPrimary,
+                    color: isSelected
+                        ? AppTheme.healingTeal
+                        : AppTheme.textPrimary,
                   ),
                 ),
                 subtitle: Text(_getPeriodDescription(period)),
@@ -303,7 +311,7 @@ class _MoodExportScreenState extends ConsumerState<MoodExportScreen> {
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withValues(alpha: 0.05),
                 blurRadius: 10,
                 offset: const Offset(0, 2),
               ),
@@ -345,9 +353,10 @@ class _MoodExportScreenState extends ConsumerState<MoodExportScreen> {
     );
   }
 
-  Widget _buildFormatOption(ExportFormat format, String title, String subtitle, IconData icon) {
+  Widget _buildFormatOption(
+      ExportFormat format, String title, String subtitle, IconData icon) {
     final isSelected = format == _selectedFormat;
-    
+
     return ListTile(
       leading: Icon(
         icon,
@@ -398,7 +407,7 @@ class _MoodExportScreenState extends ConsumerState<MoodExportScreen> {
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withValues(alpha: 0.05),
                 blurRadius: 10,
                 offset: const Offset(0, 2),
               ),
@@ -421,7 +430,7 @@ class _MoodExportScreenState extends ConsumerState<MoodExportScreen> {
                     _includeAnalytics = value;
                   });
                 },
-                activeColor: AppTheme.healingTeal,
+                activeThumbColor: AppTheme.healingTeal,
               ),
               const Divider(height: 1),
               SwitchListTile(
@@ -432,14 +441,15 @@ class _MoodExportScreenState extends ConsumerState<MoodExportScreen> {
                     color: AppTheme.textPrimary,
                   ),
                 ),
-                subtitle: const Text('Add triggers, activities, and extra details'),
+                subtitle:
+                    const Text('Add triggers, activities, and extra details'),
                 value: _includeMetadata,
                 onChanged: (value) {
                   setState(() {
                     _includeMetadata = value;
                   });
                 },
-                activeColor: AppTheme.healingTeal,
+                activeThumbColor: AppTheme.healingTeal,
               ),
             ],
           ),
@@ -458,7 +468,7 @@ class _MoodExportScreenState extends ConsumerState<MoodExportScreen> {
           backgroundColor: AppTheme.healingTeal,
           foregroundColor: Colors.white,
           elevation: 8,
-          shadowColor: AppTheme.healingTeal.withOpacity(0.3),
+          shadowColor: AppTheme.healingTeal.withValues(alpha: 0.3),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -485,7 +495,9 @@ class _MoodExportScreenState extends ConsumerState<MoodExportScreen> {
                   const Icon(Icons.download, size: 20),
                   const SizedBox(width: 8),
                   Text(
-                    _entryCount == 0 ? 'No Data to Export' : 'Export ${_entryCount} Entries',
+                    _entryCount == 0
+                        ? 'No Data to Export'
+                        : 'Export $_entryCount Entries',
                     style: const TextStyle(
                       fontWeight: FontWeight.w600,
                     ),
@@ -506,7 +518,7 @@ class _MoodExportScreenState extends ConsumerState<MoodExportScreen> {
     try {
       String exportContent;
       String fileName;
-      
+
       switch (_selectedFormat) {
         case ExportFormat.json:
           exportContent = MoodExporter.exportToJson(
@@ -532,7 +544,8 @@ class _MoodExportScreenState extends ConsumerState<MoodExportScreen> {
           final package = MoodExporter.createExportPackage(entries: _entries);
           // For now, just export JSON as a fallback
           exportContent = package['mood_data.json']!;
-          fileName = 'mood_data_complete_${_getPeriodFilePrefix(_selectedPeriod)}.json';
+          fileName =
+              'mood_data_complete_${_getPeriodFilePrefix(_selectedPeriod)}.json';
           break;
       }
 
@@ -550,7 +563,6 @@ class _MoodExportScreenState extends ConsumerState<MoodExportScreen> {
           ),
         );
       }
-      
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -623,10 +635,10 @@ class _MoodExportScreenState extends ConsumerState<MoodExportScreen> {
 
   String _getEstimatedSize() {
     if (_entries.isEmpty) return '0 KB';
-    
+
     // Rough estimation based on entry count
     final baseSize = _entries.length * 0.5; // ~0.5KB per entry
-    
+
     switch (_selectedFormat) {
       case ExportFormat.json:
         return '${(baseSize * 1.5).toStringAsFixed(0)} KB';

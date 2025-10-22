@@ -5,28 +5,141 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
 import 'dart:math';
+import 'dart:async';
 
 import 'firebase_service.dart';
 import '../../core/utils/logger.dart';
+import '../../core/config/app_config.dart';
+
+// Mock User class for development mode
+class MockUser {
+  final String uid;
+  final String? email;
+  final String? displayName;
+  final String? photoURL;
+  final bool isAnonymous;
+
+  MockUser({
+    required this.uid,
+    this.email,
+    this.displayName,
+    this.photoURL,
+    this.isAnonymous = false,
+  });
+}
+
+// Mock UserCredential class for development mode
+class MockUserCredential {
+  final MockUser? user;
+
+  MockUserCredential({this.user});
+}
+
+// Custom exception for development mode authentication
+class _DevelopmentModeException implements Exception {
+  final String message;
+  _DevelopmentModeException(this.message);
+
+  @override
+  String toString() => 'DevelopmentModeException: $message';
+}
 
 /// Authentication service handling all auth methods
 class AuthService {
   AuthService._();
-  
+
   static final _instance = AuthService._();
   static AuthService get instance => _instance;
 
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  FirebaseAuth? _auth;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
+  bool _isFirebaseAvailable = false;
+
+  // Development mode user tracking
+  MockUser? _developmentUser;
+  final _developmentAuthStream = StreamController<MockUser?>.broadcast();
+
+  // Initialize Firebase Auth safely
+  void _initializeFirebaseAuth() {
+    if (_auth != null) return; // Already initialized
+
+    try {
+      _auth = FirebaseAuth.instance;
+      _isFirebaseAvailable = true;
+    } catch (e) {
+      AppLogger.warning('Firebase Auth not available in development mode: $e');
+      _isFirebaseAvailable = false;
+    }
+  }
+
+  // Helper to check if Firebase is available and throw appropriate error
+  void _requireFirebase() {
+    _initializeFirebaseAuth();
+    if (!_isFirebaseAvailable || _auth == null) {
+      throw FirebaseAuthException(
+        code: 'firebase-not-available',
+        message: 'Firebase Auth is not available. Running in development mode.',
+      );
+    }
+  }
 
   /// Get current user
-  User? get currentUser => _auth.currentUser;
+  User? get currentUser {
+    if (AppConfig.isDevelopment && _developmentUser != null) {
+      // In development mode, we can't return MockUser as User
+      // This is a limitation - we'll handle this in the UI layer
+      return null; // But we track development user separately
+    }
+
+    try {
+      _requireFirebase();
+      return _auth!.currentUser;
+    } catch (e) {
+      return null; // No user in development mode
+    }
+  }
+
+  /// Get current development user (development mode only)
+  MockUser? get currentDevelopmentUser {
+    return AppConfig.isDevelopment ? _developmentUser : null;
+  }
 
   /// Check if user is authenticated
-  bool get isAuthenticated => _auth.currentUser != null;
+  bool get isAuthenticated {
+    // In development mode, check if we have a development user
+    if (AppConfig.isDevelopment) {
+      return _developmentUser != null;
+    }
+
+    try {
+      _requireFirebase();
+      return _auth!.currentUser != null;
+    } catch (e) {
+      return false; // No authenticated user when Firebase unavailable
+    }
+  }
 
   /// Get authentication state stream
-  Stream<User?> get authStateChanges => _auth.authStateChanges();
+  Stream<User?> get authStateChanges {
+    if (AppConfig.isDevelopment) {
+      // In development mode, we can't emit MockUser as User
+      // The UI will use isDevelopmentAuthenticated instead
+      return Stream.value(null);
+    }
+
+    try {
+      _requireFirebase();
+      return _auth!.authStateChanges();
+    } catch (e) {
+      // Return a stream that emits null when Firebase unavailable
+      return Stream.value(null);
+    }
+  }
+
+  /// Get development authentication state stream
+  Stream<MockUser?> get developmentAuthStateChanges {
+    return _developmentAuthStream.stream;
+  }
 
   /// Sign in with email and password
   Future<UserCredential> signInWithEmail({
@@ -36,7 +149,17 @@ class AuthService {
     try {
       AppLogger.info('Attempting email sign in for: $email');
 
-      final credential = await _auth.signInWithEmailAndPassword(
+      // Development mode bypass
+      if (AppConfig.isDevelopment) {
+        return await _signInDevelopmentAccount(
+          email: email,
+          password: password,
+        );
+      }
+
+      _requireFirebase();
+
+      final credential = await _auth!.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -50,7 +173,6 @@ class AuthService {
       await _updateUserLastSignIn(credential.user);
 
       return credential;
-
     } catch (error) {
       AppLogger.error('Email sign in failed', error);
       rethrow;
@@ -66,7 +188,18 @@ class AuthService {
     try {
       AppLogger.info('Creating account for: $email');
 
-      final credential = await _auth.createUserWithEmailAndPassword(
+      // Development mode bypass
+      if (AppConfig.isDevelopment) {
+        return await _createDevelopmentAccount(
+          email: email,
+          password: password,
+          displayName: displayName,
+        );
+      }
+
+      _requireFirebase();
+
+      final credential = await _auth!.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -88,7 +221,6 @@ class AuthService {
       }
 
       return credential;
-
     } catch (error) {
       AppLogger.error('Account creation failed', error);
       rethrow;
@@ -99,10 +231,11 @@ class AuthService {
   Future<UserCredential> signInWithGoogle() async {
     try {
       AppLogger.info('Attempting Google sign in');
+      _requireFirebase();
 
       // Trigger the authentication flow
       final googleUser = await _googleSignIn.signIn();
-      
+
       if (googleUser == null) {
         throw FirebaseAuthException(
           code: 'aborted-by-user',
@@ -120,7 +253,7 @@ class AuthService {
       );
 
       // Sign in to Firebase with the Google credential
-      final userCredential = await _auth.signInWithCredential(credential);
+      final userCredential = await _auth!.signInWithCredential(credential);
 
       AppLogger.userAuthenticated(
         userId: userCredential.user?.uid ?? 'unknown',
@@ -133,13 +266,12 @@ class AuthService {
       }
 
       return userCredential;
-
     } catch (error) {
       AppLogger.error('Google sign in failed', error);
-      
+
       // Sign out from Google on error to prevent stuck state
       await _googleSignIn.signOut();
-      
+
       rethrow;
     }
   }
@@ -148,6 +280,7 @@ class AuthService {
   Future<UserCredential> signInWithApple() async {
     try {
       AppLogger.info('Attempting Apple sign in');
+      _requireFirebase();
 
       // Check if Apple Sign In is available
       final isAvailable = await SignInWithApple.isAvailable();
@@ -178,7 +311,7 @@ class AuthService {
       );
 
       // Sign in to Firebase
-      final userCredential = await _auth.signInWithCredential(oauthCredential);
+      final userCredential = await _auth!.signInWithCredential(oauthCredential);
 
       AppLogger.userAuthenticated(
         userId: userCredential.user?.uid ?? 'unknown',
@@ -192,7 +325,6 @@ class AuthService {
       }
 
       return userCredential;
-
     } catch (error) {
       AppLogger.error('Apple sign in failed', error);
       rethrow;
@@ -203,8 +335,9 @@ class AuthService {
   Future<UserCredential> signInAnonymously() async {
     try {
       AppLogger.info('Attempting anonymous sign in');
+      _requireFirebase();
 
-      final credential = await _auth.signInAnonymously();
+      final credential = await _auth!.signInAnonymously();
 
       AppLogger.userAuthenticated(
         userId: credential.user?.uid ?? 'unknown',
@@ -217,7 +350,6 @@ class AuthService {
       }
 
       return credential;
-
     } catch (error) {
       AppLogger.error('Anonymous sign in failed', error);
       rethrow;
@@ -228,11 +360,11 @@ class AuthService {
   Future<void> sendPasswordResetEmail(String email) async {
     try {
       AppLogger.info('Sending password reset email to: $email');
+      _requireFirebase();
 
-      await _auth.sendPasswordResetEmail(email: email);
+      await _auth!.sendPasswordResetEmail(email: email);
 
       AppLogger.info('Password reset email sent successfully');
-
     } catch (error) {
       AppLogger.error('Failed to send password reset email', error);
       rethrow;
@@ -245,7 +377,8 @@ class AuthService {
     required String newPassword,
   }) async {
     try {
-      final user = _auth.currentUser;
+      _requireFirebase();
+      final user = _auth!.currentUser;
       if (user == null) {
         throw FirebaseAuthException(
           code: 'user-not-found',
@@ -267,14 +400,13 @@ class AuthService {
         email: user.email!,
         password: currentPassword,
       );
-      
+
       await user.reauthenticateWithCredential(credential);
 
       // Update password
       await user.updatePassword(newPassword);
 
       AppLogger.info('Password changed successfully');
-
     } catch (error) {
       AppLogger.error('Failed to change password', error);
       rethrow;
@@ -287,7 +419,8 @@ class AuthService {
     String? photoURL,
   }) async {
     try {
-      final user = _auth.currentUser;
+      _requireFirebase();
+      final user = _auth!.currentUser;
       if (user == null) {
         throw FirebaseAuthException(
           code: 'user-not-found',
@@ -308,7 +441,6 @@ class AuthService {
       await user.reload();
 
       AppLogger.info('Profile updated successfully');
-
     } catch (error) {
       AppLogger.error('Failed to update profile', error);
       rethrow;
@@ -318,7 +450,8 @@ class AuthService {
   /// Delete user account
   Future<void> deleteAccount({String? password}) async {
     try {
-      final user = _auth.currentUser;
+      _requireFirebase();
+      final user = _auth!.currentUser;
       if (user == null) {
         throw FirebaseAuthException(
           code: 'user-not-found',
@@ -344,7 +477,6 @@ class AuthService {
       await user.delete();
 
       AppLogger.warning('Account deleted successfully');
-
     } catch (error) {
       AppLogger.error('Failed to delete account', error);
       rethrow;
@@ -356,12 +488,20 @@ class AuthService {
     try {
       AppLogger.info('Signing out user');
 
+      // Handle development mode sign out
+      if (AppConfig.isDevelopment) {
+        _signOutDevelopmentUser();
+        AppLogger.info('Development user signed out successfully');
+        return;
+      }
+
+      _requireFirebase();
+
       // Sign out from all providers
-      await _auth.signOut();
+      await _auth!.signOut();
       await _googleSignIn.signOut();
 
       AppLogger.info('User signed out successfully');
-
     } catch (error) {
       AppLogger.error('Sign out failed', error);
       rethrow;
@@ -374,7 +514,8 @@ class AuthService {
     required String password,
   }) async {
     try {
-      final user = _auth.currentUser;
+      _requireFirebase();
+      final user = _auth!.currentUser;
       if (user == null || !user.isAnonymous) {
         throw FirebaseAuthException(
           code: 'invalid-user',
@@ -397,7 +538,6 @@ class AuthService {
       await _updateUserLastSignIn(userCredential.user);
 
       return userCredential;
-
     } catch (error) {
       AppLogger.error('Failed to link with email', error);
       rethrow;
@@ -407,7 +547,8 @@ class AuthService {
   /// Link anonymous account with Google
   Future<UserCredential> linkWithGoogle() async {
     try {
-      final user = _auth.currentUser;
+      _requireFirebase();
+      final user = _auth!.currentUser;
       if (user == null || !user.isAnonymous) {
         throw FirebaseAuthException(
           code: 'invalid-user',
@@ -441,7 +582,6 @@ class AuthService {
       await _updateUserLastSignIn(userCredential.user);
 
       return userCredential;
-
     } catch (error) {
       AppLogger.error('Failed to link with Google', error);
       await _googleSignIn.signOut();
@@ -453,8 +593,9 @@ class AuthService {
   Future<void> _handleNewUser(User user) async {
     try {
       // Check if this is a new user by looking for existing document
-      final userDoc = await FirebaseService.firestore.doc('users/${user.uid}').get();
-      
+      final userDoc =
+          await FirebaseService.firestore.doc('users/${user.uid}').get();
+
       if (!userDoc.exists) {
         // New user - create document
         await FirebaseService.createUserDocument(user);
@@ -462,7 +603,6 @@ class AuthService {
         // Existing user - update last sign in
         await _updateUserLastSignIn(user);
       }
-
     } catch (error) {
       AppLogger.error('Failed to handle new user', error);
     }
@@ -476,20 +616,20 @@ class AuthService {
       await FirebaseService.firestore.doc('users/${user.uid}').update({
         'lastSignIn': Timestamp.now(),
       });
-
     } catch (error) {
       AppLogger.error('Failed to update last sign in', error);
     }
   }
 
   /// Update Apple user info from credential
-  Future<void> _updateAppleUserInfo(User user, AuthorizationCredentialAppleID appleCredential) async {
+  Future<void> _updateAppleUserInfo(
+      User user, AuthorizationCredentialAppleID appleCredential) async {
     try {
       // Apple Sign In doesn't always provide name information
       // The fullName property is not available in newer versions of the API
       // so we'll skip setting the display name for Apple users
-      AppLogger.info('Apple user info processed (name not available from credential)');
-
+      AppLogger.info(
+          'Apple user info processed (name not available from credential)');
     } catch (error) {
       AppLogger.error('Failed to update Apple user info', error);
     }
@@ -497,9 +637,11 @@ class AuthService {
 
   /// Generate a cryptographically secure nonce
   String _generateNonce([int length = 32]) {
-    const charset = '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._';
+    const charset =
+        '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._';
     final random = Random.secure();
-    return List.generate(length, (_) => charset[random.nextInt(charset.length)]).join();
+    return List.generate(length, (_) => charset[random.nextInt(charset.length)])
+        .join();
   }
 
   /// Generate SHA256 hash of string
@@ -512,5 +654,85 @@ class AuthService {
   /// Get user-friendly error message
   String getErrorMessage(dynamic error) {
     return FirebaseService.getErrorMessage(error);
+  }
+
+  // Development mode helper methods
+
+  /// Create development account (bypasses Firebase)
+  Future<UserCredential> _createDevelopmentAccount({
+    required String email,
+    required String password,
+    String? displayName,
+  }) async {
+    AppLogger.info('🔧 Creating development account for: $email');
+
+    // Generate a mock user ID
+    final uid = 'dev_${email.replaceAll('@', '_at_').replaceAll('.', '_')}';
+
+    final mockUser = MockUser(
+      uid: uid,
+      email: email,
+      displayName: displayName ?? email.split('@')[0],
+      isAnonymous: false,
+    );
+
+    // Store the development user
+    _developmentUser = mockUser;
+    _developmentAuthStream.add(mockUser);
+
+    AppLogger.userAuthenticated(
+      userId: uid,
+      method: 'email-development',
+    );
+
+    AppLogger.info('🔧 Development account created successfully');
+
+    // In development mode, we don't return a real UserCredential
+    // The authentication state will be handled by the development auth stream
+    // We need to throw a specific exception that the AuthProvider will handle
+    throw _DevelopmentModeException('Development account created successfully');
+  }
+
+  /// Sign in to development account (bypasses Firebase)
+  Future<UserCredential> _signInDevelopmentAccount({
+    required String email,
+    required String password,
+  }) async {
+    AppLogger.info('🔧 Signing in to development account: $email');
+
+    // For simplicity, always allow sign-in with any email/password in development
+    // In a real scenario, you might want to store and validate credentials
+    final uid = 'dev_${email.replaceAll('@', '_at_').replaceAll('.', '_')}';
+
+    final mockUser = MockUser(
+      uid: uid,
+      email: email,
+      displayName: email.split('@')[0],
+      isAnonymous: false,
+    );
+
+    // Store the development user
+    _developmentUser = mockUser;
+    _developmentAuthStream.add(mockUser);
+
+    AppLogger.userAuthenticated(
+      userId: uid,
+      method: 'email-development',
+    );
+
+    AppLogger.info('🔧 Development sign-in successful');
+
+    // Throw development mode exception to signal successful development auth
+    throw _DevelopmentModeException('Development sign-in successful');
+  }
+
+  /// Sign out development user
+  void _signOutDevelopmentUser() {
+    if (_developmentUser != null) {
+      AppLogger.info(
+          '🔧 Signing out development user: ${_developmentUser!.email}');
+      _developmentUser = null;
+      _developmentAuthStream.add(null);
+    }
   }
 }

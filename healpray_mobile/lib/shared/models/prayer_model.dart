@@ -54,7 +54,8 @@ class PrayerModel extends Equatable {
       ];
 
   /// Create PrayerModel from Firestore document
-  factory PrayerModel.fromFirestore(DocumentSnapshot<Map<String, dynamic>> doc) {
+  factory PrayerModel.fromFirestore(
+      DocumentSnapshot<Map<String, dynamic>> doc) {
     final data = doc.data()!;
 
     return PrayerModel(
@@ -67,13 +68,14 @@ class PrayerModel extends Equatable {
       mood: data['mood'] as String?,
       moodScore: (data['moodScore'] as num?)?.toDouble(),
       createdAt: (data['createdAt'] as Timestamp).toDate(),
-      updatedAt: data['updatedAt'] != null 
-          ? (data['updatedAt'] as Timestamp).toDate() 
+      updatedAt: data['updatedAt'] != null
+          ? (data['updatedAt'] as Timestamp).toDate()
           : null,
       isFavorite: data['isFavorite'] as bool? ?? false,
       isShared: data['isShared'] as bool? ?? false,
       shareCount: data['shareCount'] as int? ?? 0,
-      metadata: Map<String, dynamic>.from(data['metadata'] as Map<dynamic, dynamic>? ?? {}),
+      metadata: Map<String, dynamic>.from(
+          data['metadata'] as Map<dynamic, dynamic>? ?? {}),
     );
   }
 
@@ -185,7 +187,8 @@ class MoodEntryModel extends Equatable {
       ];
 
   /// Create MoodEntryModel from Firestore document
-  factory MoodEntryModel.fromFirestore(DocumentSnapshot<Map<String, dynamic>> doc) {
+  factory MoodEntryModel.fromFirestore(
+      DocumentSnapshot<Map<String, dynamic>> doc) {
     final data = doc.data()!;
 
     return MoodEntryModel(
@@ -198,7 +201,8 @@ class MoodEntryModel extends Equatable {
       activities: List<String>.from(data['activities'] as List<dynamic>? ?? []),
       notes: data['notes'] as String?,
       createdAt: (data['createdAt'] as Timestamp).toDate(),
-      context: Map<String, dynamic>.from(data['context'] as Map<dynamic, dynamic>? ?? {}),
+      context: Map<String, dynamic>.from(
+          data['context'] as Map<dynamic, dynamic>? ?? {}),
     );
   }
 
@@ -325,7 +329,8 @@ class ConversationModel extends Equatable {
       ];
 
   /// Create ConversationModel from Firestore document
-  factory ConversationModel.fromFirestore(DocumentSnapshot<Map<String, dynamic>> doc) {
+  factory ConversationModel.fromFirestore(
+      DocumentSnapshot<Map<String, dynamic>> doc) {
     final data = doc.data()!;
 
     return ConversationModel(
@@ -335,13 +340,15 @@ class ConversationModel extends Equatable {
       messages: (data['messages'] as List<dynamic>? ?? [])
           .map((msg) => ChatMessage.fromMap(msg as Map<String, dynamic>))
           .toList(),
-      type: ConversationType.values.byName(data['type'] as String? ?? 'spiritual'),
+      type: ConversationType.values
+          .byName(data['type'] as String? ?? 'spiritual'),
       createdAt: (data['createdAt'] as Timestamp).toDate(),
-      updatedAt: data['updatedAt'] != null 
-          ? (data['updatedAt'] as Timestamp).toDate() 
+      updatedAt: data['updatedAt'] != null
+          ? (data['updatedAt'] as Timestamp).toDate()
           : null,
       isActive: data['isActive'] as bool? ?? true,
-      metadata: Map<String, dynamic>.from(data['metadata'] as Map<dynamic, dynamic>? ?? {}),
+      metadata: Map<String, dynamic>.from(
+          data['metadata'] as Map<dynamic, dynamic>? ?? {}),
     );
   }
 
@@ -418,7 +425,8 @@ class ChatMessage extends Equatable {
       content: map['content'] as String,
       role: MessageRole.values.byName(map['role'] as String),
       timestamp: (map['timestamp'] as Timestamp).toDate(),
-      metadata: Map<String, dynamic>.from(map['metadata'] as Map<dynamic, dynamic>? ?? {}),
+      metadata: Map<String, dynamic>.from(
+          map['metadata'] as Map<dynamic, dynamic>? ?? {}),
     );
   }
 

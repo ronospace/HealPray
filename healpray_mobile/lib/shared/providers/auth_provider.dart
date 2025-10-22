@@ -5,6 +5,7 @@ import '../services/auth_service.dart';
 import '../services/firebase_service.dart';
 import '../models/user_model.dart';
 import '../../core/utils/logger.dart';
+import '../../core/config/app_config.dart';
 
 /// Authentication state notifier
 class AuthNotifier extends StateNotifier<AuthState> {
@@ -24,6 +25,17 @@ class AuthNotifier extends StateNotifier<AuthState> {
         state = const AuthState.unauthenticated();
       }
     });
+
+    // In development mode, also listen to development auth changes
+    if (AppConfig.isDevelopment) {
+      _authService.developmentAuthStateChanges.listen((mockUser) {
+        if (mockUser != null) {
+          _loadDevelopmentUserData(mockUser);
+        } else {
+          state = const AuthState.unauthenticated();
+        }
+      });
+    }
   }
 
   /// Load user data from Firestore
@@ -31,8 +43,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
     try {
       state = AuthState.loading(user: state.user);
 
-      final userDoc = await FirebaseService.getUserDocument(firebaseUser.uid).get();
-      
+      final userDoc =
+          await FirebaseService.getUserDocument(firebaseUser.uid).get();
+
       if (userDoc.exists) {
         final userModel = UserModel.fromFirestore(userDoc);
         state = AuthState.authenticated(user: userModel);
@@ -42,11 +55,74 @@ class AuthNotifier extends StateNotifier<AuthState> {
         await FirebaseService.createUserDocument(firebaseUser);
         _loadUserData(firebaseUser); // Retry loading
       }
-
     } catch (error) {
       AppLogger.error('Failed to load user data', error);
       state = AuthState.error(
         message: 'Failed to load user data',
+        user: state.user,
+      );
+    }
+  }
+
+  /// Load development user data (bypasses Firestore)
+  void _loadDevelopmentUserData(MockUser mockUser) {
+    try {
+      AppLogger.info('🔧 Loading development user data for: ${mockUser.email}');
+
+      // Create default preferences for development
+      final notifications = const NotificationPreferences(
+        morning: true,
+        midday: true,
+        evening: true,
+        community: false,
+        crisisSupport: true,
+      );
+
+      final privacy = const PrivacyPreferences(
+        shareAnalytics: false,
+        shareCommunity: false,
+      );
+
+      final spiritual = const SpiritualPreferences(
+        denomination: 'General Christian',
+        language: 'en',
+        tone: 'warm',
+        length: 'medium',
+      );
+
+      final preferences = UserPreferences(
+        notifications: notifications,
+        privacy: privacy,
+        spiritual: spiritual,
+      );
+
+      final analytics = const UserAnalytics(
+        totalPrayers: 0,
+        totalMoodEntries: 0,
+        averageMood: 5.0,
+        longestStreak: 0,
+        currentStreak: 0,
+      );
+
+      // Create a UserModel from MockUser data
+      final userModel = UserModel(
+        uid: mockUser.uid,
+        email: mockUser.email ?? '',
+        displayName: mockUser.displayName ?? 'Development User',
+        photoURL: mockUser.photoURL,
+        createdAt: DateTime.now(),
+        lastSignIn: DateTime.now(),
+        signInMethod: 'email-development',
+        preferences: preferences,
+        analytics: analytics,
+      );
+
+      state = AuthState.authenticated(user: userModel);
+      AppLogger.info('🔧 Development user data loaded successfully');
+    } catch (error) {
+      AppLogger.error('Failed to load development user data', error);
+      state = AuthState.error(
+        message: 'Failed to load development user data',
         user: state.user,
       );
     }
@@ -66,8 +142,15 @@ class AuthNotifier extends StateNotifier<AuthState> {
       );
 
       // State will be updated by auth state listener
-
     } catch (error) {
+      // Handle development mode success
+      if (AppConfig.isDevelopment &&
+          error.toString().contains('DevelopmentModeException')) {
+        AppLogger.info('Development mode sign-in successful');
+        // State will be updated by development auth state listener
+        return;
+      }
+
       AppLogger.error('Email sign in failed', error);
       state = AuthState.error(
         message: _authService.getErrorMessage(error),
@@ -92,8 +175,15 @@ class AuthNotifier extends StateNotifier<AuthState> {
       );
 
       // State will be updated by auth state listener
-
     } catch (error) {
+      // Handle development mode success
+      if (AppConfig.isDevelopment &&
+          error.toString().contains('DevelopmentModeException')) {
+        AppLogger.info('Development mode account created successfully');
+        // State will be updated by development auth state listener
+        return;
+      }
+
       AppLogger.error('Account creation failed', error);
       state = AuthState.error(
         message: _authService.getErrorMessage(error),
@@ -110,7 +200,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
       await _authService.signInWithGoogle();
 
       // State will be updated by auth state listener
-
     } catch (error) {
       AppLogger.error('Google sign in failed', error);
       state = AuthState.error(
@@ -128,7 +217,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
       await _authService.signInWithApple();
 
       // State will be updated by auth state listener
-
     } catch (error) {
       AppLogger.error('Apple sign in failed', error);
       state = AuthState.error(
@@ -146,7 +234,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
       await _authService.signInAnonymously();
 
       // State will be updated by auth state listener
-
     } catch (error) {
       AppLogger.error('Anonymous sign in failed', error);
       state = AuthState.error(
@@ -191,7 +278,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
       if (firebaseUser != null) {
         await _loadUserData(firebaseUser);
       }
-
     } catch (error) {
       AppLogger.error('Failed to update profile', error);
       state = AuthState.error(
@@ -218,7 +304,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
       );
 
       AppLogger.info('User preferences updated');
-
     } catch (error) {
       AppLogger.error('Failed to update preferences', error);
       state = AuthState.error(
@@ -246,7 +331,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
       );
 
       // State will be updated by auth state listener
-
     } catch (error) {
       AppLogger.error('Failed to link with email', error);
       state = AuthState.error(
@@ -268,7 +352,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
       await _authService.linkWithGoogle();
 
       // State will be updated by auth state listener
-
     } catch (error) {
       AppLogger.error('Failed to link with Google', error);
       state = AuthState.error(
@@ -302,7 +385,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
       await _authService.deleteAccount(password: password);
 
       state = const AuthState.unauthenticated();
-
     } catch (error) {
       AppLogger.error('Failed to delete account', error);
       state = AuthState.error(
@@ -340,7 +422,7 @@ class AuthState {
 
   const AuthState.initial() : this._();
 
-  const AuthState.loading({UserModel? user}) 
+  const AuthState.loading({UserModel? user})
       : this._(user: user, isLoading: true);
 
   const AuthState.authenticated({required UserModel user})

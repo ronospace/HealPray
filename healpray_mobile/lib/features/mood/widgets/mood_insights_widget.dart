@@ -21,7 +21,7 @@ class MoodInsightsWidget extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 10,
               offset: const Offset(0, 2),
             ),
@@ -59,7 +59,10 @@ class MoodInsightsWidget extends StatelessWidget {
     }
 
     return Column(
-      children: insights.take(3).map((insight) => _buildInsightCard(insight)).toList(),
+      children: insights
+          .take(3)
+          .map((insight) => _buildInsightCard(insight))
+          .toList(),
     );
   }
 
@@ -71,12 +74,12 @@ class MoodInsightsWidget extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: _getInsightColor(insight.type).withOpacity(0.2),
+          color: _getInsightColor(insight.type).withValues(alpha: 0.2),
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -91,7 +94,7 @@ class MoodInsightsWidget extends StatelessWidget {
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: _getInsightColor(insight.type).withOpacity(0.1),
+                  color: _getInsightColor(insight.type).withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Center(
@@ -116,9 +119,11 @@ class MoodInsightsWidget extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 2),
                       decoration: BoxDecoration(
-                        color: _getInsightColor(insight.type).withOpacity(0.1),
+                        color: _getInsightColor(insight.type)
+                            .withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(

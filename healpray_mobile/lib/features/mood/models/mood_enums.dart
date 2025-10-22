@@ -83,7 +83,7 @@ enum MoodTrigger {
   ministry,
   spiritualDoubt,
   prayerAnswered,
-  
+
   // Relationships
   family,
   friends,
@@ -92,7 +92,7 @@ enum MoodTrigger {
   loneliness,
   community,
   socialEvent,
-  
+
   // Work & Achievement
   workStress,
   workSuccess,
@@ -101,7 +101,7 @@ enum MoodTrigger {
   deadline,
   teamwork,
   recognition,
-  
+
   // Health & Physical
   exercise,
   sleep,
@@ -110,7 +110,7 @@ enum MoodTrigger {
   medication,
   nutrition,
   energyLevel,
-  
+
   // Life Events
   celebration,
   loss,
@@ -119,7 +119,7 @@ enum MoodTrigger {
   disappointment,
   surprise,
   travel,
-  
+
   // Mental & Emotional
   stress,
   anxiety,
@@ -128,7 +128,7 @@ enum MoodTrigger {
   boredom,
   overwhelm,
   clarity,
-  
+
   // External Factors
   weather,
   news,
@@ -137,7 +137,7 @@ enum MoodTrigger {
   nature,
   technology,
   money,
-  
+
   // Personal Growth
   learning,
   creativity,
@@ -146,7 +146,7 @@ enum MoodTrigger {
   forgiveness,
   gratitude,
   reflection,
-  
+
   // Crisis & Support
   crisis,
   support,
@@ -155,7 +155,7 @@ enum MoodTrigger {
   breakthrough,
   setback,
   recovery,
-  
+
   // Other
   unknown,
   multiple,
@@ -183,7 +183,7 @@ extension MoodTriggerExtension on MoodTrigger {
         return 'Spiritual Doubt';
       case MoodTrigger.prayerAnswered:
         return 'Answered Prayer';
-        
+
       // Relationships
       case MoodTrigger.family:
         return 'Family';
@@ -199,7 +199,7 @@ extension MoodTriggerExtension on MoodTrigger {
         return 'Community';
       case MoodTrigger.socialEvent:
         return 'Social Event';
-        
+
       // Work & Achievement
       case MoodTrigger.workStress:
         return 'Work Stress';
@@ -215,7 +215,7 @@ extension MoodTriggerExtension on MoodTrigger {
         return 'Teamwork';
       case MoodTrigger.recognition:
         return 'Recognition';
-        
+
       // Health & Physical
       case MoodTrigger.exercise:
         return 'Exercise';
@@ -231,7 +231,7 @@ extension MoodTriggerExtension on MoodTrigger {
         return 'Nutrition';
       case MoodTrigger.energyLevel:
         return 'Energy Level';
-        
+
       // Life Events
       case MoodTrigger.celebration:
         return 'Celebration';
@@ -247,7 +247,7 @@ extension MoodTriggerExtension on MoodTrigger {
         return 'Surprise';
       case MoodTrigger.travel:
         return 'Travel';
-        
+
       // Mental & Emotional
       case MoodTrigger.stress:
         return 'Stress';
@@ -263,7 +263,7 @@ extension MoodTriggerExtension on MoodTrigger {
         return 'Overwhelm';
       case MoodTrigger.clarity:
         return 'Clarity';
-        
+
       // External Factors
       case MoodTrigger.weather:
         return 'Weather';
@@ -279,7 +279,7 @@ extension MoodTriggerExtension on MoodTrigger {
         return 'Technology';
       case MoodTrigger.money:
         return 'Money';
-        
+
       // Personal Growth
       case MoodTrigger.learning:
         return 'Learning';
@@ -295,7 +295,7 @@ extension MoodTriggerExtension on MoodTrigger {
         return 'Gratitude';
       case MoodTrigger.reflection:
         return 'Reflection';
-        
+
       // Crisis & Support
       case MoodTrigger.crisis:
         return 'Crisis';
@@ -311,7 +311,7 @@ extension MoodTriggerExtension on MoodTrigger {
         return 'Setback';
       case MoodTrigger.recovery:
         return 'Recovery';
-        
+
       // Other
       case MoodTrigger.unknown:
         return 'Unknown';
@@ -341,7 +341,7 @@ extension MoodTriggerExtension on MoodTrigger {
         return '❓';
       case MoodTrigger.prayerAnswered:
         return '🌟';
-        
+
       // Relationships
       case MoodTrigger.family:
         return '👨‍👩‍👧‍👦';
@@ -357,7 +357,7 @@ extension MoodTriggerExtension on MoodTrigger {
         return '🏘️';
       case MoodTrigger.socialEvent:
         return '🎉';
-        
+
       // Work & Achievement
       case MoodTrigger.workStress:
         return '💼';
@@ -373,7 +373,7 @@ extension MoodTriggerExtension on MoodTrigger {
         return '👥';
       case MoodTrigger.recognition:
         return '🏆';
-        
+
       // Health & Physical
       case MoodTrigger.exercise:
         return '🏃';
@@ -389,7 +389,7 @@ extension MoodTriggerExtension on MoodTrigger {
         return '🍎';
       case MoodTrigger.energyLevel:
         return '⚡';
-        
+
       // Life Events
       case MoodTrigger.celebration:
         return '🎉';
@@ -405,7 +405,7 @@ extension MoodTriggerExtension on MoodTrigger {
         return '😲';
       case MoodTrigger.travel:
         return '✈️';
-        
+
       // Mental & Emotional
       case MoodTrigger.stress:
         return '😰';
@@ -421,7 +421,7 @@ extension MoodTriggerExtension on MoodTrigger {
         return '🤯';
       case MoodTrigger.clarity:
         return '💡';
-        
+
       // External Factors
       case MoodTrigger.weather:
         return '🌤️';
@@ -437,7 +437,7 @@ extension MoodTriggerExtension on MoodTrigger {
         return '💻';
       case MoodTrigger.money:
         return '💰';
-        
+
       // Personal Growth
       case MoodTrigger.learning:
         return '📚';
@@ -453,7 +453,7 @@ extension MoodTriggerExtension on MoodTrigger {
         return '🙏';
       case MoodTrigger.reflection:
         return '🤔';
-        
+
       // Crisis & Support
       case MoodTrigger.crisis:
         return '🆘';
@@ -469,7 +469,7 @@ extension MoodTriggerExtension on MoodTrigger {
         return '📉';
       case MoodTrigger.recovery:
         return '🔄';
-        
+
       // Other
       case MoodTrigger.unknown:
         return '❔';
@@ -491,7 +491,7 @@ extension MoodTriggerExtension on MoodTrigger {
       case MoodTrigger.spiritualDoubt:
       case MoodTrigger.prayerAnswered:
         return MoodTriggerCategory.spiritual;
-        
+
       case MoodTrigger.family:
       case MoodTrigger.friends:
       case MoodTrigger.romantic:
@@ -500,7 +500,7 @@ extension MoodTriggerExtension on MoodTrigger {
       case MoodTrigger.community:
       case MoodTrigger.socialEvent:
         return MoodTriggerCategory.relationships;
-        
+
       case MoodTrigger.workStress:
       case MoodTrigger.workSuccess:
       case MoodTrigger.jobSearch:
@@ -509,7 +509,7 @@ extension MoodTriggerExtension on MoodTrigger {
       case MoodTrigger.teamwork:
       case MoodTrigger.recognition:
         return MoodTriggerCategory.work;
-        
+
       case MoodTrigger.exercise:
       case MoodTrigger.sleep:
       case MoodTrigger.sickness:
@@ -518,7 +518,7 @@ extension MoodTriggerExtension on MoodTrigger {
       case MoodTrigger.nutrition:
       case MoodTrigger.energyLevel:
         return MoodTriggerCategory.health;
-        
+
       case MoodTrigger.celebration:
       case MoodTrigger.loss:
       case MoodTrigger.transition:
@@ -527,7 +527,7 @@ extension MoodTriggerExtension on MoodTrigger {
       case MoodTrigger.surprise:
       case MoodTrigger.travel:
         return MoodTriggerCategory.lifeEvents;
-        
+
       case MoodTrigger.stress:
       case MoodTrigger.anxiety:
       case MoodTrigger.nostalgia:
@@ -536,7 +536,7 @@ extension MoodTriggerExtension on MoodTrigger {
       case MoodTrigger.overwhelm:
       case MoodTrigger.clarity:
         return MoodTriggerCategory.mentalEmotional;
-        
+
       case MoodTrigger.weather:
       case MoodTrigger.news:
       case MoodTrigger.environment:
@@ -545,7 +545,7 @@ extension MoodTriggerExtension on MoodTrigger {
       case MoodTrigger.technology:
       case MoodTrigger.money:
         return MoodTriggerCategory.external;
-        
+
       case MoodTrigger.learning:
       case MoodTrigger.creativity:
       case MoodTrigger.achievement:
@@ -554,7 +554,7 @@ extension MoodTriggerExtension on MoodTrigger {
       case MoodTrigger.gratitude:
       case MoodTrigger.reflection:
         return MoodTriggerCategory.growth;
-        
+
       case MoodTrigger.crisis:
       case MoodTrigger.support:
       case MoodTrigger.counseling:
@@ -563,7 +563,7 @@ extension MoodTriggerExtension on MoodTrigger {
       case MoodTrigger.setback:
       case MoodTrigger.recovery:
         return MoodTriggerCategory.crisisSupport;
-        
+
       case MoodTrigger.unknown:
       case MoodTrigger.multiple:
       case MoodTrigger.other:

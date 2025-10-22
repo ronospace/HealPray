@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:firebase_core/firebase_core.dart';
-
-import 'firebase_options.dart';
 import 'core/config/app_config.dart';
 import 'core/utils/logger.dart';
-import 'shared/services/firebase_service.dart';
+import 'core/services/advanced_analytics_service.dart';
+import 'core/services/ab_test_service.dart';
+import 'core/services/user_feedback_service.dart';
 import 'app.dart';
 
 void main() async {
@@ -29,30 +28,35 @@ Future<void> _initializeApp() async {
     // Initialize app configuration
     await AppConfig.initialize();
     AppLogger.info('✅ App configuration loaded');
-
+    
+    // Initialize analytics services
+    await _initializeAnalyticsServices();
+    
     // Set system UI overlay style
     _configureSystemUI();
 
-    // Initialize Firebase
+    // Initialize Firebase (disabled for development)
     try {
-      await Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform,
-      );
-      AppLogger.info('✅ Firebase initialized');
-      
-      // Initialize Firebase services
-      await FirebaseService.initialize();
-      AppLogger.info('✅ Firebase services initialized');
+      AppLogger.info('⚠️ Firebase initialization skipped in development mode');
+      // TODO: Enable Firebase when proper configuration is available
+      // await Firebase.initializeApp(
+      //   options: DefaultFirebaseOptions.currentPlatform,
+      // );
+      // AppLogger.info('✅ Firebase initialized');
+      //
+      // // Initialize Firebase services
+      // await FirebaseService.initialize();
+      // AppLogger.info('✅ Firebase services initialized');
     } catch (firebaseError) {
-      AppLogger.warning('Firebase initialization failed, running in offline mode: $firebaseError');
+      AppLogger.warning(
+          'Firebase initialization failed, running in offline mode: $firebaseError');
       // Continue without Firebase - the app should work in offline mode
     }
 
     AppLogger.info('🎉 App initialization complete');
-
   } catch (error, stackTrace) {
     AppLogger.error('💥 App initialization failed', error, stackTrace);
-    
+
     // Show critical error to user
     runApp(
       MaterialApp(
@@ -66,6 +70,34 @@ Future<void> _initializeApp() async {
       ),
     );
     return;
+  }
+}
+
+/// Initialize analytics and monitoring services
+Future<void> _initializeAnalyticsServices() async {
+  try {
+    // Initialize advanced analytics service
+    final analyticsInitialized = await AdvancedAnalyticsService.instance.initialize();
+    if (analyticsInitialized) {
+      AppLogger.info('✅ Advanced analytics service initialized');
+    } else {
+      AppLogger.warning('⚠️ Advanced analytics service initialization failed');
+    }
+    
+    // Initialize A/B testing service
+    await ABTestService.instance.initialize();
+    AppLogger.info('✅ A/B test service initialized');
+    
+    // Initialize user feedback service
+    await UserFeedbackService.instance.initialize();
+    AppLogger.info('✅ User feedback service initialized');
+    
+    // Track app launch event
+    AdvancedAnalyticsService.instance.trackRetention();
+    AppLogger.debug('📊 App launch event tracked');
+  } catch (e, stackTrace) {
+    // Log error but continue app initialization
+    AppLogger.error('❌ Analytics services initialization failed', e, stackTrace);
   }
 }
 
@@ -114,7 +146,7 @@ class _ErrorScreen extends StatelessWidget {
                 width: 80,
                 height: 80,
                 decoration: BoxDecoration(
-                  color: Colors.red.withOpacity(0.1),
+                  color: Colors.red.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(40),
                 ),
                 child: const Icon(

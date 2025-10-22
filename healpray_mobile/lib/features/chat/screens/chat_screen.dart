@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/animated_gradient_background.dart';
+import '../../../core/widgets/gradient_text.dart';
 import '../models/chat_message.dart';
 import '../services/chat_service.dart';
 import '../widgets/message_bubble.dart';
@@ -12,7 +14,7 @@ import '../widgets/conversation_context_selector.dart';
 /// Main chat screen for AI spiritual guidance
 class ChatScreen extends ConsumerStatefulWidget {
   const ChatScreen({super.key, this.conversationId});
-  
+
   final String? conversationId;
 
   @override
@@ -23,7 +25,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   final ChatService _chatService = ChatService.instance;
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _messageController = TextEditingController();
-  
+
   List<ChatMessage> _messages = [];
   Conversation? _currentConversation;
   bool _isLoading = false;
@@ -45,15 +47,17 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
   Future<void> _initializeChat() async {
     setState(() => _isLoading = true);
-    
+
     try {
       await _chatService.initialize();
-      
+
       if (widget.conversationId != null) {
         // Load existing conversation
-        _currentConversation = _chatService.getConversation(widget.conversationId!);
+        _currentConversation =
+            _chatService.getConversation(widget.conversationId!);
         if (_currentConversation != null) {
-          _messages = _chatService.getMessagesForConversation(widget.conversationId!);
+          _messages =
+              _chatService.getMessagesForConversation(widget.conversationId!);
           _chatService.switchConversation(widget.conversationId!);
         }
       } else {
@@ -61,12 +65,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         _currentConversation = await _chatService.startConversation(
           context: ChatContext.spiritual,
         );
-        _messages = _chatService.getMessagesForConversation(_currentConversation!.id);
+        _messages =
+            _chatService.getMessagesForConversation(_currentConversation!.id);
       }
-      
+
       setState(() => _isInitialized = true);
       _scrollToBottom();
-      
     } catch (e) {
       debugPrint('Error initializing chat: $e');
       _showErrorSnackBar('Failed to initialize chat. Please try again.');
@@ -78,13 +82,14 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.lightBackground,
       appBar: _buildAppBar(),
-      body: _isLoading
-          ? _buildLoadingState()
-          : _isInitialized
-              ? _buildChatInterface()
-              : _buildErrorState(),
+      body: AnimatedGradientBackground(
+        child: _isLoading
+            ? _buildLoadingState()
+            : _isInitialized
+                ? _buildChatInterface()
+                : _buildErrorState(),
+      ),
     );
   }
 
@@ -93,43 +98,46 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          GradientText(
             _currentConversation?.title ?? 'Spiritual Companion',
+            gradient: const LinearGradient(
+              colors: [Colors.white, Color(0xFFE5F0FF)],
+            ),
             style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
-              color: AppTheme.textPrimary,
             ),
           ),
           if (_currentConversation != null)
             Text(
               _getContextDisplayName(_currentConversation!.context),
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 12,
-                color: AppTheme.textSecondary,
+                color: Colors.white.withOpacity(0.7),
               ),
             ),
         ],
       ),
-      backgroundColor: Colors.white,
-      elevation: 1,
+      backgroundColor: Colors.transparent,
+      elevation: 0,
       leading: IconButton(
         onPressed: () => context.pop(),
         icon: const Icon(
           Icons.arrow_back_ios,
-          color: AppTheme.textPrimary,
+          color: Colors.white,
         ),
       ),
       actions: [
         IconButton(
-          onPressed: () => setState(() => _showContextSelector = !_showContextSelector),
+          onPressed: () =>
+              setState(() => _showContextSelector = !_showContextSelector),
           icon: Icon(
             _showContextSelector ? Icons.close : Icons.tune,
-            color: AppTheme.healingTeal,
+            color: Colors.white,
           ),
         ),
         PopupMenuButton<String>(
-          icon: const Icon(Icons.more_vert, color: AppTheme.textPrimary),
+          icon: const Icon(Icons.more_vert, color: Colors.white),
           onSelected: _handleMenuAction,
           itemBuilder: (context) => [
             const PopupMenuItem(
@@ -229,23 +237,22 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         // Context selector
         if (_showContextSelector)
           ConversationContextSelector(
-            currentContext: _currentConversation?.context ?? ChatContext.spiritual,
+            currentContext:
+                _currentConversation?.context ?? ChatContext.spiritual,
             onContextChanged: _switchContext,
           ),
-        
+
         // Messages area
         Expanded(
-          child: _messages.isEmpty
-              ? _buildEmptyState()
-              : _buildMessagesList(),
+          child: _messages.isEmpty ? _buildEmptyState() : _buildMessagesList(),
         ),
-        
+
         // Input area
         Container(
           decoration: const BoxDecoration(
             color: Colors.white,
             border: Border(
-              top: BorderSide(color: AppTheme.borderColor, width: 1),
+              top: BorderSide(color: AppTheme.lightGray, width: 1),
             ),
           ),
           child: SafeArea(
@@ -271,7 +278,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               width: 80,
               height: 80,
               decoration: BoxDecoration(
-                color: AppTheme.healingTeal.withOpacity(0.1),
+                color: AppTheme.healingTeal.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -322,7 +329,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     return ActionChip(
       label: Text(text),
       onPressed: () => _sendMessage(text),
-      backgroundColor: AppTheme.healingTeal.withOpacity(0.1),
+      backgroundColor: AppTheme.healingTeal.withValues(alpha: 0.1),
       labelStyle: const TextStyle(
         color: AppTheme.healingTeal,
         fontWeight: FontWeight.w500,
@@ -342,14 +349,15 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       itemBuilder: (context, index) {
         final message = _messages[index];
         final isLast = index == _messages.length - 1;
-        
+
         return Padding(
           padding: EdgeInsets.only(
             bottom: isLast ? 16 : 8,
           ),
           child: MessageBubble(
             message: message,
-            onRetry: message.isError == true ? () => _retryMessage(message) : null,
+            onRetry:
+                message.isError == true ? () => _retryMessage(message) : null,
           ),
         );
       },
@@ -360,22 +368,21 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
   Future<void> _sendMessage(String content) async {
     if (content.trim().isEmpty || _currentConversation == null) return;
-    
+
     setState(() => _isLoading = true);
-    
+
     try {
       final newMessages = await _chatService.sendMessage(
         content.trim(),
         conversationId: _currentConversation!.id,
       );
-      
+
       setState(() {
         _messages.addAll(newMessages);
       });
-      
+
       _messageController.clear();
       _scrollToBottom();
-      
     } catch (e) {
       debugPrint('Error sending message: $e');
       _showErrorSnackBar('Failed to send message. Please try again.');
@@ -386,7 +393,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
   Future<void> _retryMessage(ChatMessage failedMessage) async {
     setState(() => _isLoading = true);
-    
+
     try {
       // Find the user message that preceded this failed AI response
       final messageIndex = _messages.indexOf(failedMessage);
@@ -398,17 +405,16 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             userMessage.content,
             conversationId: _currentConversation!.id,
           );
-          
+
           // Remove the failed message and add the new response
           setState(() {
             _messages.removeAt(messageIndex);
             _messages.add(newMessages.last); // Add only the AI response
           });
-          
+
           _scrollToBottom();
         }
       }
-      
     } catch (e) {
       debugPrint('Error retrying message: $e');
       _showErrorSnackBar('Retry failed. Please try again.');
@@ -419,22 +425,22 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
   Future<void> _switchContext(ChatContext newContext) async {
     setState(() => _showContextSelector = false);
-    
+
     if (_currentConversation?.context == newContext) return;
-    
+
     // Start new conversation with different context
     try {
       setState(() => _isLoading = true);
-      
+
       _currentConversation = await _chatService.startConversation(
         context: newContext,
       );
-      
-      _messages = _chatService.getMessagesForConversation(_currentConversation!.id);
-      
+
+      _messages =
+          _chatService.getMessagesForConversation(_currentConversation!.id);
+
       setState(() {});
       _scrollToBottom();
-      
     } catch (e) {
       debugPrint('Error switching context: $e');
       _showErrorSnackBar('Failed to switch context. Please try again.');

@@ -37,13 +37,13 @@ class AuthTextField extends StatelessWidget {
         Text(
           label,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: Colors.white,
-            fontWeight: FontWeight.w500,
-          ),
+                color: Colors.white,
+                fontWeight: FontWeight.w500,
+              ),
         ),
-        
+
         const SizedBox(height: 8),
-        
+
         // Text field
         TextFormField(
           controller: controller,
@@ -53,37 +53,37 @@ class AuthTextField extends StatelessWidget {
           maxLines: maxLines,
           onChanged: onChanged,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: Colors.white,
-          ),
+                color: Colors.white,
+              ),
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Colors.white.withOpacity(0.6),
-            ),
-            
+                  color: Colors.white.withValues(alpha: 0.6),
+                ),
+
             // Prefix icon
             prefixIcon: prefixIcon != null
                 ? Icon(
                     prefixIcon,
-                    color: Colors.white.withOpacity(0.7),
+                    color: Colors.white.withValues(alpha: 0.7),
                   )
                 : null,
-            
+
             // Suffix icon
             suffixIcon: suffixIcon,
-            
+
             // Border styling
             filled: true,
-            fillColor: Colors.white.withOpacity(0.1),
-            
+            fillColor: Colors.white.withValues(alpha: 0.1),
+
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(
-                color: Colors.white.withOpacity(0.3),
+                color: Colors.white.withValues(alpha: 0.3),
                 width: 1.5,
               ),
             ),
-            
+
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: const BorderSide(
@@ -91,7 +91,7 @@ class AuthTextField extends StatelessWidget {
                 width: 2,
               ),
             ),
-            
+
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: const BorderSide(
@@ -99,7 +99,7 @@ class AuthTextField extends StatelessWidget {
                 width: 2,
               ),
             ),
-            
+
             focusedErrorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: const BorderSide(
@@ -107,17 +107,17 @@ class AuthTextField extends StatelessWidget {
                 width: 2,
               ),
             ),
-            
+
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 16,
               vertical: 16,
             ),
-            
+
             // Error text styling
             errorStyle: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: AppTheme.crisisColor,
-              fontWeight: FontWeight.w500,
-            ),
+                  color: AppTheme.crisisColor,
+                  fontWeight: FontWeight.w500,
+                ),
           ),
         ),
       ],

@@ -1,4 +1,3 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -16,39 +15,44 @@ class FirebaseService {
     try {
       return FirebaseAuth.instance;
     } catch (e) {
-      throw Exception('Firebase not initialized. Please ensure Firebase.initializeApp() is called first.');
+      throw Exception(
+          'Firebase not initialized. Please ensure Firebase.initializeApp() is called first.');
     }
   }
-  
+
   static FirebaseFirestore get firestore {
     try {
       return FirebaseFirestore.instance;
     } catch (e) {
-      throw Exception('Firebase not initialized. Please ensure Firebase.initializeApp() is called first.');
+      throw Exception(
+          'Firebase not initialized. Please ensure Firebase.initializeApp() is called first.');
     }
   }
-  
+
   static FirebaseMessaging get messaging {
     try {
       return FirebaseMessaging.instance;
     } catch (e) {
-      throw Exception('Firebase not initialized. Please ensure Firebase.initializeApp() is called first.');
+      throw Exception(
+          'Firebase not initialized. Please ensure Firebase.initializeApp() is called first.');
     }
   }
-  
+
   static FirebaseAnalytics get analytics {
     try {
       return FirebaseAnalytics.instance;
     } catch (e) {
-      throw Exception('Firebase not initialized. Please ensure Firebase.initializeApp() is called first.');
+      throw Exception(
+          'Firebase not initialized. Please ensure Firebase.initializeApp() is called first.');
     }
   }
-  
+
   static FirebaseCrashlytics get crashlytics {
     try {
       return FirebaseCrashlytics.instance;
     } catch (e) {
-      throw Exception('Firebase not initialized. Please ensure Firebase.initializeApp() is called first.');
+      throw Exception(
+          'Firebase not initialized. Please ensure Firebase.initializeApp() is called first.');
     }
   }
 
@@ -88,13 +92,14 @@ class FirebaseService {
       }
 
       // Configure crashlytics
-      await crashlytics.setCrashlyticsCollectionEnabled(!AppConfig.isDevelopment);
-      
+      await crashlytics
+          .setCrashlyticsCollectionEnabled(!AppConfig.isDevelopment);
+
       _initialized = true;
       AppLogger.info('Firebase services initialized successfully');
-
     } catch (error, stackTrace) {
-      AppLogger.error('Failed to initialize Firebase services', error, stackTrace);
+      AppLogger.error(
+          'Failed to initialize Firebase services', error, stackTrace);
       rethrow;
     }
   }
@@ -132,7 +137,6 @@ class FirebaseService {
         // Handle background message clicks
         FirebaseMessaging.onMessageOpenedApp.listen(_handleMessageOpenedApp);
       }
-
     } catch (error) {
       AppLogger.error('Failed to configure FCM', error);
     }
@@ -149,15 +153,15 @@ class FirebaseService {
       // Update user analytics properties
       if (AppConfig.enableAnalytics) {
         analytics.setUserId(id: user.uid);
-        analytics.setUserProperty(name: 'sign_in_method', value: _getSignInMethod(user));
+        analytics.setUserProperty(
+            name: 'sign_in_method', value: _getSignInMethod(user));
       }
 
       // Update FCM token in user profile
       _updateUserFCMToken();
-
     } else {
       AppLogger.info('User signed out');
-      
+
       if (AppConfig.enableAnalytics) {
         analytics.setUserId(id: null);
       }
@@ -167,10 +171,10 @@ class FirebaseService {
   /// Handle foreground FCM messages
   static void _handleForegroundMessage(RemoteMessage message) {
     AppLogger.info('Received FCM message: ${message.messageId}');
-    
+
     // Handle different message types
     final messageType = message.data['type'] ?? 'general';
-    
+
     switch (messageType) {
       case 'morning_prayer':
         _handlePrayerReminder(message);
@@ -189,7 +193,7 @@ class FirebaseService {
   /// Handle FCM message opened from background/terminated state
   static void _handleMessageOpenedApp(RemoteMessage message) {
     AppLogger.info('App opened from FCM message: ${message.messageId}');
-    
+
     // Navigate to appropriate screen based on message type
     final messageType = message.data['type'] ?? 'general';
     // Navigation logic would go here
@@ -228,7 +232,6 @@ class FirebaseService {
       }, SetOptions(merge: true));
 
       AppLogger.debug('FCM token updated for user');
-
     } catch (error) {
       AppLogger.error('Failed to update FCM token', error);
     }
@@ -237,7 +240,7 @@ class FirebaseService {
   /// Get sign-in method from user
   static String _getSignInMethod(User user) {
     if (user.providerData.isEmpty) return 'anonymous';
-    
+
     final provider = user.providerData.first.providerId;
     switch (provider) {
       case 'google.com':
@@ -275,7 +278,7 @@ class FirebaseService {
   static Future<void> createUserDocument(User user) async {
     try {
       final userDoc = firestore.doc('users/${user.uid}');
-      
+
       // Check if document already exists
       final docSnapshot = await userDoc.get();
       if (docSnapshot.exists) {
@@ -321,7 +324,6 @@ class FirebaseService {
       });
 
       AppLogger.info('User document created successfully');
-
     } catch (error) {
       AppLogger.error('Failed to create user document', error);
       rethrow;
@@ -337,29 +339,32 @@ class FirebaseService {
       await firestore.doc('users/${user.uid}').update({
         'lastActivity': FieldValue.serverTimestamp(),
       });
-
     } catch (error) {
       AppLogger.error('Failed to update last activity', error);
     }
   }
 
   /// Get user document
-  static DocumentReference<Map<String, dynamic>> getUserDocument(String userId) {
+  static DocumentReference<Map<String, dynamic>> getUserDocument(
+      String userId) {
     return firestore.doc('users/$userId');
   }
 
   /// Get user's mood entries collection
-  static CollectionReference<Map<String, dynamic>> getMoodEntriesCollection(String userId) {
+  static CollectionReference<Map<String, dynamic>> getMoodEntriesCollection(
+      String userId) {
     return firestore.collection('users/$userId/moodEntries');
   }
 
   /// Get user's prayers collection
-  static CollectionReference<Map<String, dynamic>> getPrayersCollection(String userId) {
+  static CollectionReference<Map<String, dynamic>> getPrayersCollection(
+      String userId) {
     return firestore.collection('users/$userId/prayers');
   }
 
   /// Get user's conversations collection
-  static CollectionReference<Map<String, dynamic>> getConversationsCollection(String userId) {
+  static CollectionReference<Map<String, dynamic>> getConversationsCollection(
+      String userId) {
     return firestore.collection('users/$userId/conversations');
   }
 
@@ -396,7 +401,7 @@ class FirebaseService {
           return 'An error occurred. Please try again.';
       }
     }
-    
+
     return 'An unexpected error occurred. Please try again.';
   }
 }

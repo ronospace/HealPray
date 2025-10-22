@@ -15,7 +15,7 @@ class SpiritualBackground extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         gradient: AppTheme.morningGradient,
       ),
       child: Stack(
@@ -58,7 +58,7 @@ class SpiritualBackground extends StatelessWidget {
               opacity: 0.2,
             ),
           ],
-          
+
           // Content
           child,
         ],
@@ -114,7 +114,7 @@ class _FloatingElementState extends State<_FloatingElement>
       duration: Duration(seconds: 3 + (widget.size * 0.1).round()),
       vsync: this,
     );
-    
+
     _animation = Tween<double>(
       begin: 0,
       end: 1,
@@ -144,10 +144,11 @@ class _FloatingElementState extends State<_FloatingElement>
             height: widget.size,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: Colors.white.withOpacity(widget.opacity * _animation.value),
+              color: Colors.white
+                  .withValues(alpha: widget.opacity * _animation.value),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.white.withOpacity(0.1 * _animation.value),
+                  color: Colors.white.withValues(alpha: 0.1 * _animation.value),
                   blurRadius: widget.size * 0.5,
                   spreadRadius: 2,
                 ),

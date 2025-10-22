@@ -83,17 +83,28 @@ class SimpleMoodEntry extends Equatable {
   /// Get emoji representation
   String get emoji {
     switch (score) {
-      case 1: return '😢';
-      case 2: return '😞';
-      case 3: return '😕';
-      case 4: return '😐';
-      case 5: return '🙂';
-      case 6: return '😊';
-      case 7: return '😄';
-      case 8: return '😁';
-      case 9: return '🤗';
-      case 10: return '🥳';
-      default: return '🙂';
+      case 1:
+        return '😢';
+      case 2:
+        return '😞';
+      case 3:
+        return '😕';
+      case 4:
+        return '😐';
+      case 5:
+        return '🙂';
+      case 6:
+        return '😊';
+      case 7:
+        return '😄';
+      case 8:
+        return '😁';
+      case 9:
+        return '🤗';
+      case 10:
+        return '🥳';
+      default:
+        return '🙂';
     }
   }
 
@@ -119,7 +130,8 @@ class SimpleMoodEntry extends Equatable {
       emotions: List<String>.from(json['emotions'] as List<dynamic>? ?? []),
       timestamp: DateTime.parse(json['timestamp'] as String),
       location: json['location'] as String?,
-      metadata: Map<String, dynamic>.from(json['metadata'] as Map<dynamic, dynamic>? ?? {}),
+      metadata: Map<String, dynamic>.from(
+          json['metadata'] as Map<dynamic, dynamic>? ?? {}),
     );
   }
 }

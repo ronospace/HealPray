@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/animated_gradient_background.dart';
+import '../../../core/widgets/glass_card.dart';
+import '../../../core/widgets/gradient_text.dart';
 import '../../../shared/providers/auth_provider.dart';
 
 /// Settings screen for app configuration
@@ -17,100 +21,91 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final user = ref.watch(currentUserProvider);
 
     return Scaffold(
-      backgroundColor: AppTheme.lightBackground,
       appBar: AppBar(
-        title: const Text(
+        title: const GradientText(
           'Settings',
+          gradient: LinearGradient(
+            colors: [Colors.white, Color(0xFFE5F0FF)],
+          ),
           style: TextStyle(
             fontWeight: FontWeight.w600,
-            color: AppTheme.textPrimary,
+            fontSize: 20,
           ),
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
-      body: SafeArea(
-        child: ListView(
+      body: AnimatedGradientBackground(
+        child: SafeArea(
+          child: ListView(
           children: [
-            // Profile Section
-            if (user != null) ...[
-              Container(
-                margin: const EdgeInsets.all(16),
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: 10,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 60,
-                      height: 60,
-                      decoration: BoxDecoration(
-                        color: AppTheme.healingTeal.withOpacity(0.1),
-                        shape: BoxShape.circle,
-                      ),
-                      child: user.photoURL != null
-                          ? ClipRRect(
-                              borderRadius: BorderRadius.circular(30),
-                              child: Image.network(
-                                user.photoURL!,
-                                width: 60,
-                                height: 60,
-                                fit: BoxFit.cover,
+              // Profile Section
+              if (user != null) ...[
+                GlassCard(
+                  margin: const EdgeInsets.all(16),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 60,
+                        height: 60,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.2),
+                          shape: BoxShape.circle,
+                        ),
+                        child: user.photoURL != null
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(30),
+                                child: Image.network(
+                                  user.photoURL!,
+                                  width: 60,
+                                  height: 60,
+                                  fit: BoxFit.cover,
+                                ),
+                              )
+                            : const Icon(
+                                Icons.person,
+                                color: Colors.white,
+                                size: 30,
                               ),
-                            )
-                          : const Icon(
-                              Icons.person,
-                              color: AppTheme.healingTeal,
-                              size: 30,
-                            ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            user.displayName ?? 'User',
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                              color: AppTheme.textPrimary,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            user.email ?? '',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: AppTheme.textSecondary,
-                            ),
-                          ),
-                        ],
                       ),
-                    ),
-                    IconButton(
-                      onPressed: () {
-                        // Navigate to profile edit
-                      },
-                      icon: const Icon(
-                        Icons.edit,
-                        color: AppTheme.textSecondary,
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              user.displayName ?? 'User',
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              user.email ?? '',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.white.withOpacity(0.7),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                      IconButton(
+                        onPressed: () {
+                          // Navigate to profile edit
+                        },
+                        icon: Icon(
+                          Icons.edit,
+                          color: Colors.white.withOpacity(0.7),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(height: 8),
-            ],
+                const SizedBox(height: 8),
+              ],
 
             // Settings Sections
             _buildSettingsSection(
@@ -118,30 +113,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               children: [
                 _buildSettingsTile(
                   icon: Icons.notifications_outlined,
-                  title: 'Push Notifications',
-                  subtitle: 'Daily reminders and updates',
-                  trailing: Switch(
-                    value: true,
-                    onChanged: (value) {
-                      // Toggle notifications
-                    },
-                    activeColor: AppTheme.healingTeal,
-                  ),
-                ),
-                _buildSettingsTile(
-                  icon: Icons.schedule,
-                  title: 'Prayer Reminders',
-                  subtitle: 'Set daily prayer times',
+                  title: 'Notification Settings',
+                  subtitle: 'Manage all your reminders and alerts',
                   onTap: () {
-                    // Navigate to prayer reminders
-                  },
-                ),
-                _buildSettingsTile(
-                  icon: Icons.favorite_outline,
-                  title: 'Mood Check Reminders',
-                  subtitle: 'Daily mood tracking prompts',
-                  onTap: () {
-                    // Navigate to mood reminders
+                    context.push('/settings/notifications');
                   },
                 ),
               ],
@@ -164,6 +139,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   subtitle: 'Encryption and security info',
                   onTap: () {
                     // Navigate to security info
+                  },
+                ),
+                _buildSettingsTile(
+                  icon: Icons.analytics_outlined,
+                  title: 'Analytics Dashboard',
+                  subtitle: 'View app usage insights',
+                  onTap: () {
+                    context.push('/analytics-dashboard');
                   },
                 ),
                 _buildSettingsTile(
@@ -223,7 +206,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   title: 'Send Feedback',
                   subtitle: 'Share your thoughts',
                   onTap: () {
-                    // Navigate to feedback
+                    context.push('/feedback');
                   },
                 ),
                 _buildSettingsTile(
@@ -298,8 +281,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               ),
             ],
 
-            const SizedBox(height: 32),
-          ],
+              const SizedBox(height: 32),
+            ],
+          ),
         ),
       ),
     );
@@ -319,23 +303,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
-              color: AppTheme.textPrimary,
+              color: Colors.white,
             ),
           ),
         ),
-        Container(
+        GlassCard(
           margin: const EdgeInsets.symmetric(horizontal: 16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
           child: Column(
             children: children.map((child) {
               final isLast = child == children.last;
@@ -345,7 +318,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   if (!isLast)
                     Divider(
                       height: 1,
-                      color: Colors.grey.shade200,
+                      color: Colors.white.withOpacity(0.2),
                       indent: 60,
                     ),
                 ],
@@ -370,12 +343,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         width: 40,
         height: 40,
         decoration: BoxDecoration(
-          color: AppTheme.healingTeal.withOpacity(0.1),
+          color: Colors.white.withOpacity(0.2),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Icon(
           icon,
-          color: AppTheme.healingTeal,
+          color: Colors.white,
           size: 20,
         ),
       ),
@@ -383,14 +356,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         title,
         style: const TextStyle(
           fontWeight: FontWeight.w500,
-          color: AppTheme.textPrimary,
+          color: Colors.white,
         ),
       ),
       subtitle: subtitle != null
           ? Text(
               subtitle,
               style: TextStyle(
-                color: AppTheme.textSecondary,
+                color: Colors.white.withOpacity(0.7),
                 fontSize: 13,
               ),
             )
@@ -399,7 +372,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           (onTap != null
               ? Icon(
                   Icons.chevron_right,
-                  color: AppTheme.textSecondary,
+                  color: Colors.white.withOpacity(0.7),
                 )
               : null),
       onTap: onTap,

@@ -44,7 +44,8 @@ class SpiritualQuoteCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Get today's quote based on day of year
-    final dayOfYear = DateTime.now().difference(DateTime(DateTime.now().year)).inDays;
+    final dayOfYear =
+        DateTime.now().difference(DateTime(DateTime.now().year)).inDays;
     final quote = _quotes[dayOfYear % _quotes.length];
 
     return Container(
@@ -55,7 +56,7 @@ class SpiritualQuoteCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: AppTheme.healingTeal.withOpacity(0.3),
+            color: AppTheme.healingTeal.withValues(alpha: 0.3),
             blurRadius: 20,
             spreadRadius: 0,
             offset: const Offset(0, 10),
@@ -71,7 +72,7 @@ class SpiritualQuoteCard extends StatelessWidget {
                 width: 32,
                 height: 32,
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
+                  color: Colors.white.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: const Icon(
@@ -80,38 +81,32 @@ class SpiritualQuoteCard extends StatelessWidget {
                   size: 18,
                 ),
               ),
-              
               const SizedBox(width: 12),
-              
               Text(
                 'Daily Inspiration',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                ),
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
               ),
             ],
           ),
-          
           const SizedBox(height: 16),
-          
           Text(
             quote['quote']!,
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: Colors.white,
-              height: 1.5,
-              fontStyle: FontStyle.italic,
-            ),
+                  color: Colors.white,
+                  height: 1.5,
+                  fontStyle: FontStyle.italic,
+                ),
           ),
-          
           const SizedBox(height: 12),
-          
           Text(
             '— ${quote['source']}',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Colors.white.withOpacity(0.8),
-              fontWeight: FontWeight.w500,
-            ),
+                  color: Colors.white.withValues(alpha: 0.8),
+                  fontWeight: FontWeight.w500,
+                ),
           ),
         ],
       ),

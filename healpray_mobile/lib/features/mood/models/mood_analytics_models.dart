@@ -17,7 +17,8 @@ class MoodTrend with _$MoodTrend {
     required List<double> values,
   }) = _MoodTrend;
 
-  factory MoodTrend.fromJson(Map<String, Object?> json) => _$MoodTrendFromJson(json);
+  factory MoodTrend.fromJson(Map<String, Object?> json) =>
+      _$MoodTrendFromJson(json);
 }
 
 /// Represents a mood pattern
@@ -31,7 +32,8 @@ class MoodPattern with _$MoodPattern {
     Map<String, dynamic>? data,
   }) = _MoodPattern;
 
-  factory MoodPattern.fromJson(Map<String, Object?> json) => _$MoodPatternFromJson(json);
+  factory MoodPattern.fromJson(Map<String, Object?> json) =>
+      _$MoodPatternFromJson(json);
 }
 
 /// Represents a mood insight
@@ -47,7 +49,8 @@ class MoodInsight with _$MoodInsight {
     Map<String, dynamic>? metadata,
   }) = _MoodInsight;
 
-  factory MoodInsight.fromJson(Map<String, Object?> json) => _$MoodInsightFromJson(json);
+  factory MoodInsight.fromJson(Map<String, Object?> json) =>
+      _$MoodInsightFromJson(json);
 }
 
 /// Represents a mood correlation
@@ -61,7 +64,8 @@ class MoodCorrelation with _$MoodCorrelation {
     String? interpretation,
   }) = _MoodCorrelation;
 
-  factory MoodCorrelation.fromJson(Map<String, Object?> json) => _$MoodCorrelationFromJson(json);
+  factory MoodCorrelation.fromJson(Map<String, Object?> json) =>
+      _$MoodCorrelationFromJson(json);
 }
 
 /// Represents a mood recommendation
@@ -77,5 +81,6 @@ class MoodRecommendation with _$MoodRecommendation {
     Map<String, dynamic>? metadata,
   }) = _MoodRecommendation;
 
-  factory MoodRecommendation.fromJson(Map<String, Object?> json) => _$MoodRecommendationFromJson(json);
+  factory MoodRecommendation.fromJson(Map<String, Object?> json) =>
+      _$MoodRecommendationFromJson(json);
 }

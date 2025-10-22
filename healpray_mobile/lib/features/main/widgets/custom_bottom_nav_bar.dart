@@ -23,7 +23,7 @@ class CustomBottomNavBar extends StatelessWidget {
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 20,
             spreadRadius: 0,
             offset: const Offset(0, -5),
@@ -52,14 +52,14 @@ class CustomBottomNavBar extends StatelessWidget {
           ),
           items: items.map((item) {
             final isSelected = items.indexOf(item) == currentIndex;
-            
+
             return BottomNavigationBarItem(
               icon: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: isSelected 
-                      ? AppTheme.healingTeal.withOpacity(0.1)
+                  color: isSelected
+                      ? AppTheme.healingTeal.withValues(alpha: 0.1)
                       : Colors.transparent,
                   borderRadius: BorderRadius.circular(12),
                 ),

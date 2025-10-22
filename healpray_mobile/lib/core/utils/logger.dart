@@ -102,7 +102,7 @@ class AppLogger {
     _ensureInitialized();
     final message = 'Prayer generated: $prayerId ($category, mood: $moodLevel, '
         'model: $aiModel, time: ${generationTimeMs}ms)';
-    
+
     info(message);
     developer.log(
       message,
@@ -118,8 +118,9 @@ class AppLogger {
     String? description,
   }) {
     _ensureInitialized();
-    final message = 'Mood logged: $moodLevel/10 for user ${userId.substring(0, 8)}...';
-    
+    final message =
+        'Mood logged: $moodLevel/10 for user ${userId.substring(0, 8)}...';
+
     info(message);
     developer.log(
       message,
@@ -137,7 +138,7 @@ class AppLogger {
     _ensureInitialized();
     final message = 'CRISIS DETECTED: User ${userId.substring(0, 8)}... '
         '(avg mood: $averageMood, risk: $riskLevel)';
-    
+
     warning(message);
     developer.log(
       message,
@@ -152,8 +153,9 @@ class AppLogger {
     required String method,
   }) {
     _ensureInitialized();
-    final message = 'User authenticated: ${userId.substring(0, 8)}... via $method';
-    
+    final message =
+        'User authenticated: ${userId.substring(0, 8)}... via $method';
+
     info(message);
     developer.log(
       message,
@@ -171,7 +173,7 @@ class AppLogger {
   }) {
     _ensureInitialized();
     final message = '$method $endpoint -> $statusCode (${responseTimeMs}ms)';
-    
+
     if (statusCode >= 400) {
       warning(message);
     } else {
@@ -193,7 +195,7 @@ class AppLogger {
   }) {
     _ensureInitialized();
     final message = 'Performance: $operation took ${durationMs}ms';
-    
+
     if (durationMs > 5000) {
       warning('$message (SLOW)');
     } else {

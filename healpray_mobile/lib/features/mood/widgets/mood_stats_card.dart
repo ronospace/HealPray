@@ -27,7 +27,7 @@ class MoodStatsCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -43,7 +43,7 @@ class MoodStatsCard extends StatelessWidget {
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
+                  color: color.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(
@@ -61,9 +61,9 @@ class MoodStatsCard extends StatelessWidget {
               Text(
                 value,
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: color,
-                ),
+                      fontWeight: FontWeight.w700,
+                      color: color,
+                    ),
               ),
               const SizedBox(width: 4),
               Padding(
@@ -71,9 +71,9 @@ class MoodStatsCard extends StatelessWidget {
                 child: Text(
                   subtitle,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppTheme.textSecondary,
-                    fontWeight: FontWeight.w500,
-                  ),
+                        color: AppTheme.textSecondary,
+                        fontWeight: FontWeight.w500,
+                      ),
                 ),
               ),
             ],
@@ -82,9 +82,9 @@ class MoodStatsCard extends StatelessWidget {
           Text(
             title,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: AppTheme.textSecondary,
-              fontWeight: FontWeight.w500,
-            ),
+                  color: AppTheme.textSecondary,
+                  fontWeight: FontWeight.w500,
+                ),
           ),
         ],
       ),

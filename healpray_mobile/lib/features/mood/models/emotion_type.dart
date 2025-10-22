@@ -502,17 +502,47 @@ extension EmotionTypeExtension on EmotionType {
   List<String> get suggestedPractices {
     switch (category) {
       case EmotionCategory.positive:
-        return ['Gratitude Prayer', 'Praise & Worship', 'Meditation', 'Journaling'];
+        return [
+          'Gratitude Prayer',
+          'Praise & Worship',
+          'Meditation',
+          'Journaling'
+        ];
       case EmotionCategory.sadness:
-        return ['Comfort Prayer', 'Lament', 'Scripture Reading', 'Community Prayer'];
+        return [
+          'Comfort Prayer',
+          'Lament',
+          'Scripture Reading',
+          'Community Prayer'
+        ];
       case EmotionCategory.anxiety:
-        return ['Peace Prayer', 'Breathing Meditation', 'Trust Affirmations', 'Calming Scriptures'];
+        return [
+          'Peace Prayer',
+          'Breathing Meditation',
+          'Trust Affirmations',
+          'Calming Scriptures'
+        ];
       case EmotionCategory.anger:
-        return ['Forgiveness Prayer', 'Peaceful Reflection', 'Walking Meditation', 'Patience Prayer'];
+        return [
+          'Forgiveness Prayer',
+          'Peaceful Reflection',
+          'Walking Meditation',
+          'Patience Prayer'
+        ];
       case EmotionCategory.spiritual:
-        return ['Contemplative Prayer', 'Scripture Study', 'Silent Reflection', 'Spiritual Direction'];
+        return [
+          'Contemplative Prayer',
+          'Scripture Study',
+          'Silent Reflection',
+          'Spiritual Direction'
+        ];
       case EmotionCategory.physical:
-        return ['Healing Prayer', 'Body Gratitude', 'Energy Meditation', 'Rest Prayer'];
+        return [
+          'Healing Prayer',
+          'Body Gratitude',
+          'Energy Meditation',
+          'Rest Prayer'
+        ];
     }
   }
 }

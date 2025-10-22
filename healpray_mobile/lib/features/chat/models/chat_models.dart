@@ -8,22 +8,22 @@ part 'chat_models.g.dart';
 class ChatMessage extends Equatable {
   @HiveField(0)
   final String id;
-  
+
   @HiveField(1)
   final String content;
-  
+
   @HiveField(2)
   final MessageType type;
-  
+
   @HiveField(3)
   final MessageStatus status;
-  
+
   @HiveField(4)
   final DateTime timestamp;
-  
+
   @HiveField(5)
   final String? conversationId;
-  
+
   @HiveField(6)
   final Map<String, dynamic> metadata;
 
@@ -91,7 +91,8 @@ class ChatMessage extends Equatable {
       status: MessageStatus.values.byName(json['status'] as String? ?? 'sent'),
       timestamp: DateTime.parse(json['timestamp'] as String),
       conversationId: json['conversationId'] as String?,
-      metadata: Map<String, dynamic>.from(json['metadata'] as Map<dynamic, dynamic>? ?? {}),
+      metadata: Map<String, dynamic>.from(
+          json['metadata'] as Map<dynamic, dynamic>? ?? {}),
     );
   }
 }
@@ -101,28 +102,28 @@ class ChatMessage extends Equatable {
 class Conversation extends Equatable {
   @HiveField(0)
   final String id;
-  
+
   @HiveField(1)
   final String title;
-  
+
   @HiveField(2)
   final String? summary;
-  
+
   @HiveField(3)
   final DateTime createdAt;
-  
+
   @HiveField(4)
   final DateTime updatedAt;
-  
+
   @HiveField(5)
   final bool isActive;
-  
+
   @HiveField(6)
   final List<String> messageIds;
-  
+
   @HiveField(7)
   final ConversationType type;
-  
+
   @HiveField(8)
   final Map<String, dynamic> metadata;
 
@@ -201,8 +202,10 @@ class Conversation extends Equatable {
       updatedAt: DateTime.parse(json['updatedAt'] as String),
       isActive: json['isActive'] as bool? ?? true,
       messageIds: List<String>.from(json['messageIds'] as List<dynamic>? ?? []),
-      type: ConversationType.values.byName(json['type'] as String? ?? 'spiritual'),
-      metadata: Map<String, dynamic>.from(json['metadata'] as Map<dynamic, dynamic>? ?? {}),
+      type: ConversationType.values
+          .byName(json['type'] as String? ?? 'spiritual'),
+      metadata: Map<String, dynamic>.from(
+          json['metadata'] as Map<dynamic, dynamic>? ?? {}),
     );
   }
 }
@@ -212,10 +215,10 @@ class Conversation extends Equatable {
 enum MessageType {
   @HiveField(0)
   user,
-  
+
   @HiveField(1)
   assistant,
-  
+
   @HiveField(2)
   system,
 }
@@ -225,13 +228,13 @@ enum MessageType {
 enum MessageStatus {
   @HiveField(0)
   sending,
-  
+
   @HiveField(1)
   sent,
-  
+
   @HiveField(2)
   failed,
-  
+
   @HiveField(3)
   received,
 }
@@ -241,13 +244,13 @@ enum MessageStatus {
 enum ConversationType {
   @HiveField(0)
   spiritual,
-  
+
   @HiveField(1)
   prayer,
-  
+
   @HiveField(2)
   guidance,
-  
+
   @HiveField(3)
   crisis,
 }

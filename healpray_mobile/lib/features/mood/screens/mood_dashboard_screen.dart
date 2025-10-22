@@ -15,12 +15,13 @@ class MoodDashboardScreen extends ConsumerStatefulWidget {
   const MoodDashboardScreen({super.key});
 
   @override
-  ConsumerState<MoodDashboardScreen> createState() => _MoodDashboardScreenState();
+  ConsumerState<MoodDashboardScreen> createState() =>
+      _MoodDashboardScreenState();
 }
 
 class _MoodDashboardScreenState extends ConsumerState<MoodDashboardScreen> {
   final MoodService _moodService = MoodService.instance;
-  
+
   String _selectedPeriod = 'Last 30 Days';
   final List<String> _periods = [
     'Last 7 Days',
@@ -29,7 +30,7 @@ class _MoodDashboardScreenState extends ConsumerState<MoodDashboardScreen> {
     'This Year',
     'All Time'
   ];
-  
+
   List<SimpleMoodEntry> _filteredEntries = [];
   MoodStatistics? _statistics;
   List<MoodInsight> _insights = [];
@@ -43,18 +44,18 @@ class _MoodDashboardScreenState extends ConsumerState<MoodDashboardScreen> {
 
   Future<void> _loadData() async {
     setState(() => _isLoading = true);
-    
+
     try {
       await _moodService.initialize();
       final allEntries = _moodService.getAllMoodEntries();
-      
+
       _filteredEntries = _filterEntriesByPeriod(allEntries, _selectedPeriod);
       _statistics = _moodService.getMoodStatistics(
         startDate: _getStartDateForPeriod(_selectedPeriod),
         endDate: DateTime.now(),
       );
-      _insights = _moodService.getMoodInsights(days: _getDaysForPeriod(_selectedPeriod));
-      
+      _insights = _moodService.getMoodInsights(
+          days: _getDaysForPeriod(_selectedPeriod));
     } catch (e) {
       debugPrint('Error loading mood data: $e');
     } finally {
@@ -62,10 +63,11 @@ class _MoodDashboardScreenState extends ConsumerState<MoodDashboardScreen> {
     }
   }
 
-  List<SimpleMoodEntry> _filterEntriesByPeriod(List<SimpleMoodEntry> entries, String period) {
+  List<SimpleMoodEntry> _filterEntriesByPeriod(
+      List<SimpleMoodEntry> entries, String period) {
     final now = DateTime.now();
     DateTime startDate;
-    
+
     switch (period) {
       case 'Last 7 Days':
         startDate = now.subtract(const Duration(days: 7));
@@ -84,13 +86,15 @@ class _MoodDashboardScreenState extends ConsumerState<MoodDashboardScreen> {
       default:
         startDate = now.subtract(const Duration(days: 30));
     }
-    
-    return entries.where((entry) => entry.timestamp.isAfter(startDate)).toList();
+
+    return entries
+        .where((entry) => entry.timestamp.isAfter(startDate))
+        .toList();
   }
 
   DateTime? _getStartDateForPeriod(String period) {
     final now = DateTime.now();
-    
+
     switch (period) {
       case 'Last 7 Days':
         return now.subtract(const Duration(days: 7));
@@ -116,7 +120,9 @@ class _MoodDashboardScreenState extends ConsumerState<MoodDashboardScreen> {
       case 'Last 90 Days':
         return 90;
       case 'This Year':
-        return DateTime.now().difference(DateTime(DateTime.now().year, 1, 1)).inDays;
+        return DateTime.now()
+            .difference(DateTime(DateTime.now().year, 1, 1))
+            .inDays;
       case 'All Time':
         return 365; // Max for insights
       default:
@@ -155,38 +161,38 @@ class _MoodDashboardScreenState extends ConsumerState<MoodDashboardScreen> {
           ),
         ],
       ),
-      body: _isLoading 
-        ? const Center(
-            child: CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(AppTheme.healingTeal),
-            ),
-          )
-        : _filteredEntries.isEmpty
-            ? _buildEmptyState()
-            : RefreshIndicator(
-                onRefresh: _loadData,
-                color: AppTheme.healingTeal,
-                child: SingleChildScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildPeriodSelector(),
-                      const SizedBox(height: 24),
-                      _buildStatsOverview(),
-                      const SizedBox(height: 24),
-                      _buildMoodChart(),
-                      const SizedBox(height: 24),
-                      _buildInsights(),
-                      const SizedBox(height: 24),
-                      _buildEmotionAnalysis(),
-                      const SizedBox(height: 24),
-                      _buildPatterns(),
-                    ],
+      body: _isLoading
+          ? const Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(AppTheme.healingTeal),
+              ),
+            )
+          : _filteredEntries.isEmpty
+              ? _buildEmptyState()
+              : RefreshIndicator(
+                  onRefresh: _loadData,
+                  color: AppTheme.healingTeal,
+                  child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: const EdgeInsets.all(20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildPeriodSelector(),
+                        const SizedBox(height: 24),
+                        _buildStatsOverview(),
+                        const SizedBox(height: 24),
+                        _buildMoodChart(),
+                        const SizedBox(height: 24),
+                        _buildInsights(),
+                        const SizedBox(height: 24),
+                        _buildEmotionAnalysis(),
+                        const SizedBox(height: 24),
+                        _buildPatterns(),
+                      ],
+                    ),
                   ),
                 ),
-              ),
     );
   }
 
@@ -214,18 +220,18 @@ class _MoodDashboardScreenState extends ConsumerState<MoodDashboardScreen> {
             Text(
               'No Mood Data Yet',
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: AppTheme.textPrimary,
-              ),
+                    fontWeight: FontWeight.w600,
+                    color: AppTheme.textPrimary,
+                  ),
             ),
             const SizedBox(height: 12),
             Text(
               'Start tracking your mood to see\ninsightful analytics and patterns',
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: AppTheme.textSecondary,
-                height: 1.5,
-              ),
+                    color: AppTheme.textSecondary,
+                    height: 1.5,
+                  ),
             ),
             const SizedBox(height: 32),
             ElevatedButton(
@@ -233,7 +239,8 @@ class _MoodDashboardScreenState extends ConsumerState<MoodDashboardScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppTheme.healingTeal,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -260,7 +267,7 @@ class _MoodDashboardScreenState extends ConsumerState<MoodDashboardScreen> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -279,7 +286,8 @@ class _MoodDashboardScreenState extends ConsumerState<MoodDashboardScreen> {
                 _loadData();
               },
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 margin: const EdgeInsets.symmetric(horizontal: 2),
                 decoration: BoxDecoration(
                   color: isSelected ? AppTheme.healingTeal : Colors.transparent,
@@ -303,16 +311,16 @@ class _MoodDashboardScreenState extends ConsumerState<MoodDashboardScreen> {
 
   Widget _buildStatsOverview() {
     if (_statistics == null) return const SizedBox();
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'Overview',
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.w600,
-            color: AppTheme.textPrimary,
-          ),
+                fontWeight: FontWeight.w600,
+                color: AppTheme.textPrimary,
+              ),
         ),
         const SizedBox(height: 16),
         Row(
@@ -373,9 +381,9 @@ class _MoodDashboardScreenState extends ConsumerState<MoodDashboardScreen> {
         Text(
           'Mood Timeline',
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.w600,
-            color: AppTheme.textPrimary,
-          ),
+                fontWeight: FontWeight.w600,
+                color: AppTheme.textPrimary,
+              ),
         ),
         const SizedBox(height: 16),
         MoodChartWidget(entries: _filteredEntries),
@@ -385,16 +393,16 @@ class _MoodDashboardScreenState extends ConsumerState<MoodDashboardScreen> {
 
   Widget _buildInsights() {
     if (_insights.isEmpty) return const SizedBox();
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'Insights',
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.w600,
-            color: AppTheme.textPrimary,
-          ),
+                fontWeight: FontWeight.w600,
+                color: AppTheme.textPrimary,
+              ),
         ),
         const SizedBox(height: 16),
         MoodInsightsWidget(insights: _insights),
@@ -406,16 +414,16 @@ class _MoodDashboardScreenState extends ConsumerState<MoodDashboardScreen> {
     if (_statistics == null || _statistics!.emotionFrequency.isEmpty) {
       return const SizedBox();
     }
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'Top Emotions',
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.w600,
-            color: AppTheme.textPrimary,
-          ),
+                fontWeight: FontWeight.w600,
+                color: AppTheme.textPrimary,
+              ),
         ),
         const SizedBox(height: 16),
         Container(
@@ -425,7 +433,7 @@ class _MoodDashboardScreenState extends ConsumerState<MoodDashboardScreen> {
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withValues(alpha: 0.05),
                 blurRadius: 10,
                 offset: const Offset(0, 2),
               ),
@@ -443,10 +451,10 @@ class _MoodDashboardScreenState extends ConsumerState<MoodDashboardScreen> {
   }
 
   Widget _buildEmotionItem(String emotion, int count) {
-    final percentage = _statistics!.totalEntries > 0 
-        ? (count / _statistics!.totalEntries * 100) 
+    final percentage = _statistics!.totalEntries > 0
+        ? (count / _statistics!.totalEntries * 100)
         : 0.0;
-    
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
@@ -471,7 +479,8 @@ class _MoodDashboardScreenState extends ConsumerState<MoodDashboardScreen> {
                 LinearProgressIndicator(
                   value: percentage / 100,
                   backgroundColor: Colors.grey[200],
-                  valueColor: const AlwaysStoppedAnimation<Color>(AppTheme.healingTeal),
+                  valueColor:
+                      const AlwaysStoppedAnimation<Color>(AppTheme.healingTeal),
                 ),
               ],
             ),
@@ -491,21 +500,21 @@ class _MoodDashboardScreenState extends ConsumerState<MoodDashboardScreen> {
 
   Widget _buildPatterns() {
     final patterns = MoodAnalytics.identifyPatterns(_filteredEntries);
-    
+
     if (patterns.isEmpty) return const SizedBox();
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'Patterns & Trends',
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.w600,
-            color: AppTheme.textPrimary,
-          ),
+                fontWeight: FontWeight.w600,
+                color: AppTheme.textPrimary,
+              ),
         ),
         const SizedBox(height: 16),
-        ...patterns.take(3).map((pattern) => _buildPatternCard(pattern)).toList(),
+        ...patterns.take(3).map((pattern) => _buildPatternCard(pattern)),
       ],
     );
   }
@@ -519,7 +528,7 @@ class _MoodDashboardScreenState extends ConsumerState<MoodDashboardScreen> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -532,8 +541,8 @@ class _MoodDashboardScreenState extends ConsumerState<MoodDashboardScreen> {
             height: 40,
             decoration: BoxDecoration(
               color: pattern.type == PatternType.positiveCorrelation
-                  ? AppTheme.sunriseGold.withOpacity(0.2)
-                  : AppTheme.healingTeal.withOpacity(0.2),
+                  ? AppTheme.sunriseGold.withValues(alpha: 0.2)
+                  : AppTheme.healingTeal.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(
@@ -588,9 +597,9 @@ class _MoodDashboardScreenState extends ConsumerState<MoodDashboardScreen> {
             Text(
               'Export Mood Data',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: AppTheme.textPrimary,
-              ),
+                    fontWeight: FontWeight.w600,
+                    color: AppTheme.textPrimary,
+                  ),
             ),
             const SizedBox(height: 20),
             _buildExportOption(
@@ -617,7 +626,8 @@ class _MoodDashboardScreenState extends ConsumerState<MoodDashboardScreen> {
     );
   }
 
-  Widget _buildExportOption(String title, String subtitle, IconData icon, VoidCallback onTap) {
+  Widget _buildExportOption(
+      String title, String subtitle, IconData icon, VoidCallback onTap) {
     return ListTile(
       leading: Icon(icon, color: AppTheme.healingTeal),
       title: Text(

@@ -14,17 +14,19 @@ class PrayerGenerationScreen extends ConsumerStatefulWidget {
   const PrayerGenerationScreen({super.key});
 
   @override
-  ConsumerState<PrayerGenerationScreen> createState() => _PrayerGenerationScreenState();
+  ConsumerState<PrayerGenerationScreen> createState() =>
+      _PrayerGenerationScreenState();
 }
 
-class _PrayerGenerationScreenState extends ConsumerState<PrayerGenerationScreen> {
+class _PrayerGenerationScreenState
+    extends ConsumerState<PrayerGenerationScreen> {
   String _selectedCategory = 'gratitude';
   String _selectedTone = 'warm';
   String _selectedLength = 'medium';
   String _customIntention = '';
   bool _isGenerating = false;
   Prayer? _generatedPrayer;
-  
+
   final TextEditingController _intentionController = TextEditingController();
 
   @override
@@ -97,7 +99,7 @@ class _PrayerGenerationScreenState extends ConsumerState<PrayerGenerationScreen>
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: AppTheme.healingTeal.withOpacity(0.3),
+                  color: AppTheme.healingTeal.withValues(alpha: 0.3),
                   blurRadius: 20,
                   offset: const Offset(0, 10),
                 ),
@@ -114,17 +116,17 @@ class _PrayerGenerationScreenState extends ConsumerState<PrayerGenerationScreen>
                 Text(
                   'AI-Guided Prayer Generation',
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                  ),
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 8),
                 Text(
                   'Let AI help you create a personalized prayer for your spiritual needs',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Colors.white.withOpacity(0.9),
-                  ),
+                        color: Colors.white.withValues(alpha: 0.9),
+                      ),
                   textAlign: TextAlign.center,
                 ),
               ],
@@ -137,9 +139,9 @@ class _PrayerGenerationScreenState extends ConsumerState<PrayerGenerationScreen>
           Text(
             'Prayer Category',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-              color: AppTheme.textPrimary,
-            ),
+                  fontWeight: FontWeight.w600,
+                  color: AppTheme.textPrimary,
+                ),
           ),
           const SizedBox(height: 12),
           PrayerCategorySelector(
@@ -157,9 +159,9 @@ class _PrayerGenerationScreenState extends ConsumerState<PrayerGenerationScreen>
           Text(
             'Personal Intention (Optional)',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-              color: AppTheme.textPrimary,
-            ),
+                  fontWeight: FontWeight.w600,
+                  color: AppTheme.textPrimary,
+                ),
           ),
           const SizedBox(height: 12),
           Container(
@@ -168,7 +170,7 @@ class _PrayerGenerationScreenState extends ConsumerState<PrayerGenerationScreen>
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha: 0.05),
                   blurRadius: 10,
                   offset: const Offset(0, 2),
                 ),
@@ -178,7 +180,8 @@ class _PrayerGenerationScreenState extends ConsumerState<PrayerGenerationScreen>
               controller: _intentionController,
               maxLines: 3,
               decoration: InputDecoration(
-                hintText: 'Share what\'s on your heart or specific prayers needs...',
+                hintText:
+                    'Share what\'s on your heart or specific prayers needs...',
                 hintStyle: TextStyle(
                   color: Colors.grey[600],
                 ),
@@ -227,7 +230,7 @@ class _PrayerGenerationScreenState extends ConsumerState<PrayerGenerationScreen>
                 foregroundColor: Colors.white,
                 disabledBackgroundColor: Colors.grey[300],
                 elevation: 8,
-                shadowColor: AppTheme.healingTeal.withOpacity(0.3),
+                shadowColor: AppTheme.healingTeal.withValues(alpha: 0.3),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -241,25 +244,27 @@ class _PrayerGenerationScreenState extends ConsumerState<PrayerGenerationScreen>
                           height: 20,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(Colors.white),
                           ),
                         ),
                         const SizedBox(width: 12),
                         Text(
                           'Generating Prayer...',
-                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                         ),
                       ],
                     )
                   : Text(
                       'Generate Prayer',
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                      ),
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
                     ),
             ),
           ),
@@ -285,7 +290,7 @@ class _PrayerGenerationScreenState extends ConsumerState<PrayerGenerationScreen>
             color: Colors.white,
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
+                color: Colors.black.withValues(alpha: 0.1),
                 blurRadius: 20,
                 offset: const Offset(0, -5),
               ),
@@ -299,7 +304,8 @@ class _PrayerGenerationScreenState extends ConsumerState<PrayerGenerationScreen>
                     onPressed: _startOver,
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppTheme.healingTeal,
-                      side: const BorderSide(color: AppTheme.healingTeal, width: 2),
+                      side: const BorderSide(
+                          color: AppTheme.healingTeal, width: 2),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -351,11 +357,12 @@ class _PrayerGenerationScreenState extends ConsumerState<PrayerGenerationScreen>
 
     try {
       final prayer = await ref.read(prayerServiceProvider).generatePrayer(
-        category: _selectedCategory,
-        tone: _selectedTone,
-        length: _selectedLength,
-        customIntention: _customIntention.trim().isEmpty ? null : _customIntention,
-      );
+            category: _selectedCategory,
+            tone: _selectedTone,
+            length: _selectedLength,
+            customIntention:
+                _customIntention.trim().isEmpty ? null : _customIntention,
+          );
 
       setState(() {
         _generatedPrayer = prayer;
@@ -365,7 +372,7 @@ class _PrayerGenerationScreenState extends ConsumerState<PrayerGenerationScreen>
       setState(() {
         _isGenerating = false;
       });
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -394,7 +401,7 @@ class _PrayerGenerationScreenState extends ConsumerState<PrayerGenerationScreen>
 
     try {
       await ref.read(prayerServiceProvider).savePrayer(_generatedPrayer!);
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -417,7 +424,7 @@ class _PrayerGenerationScreenState extends ConsumerState<PrayerGenerationScreen>
 
   void _sharePrayer() {
     if (_generatedPrayer == null) return;
-    
+
     // TODO: Implement sharing functionality
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(

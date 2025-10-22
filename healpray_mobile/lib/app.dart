@@ -6,8 +6,9 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'core/theme/app_theme.dart';
 import 'core/config/app_config.dart';
 import 'core/utils/logger.dart';
-import 'shared/services/firebase_service.dart';
 import 'shared/services/analytics_service.dart';
+import 'shared/services/notification_service.dart';
+import 'features/settings/screens/notification_settings_screen.dart';
 import 'features/auth/screens/welcome_screen.dart';
 import 'features/auth/screens/login_screen.dart';
 import 'features/auth/screens/register_screen.dart';
@@ -18,9 +19,16 @@ import 'features/mood/screens/mood_tracking_screen.dart';
 import 'features/mood/screens/mood_analytics_screen.dart';
 import 'features/mood/screens/mood_calendar_screen.dart';
 import 'features/mood/screens/enhanced_mood_entry_screen.dart';
+import 'features/analytics/analytics_dashboard_screen.dart';
+import 'features/feedback/feedback_form_screen.dart';
 import 'features/prayer/screens/prayer_screen.dart';
 import 'features/chat/screens/chat_screen.dart';
 import 'features/settings/screens/settings_screen.dart';
+import 'features/crisis/screens/crisis_support_screen.dart';
+import 'features/splash/screens/splash_screen.dart';
+import 'features/community/screens/community_screen_placeholder.dart';
+import 'features/error/screens/error_screen.dart';
+import 'features/inspiration/screens/inspiration_screen.dart';
 
 /// Main HealPray application widget
 class HealPrayApp extends ConsumerStatefulWidget {
@@ -30,11 +38,10 @@ class HealPrayApp extends ConsumerStatefulWidget {
   ConsumerState<HealPrayApp> createState() => _HealPrayAppState();
 }
 
-class _HealPrayAppState extends ConsumerState<HealPrayApp> 
+class _HealPrayAppState extends ConsumerState<HealPrayApp>
     with WidgetsBindingObserver {
-  
   late final GoRouter _router;
-  
+
   @override
   void initState() {
     super.initState();
@@ -71,6 +78,11 @@ class _HealPrayAppState extends ConsumerState<HealPrayApp>
               path: '/spiritual-preferences',
               name: 'spiritual-preferences',
               builder: (context, state) => const SpiritualPreferencesScreen(),
+            ),
+            GoRoute(
+              path: '/notification-preferences',
+              name: 'onboarding-notification-preferences',
+              builder: (context, state) => const NotificationSettingsScreen(),
             ),
           ],
         ),
@@ -139,6 +151,20 @@ class _HealPrayAppState extends ConsumerState<HealPrayApp>
               name: 'analytics',
               builder: (context, state) => const MoodAnalyticsScreen(),
             ),
+            
+            // Analytics Dashboard
+            GoRoute(
+              path: '/analytics-dashboard',
+              name: 'analytics-dashboard',
+              builder: (context, state) => const AnalyticsDashboardScreen(),
+            ),
+            
+            // Feedback Form
+            GoRoute(
+              path: '/feedback',
+              name: 'feedback',
+              builder: (context, state) => const FeedbackFormScreen(),
+            ),
 
             // Community (placeholder)
             GoRoute(
@@ -147,11 +173,33 @@ class _HealPrayAppState extends ConsumerState<HealPrayApp>
               builder: (context, state) => const CommunityScreenPlaceholder(),
             ),
 
+            // Crisis Support
+            GoRoute(
+              path: '/crisis-support',
+              name: 'crisis-support',
+              builder: (context, state) => const CrisisSupportScreen(),
+            ),
+            
+            // Inspiration
+            GoRoute(
+              path: 'inspiration',
+              name: 'inspiration',
+              builder: (context, state) => const InspirationScreen(),
+            ),
+
             // Settings
             GoRoute(
               path: '/settings',
               name: 'settings',
               builder: (context, state) => const SettingsScreen(),
+              routes: [
+                GoRoute(
+                  path: '/notifications',
+                  name: 'notification-settings',
+                  builder: (context, state) =>
+                      const NotificationSettingsScreen(),
+                ),
+              ],
             ),
           ],
         ),
@@ -168,24 +216,21 @@ class _HealPrayAppState extends ConsumerState<HealPrayApp>
       return '/';
     }
 
-    // Check if user is authenticated (safely)
-    bool isAuthenticated = false;
-    try {
-      isAuthenticated = FirebaseService.isAuthenticated;
-    } catch (e) {
-      AppLogger.warning('Cannot check authentication status - Firebase not initialized: $e');
-      // Default to auth screen if Firebase is not available
-      return '/auth';
-    }
+    // Firebase disabled in development mode - always go to auth
+    AppLogger.info('Skipping authentication check - Firebase disabled, redirecting to auth');
+    return '/auth';
     
-    if (!isAuthenticated) {
-      return '/auth';
-    }
-
-    // Check if user has completed onboarding
-    // This would typically check SharedPreferences or user profile
-    // For now, assume onboarding is needed for new users
-    return '/onboarding';
+    // TODO: When Firebase is enabled, implement proper authentication check:
+    // try {
+    //   final user = FirebaseAuth.instance.currentUser;
+    //   if (user == null) {
+    //     return '/auth';
+    //   }
+    //   // Check if user has completed onboarding
+    //   return '/onboarding';
+    // } catch (e) {
+    //   return '/auth';
+    // }
   }
 
   Future<void> _initializeServices() async {
@@ -196,17 +241,28 @@ class _HealPrayAppState extends ConsumerState<HealPrayApp>
         AppLogger.info('Analytics service initialized');
       }
 
-      // Initialize Firebase services
-      await FirebaseService.initialize();
-      AppLogger.info('Firebase services initialized');
+      // Initialize notification service
+      final notificationInitialized =
+          await NotificationService.instance.initialize();
+      if (notificationInitialized) {
+        AppLogger.info('Notification service initialized');
+      } else {
+        AppLogger.warning('Notification service initialization failed');
+      }
+
+      // Initialize Firebase services (disabled in development)
+      AppLogger.info(
+          'Firebase services initialization skipped in development mode');
+      // TODO: Enable when Firebase is properly configured
+      // await FirebaseService.initialize();
+      // AppLogger.info('Firebase services initialized');
 
       // Log app startup
       AppLogger.info('HealPray app initialized successfully');
-      
+
       if (AppConfig.debugMode) {
         AppConfig.printConfigSummary();
       }
-
     } catch (error, stackTrace) {
       AppLogger.error('Failed to initialize services', error, stackTrace);
     }
@@ -215,7 +271,7 @@ class _HealPrayAppState extends ConsumerState<HealPrayApp>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
-    
+
     switch (state) {
       case AppLifecycleState.resumed:
         AppLogger.debug('App resumed');
@@ -286,138 +342,13 @@ class _HealPrayAppState extends ConsumerState<HealPrayApp>
           // Ensure text scaling doesn't break UI
           data: MediaQuery.of(context).copyWith(
             textScaler: MediaQuery.of(context).textScaler.clamp(
-              minScaleFactor: 0.8,
-              maxScaleFactor: 1.2,
-            ),
+                  minScaleFactor: 0.8,
+                  maxScaleFactor: 1.2,
+                ),
           ),
           child: child ?? const SizedBox.shrink(),
         );
       },
-    );
-  }
-}
-
-/// Splash screen widget
-class SplashScreen extends StatelessWidget {
-  const SplashScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: AppTheme.morningGradient,
-        ),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Logo placeholder
-              Container(
-                width: 120,
-                height: 120,
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.9),
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 20,
-                      spreadRadius: 5,
-                    ),
-                  ],
-                ),
-                child: const Icon(
-                  Icons.favorite,
-                  size: 60,
-                  color: AppTheme.healingTeal,
-                ),
-              ),
-              
-              const SizedBox(height: 24),
-              
-              Text(
-                'HealPray',
-                style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              
-              const SizedBox(height: 8),
-              
-              Text(
-                'Your Daily Healing & Prayer Companion',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.white.withOpacity(0.9),
-                ),
-                textAlign: TextAlign.center,
-              ),
-              
-              const SizedBox(height: 48),
-              
-              const CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// Placeholder screens for missing features
-class CommunityScreenPlaceholder extends StatelessWidget {
-  const CommunityScreenPlaceholder({super.key});
-  @override
-  Widget build(BuildContext context) => const Scaffold(
-    appBar: null,
-    body: Center(child: Text('Community Feature - Coming Soon')),
-  );
-}
-
-class ErrorScreen extends StatelessWidget {
-  const ErrorScreen({super.key, this.error});
-  
-  final Exception? error;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Something went wrong')),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(
-              Icons.error_outline,
-              size: 64,
-              color: Colors.red,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Oops! Something went wrong.',
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-            const SizedBox(height: 8),
-            if (AppConfig.debugMode && error != null)
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Text(
-                  error.toString(),
-                  style: Theme.of(context).textTheme.bodySmall,
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: () => context.go('/'),
-              child: const Text('Go Home'),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

@@ -3,23 +3,28 @@
 class HiveService {
   static HiveService? _instance;
   static HiveService get instance => _instance ??= HiveService._();
-  
+
   HiveService._();
 
   /// Initialize Hive database
   Future<void> initialize() async {
     // TODO: Implement Hive initialization when models are ready
-    print('🗄️ HiveService initialized (placeholder)');
+    // Note: No logging here to avoid import cycle - this is just a placeholder
+  }
+
+  /// Ensure Hive is initialized
+  static Future<void> ensureInitialized() async {
+    await instance.initialize();
   }
 
   /// Clear all data (for debugging/reset)
   Future<void> clearAllData() async {
-    print('🗑️ HiveService clear data (placeholder)');
+    // TODO: Implement when Hive is properly set up
   }
 
   /// Close all boxes
   Future<void> close() async {
-    print('🗄️ HiveService closed (placeholder)');
+    // TODO: Implement when Hive is properly set up
   }
 
   /// Get database size information

@@ -18,7 +18,7 @@ class PrayerTextDisplay extends StatefulWidget {
   State<PrayerTextDisplay> createState() => _PrayerTextDisplayState();
 }
 
-class _PrayerTextDisplayState extends State<PrayerTextDisplay> 
+class _PrayerTextDisplayState extends State<PrayerTextDisplay>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
@@ -37,7 +37,7 @@ class _PrayerTextDisplayState extends State<PrayerTextDisplay>
       parent: _animationController,
       curve: Curves.easeInOut,
     ));
-    
+
     _animationController.forward();
   }
 
@@ -58,14 +58,14 @@ class _PrayerTextDisplayState extends State<PrayerTextDisplay>
           children: [
             // Header with category and regenerate button
             _buildHeader(),
-            
+
             const SizedBox(height: 24),
-            
+
             // Prayer content
             _buildPrayerContent(),
-            
+
             const SizedBox(height: 32),
-            
+
             // Action buttons
             _buildActionButtons(),
           ],
@@ -82,7 +82,7 @@ class _PrayerTextDisplayState extends State<PrayerTextDisplay>
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: AppTheme.healingTeal.withOpacity(0.3),
+            color: AppTheme.healingTeal.withValues(alpha: 0.3),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -97,17 +97,17 @@ class _PrayerTextDisplayState extends State<PrayerTextDisplay>
                 Text(
                   widget.prayer.title,
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   '${widget.prayer.tone.toUpperCase()} • ${widget.prayer.length.toUpperCase()}',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.white.withOpacity(0.8),
-                    letterSpacing: 1.2,
-                  ),
+                        color: Colors.white.withValues(alpha: 0.8),
+                        letterSpacing: 1.2,
+                      ),
                 ),
               ],
             ),
@@ -121,7 +121,7 @@ class _PrayerTextDisplayState extends State<PrayerTextDisplay>
             ),
             tooltip: 'Generate New Prayer',
             style: IconButton.styleFrom(
-              backgroundColor: Colors.white.withOpacity(0.2),
+              backgroundColor: Colors.white.withValues(alpha: 0.2),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -141,7 +141,7 @@ class _PrayerTextDisplayState extends State<PrayerTextDisplay>
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 20,
             spreadRadius: 0,
             offset: const Offset(0, 10),
@@ -152,15 +152,15 @@ class _PrayerTextDisplayState extends State<PrayerTextDisplay>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Custom intention if provided
-          if (widget.prayer.customIntention != null && 
+          if (widget.prayer.customIntention != null &&
               widget.prayer.customIntention!.isNotEmpty) ...[
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: AppTheme.healingTeal.withOpacity(0.05),
+                color: AppTheme.healingTeal.withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: AppTheme.healingTeal.withOpacity(0.2),
+                  color: AppTheme.healingTeal.withValues(alpha: 0.2),
                   width: 1,
                 ),
               ),
@@ -178,9 +178,9 @@ class _PrayerTextDisplayState extends State<PrayerTextDisplay>
                       Text(
                         'Your Intention',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: AppTheme.healingTeal,
-                          fontWeight: FontWeight.w600,
-                        ),
+                              color: AppTheme.healingTeal,
+                              fontWeight: FontWeight.w600,
+                            ),
                       ),
                     ],
                   ),
@@ -188,30 +188,30 @@ class _PrayerTextDisplayState extends State<PrayerTextDisplay>
                   Text(
                     widget.prayer.customIntention!,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: AppTheme.textSecondary,
-                      fontStyle: FontStyle.italic,
-                    ),
+                          color: AppTheme.textSecondary,
+                          fontStyle: FontStyle.italic,
+                        ),
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 24),
           ],
-          
+
           // Prayer text
           SelectableText(
             widget.prayer.content,
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              height: 1.8,
-              color: AppTheme.textPrimary,
-              fontSize: 18,
-              fontWeight: FontWeight.w400,
-            ),
+                  height: 1.8,
+                  color: AppTheme.textPrimary,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w400,
+                ),
             textAlign: TextAlign.left,
           ),
-          
+
           const SizedBox(height: 20),
-          
+
           // Tags
           if (widget.prayer.tags.isNotEmpty)
             Wrap(
@@ -219,21 +219,22 @@ class _PrayerTextDisplayState extends State<PrayerTextDisplay>
               runSpacing: 8,
               children: widget.prayer.tags.map((tag) {
                 return Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: AppTheme.sunriseGold.withOpacity(0.1),
+                    color: AppTheme.sunriseGold.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: AppTheme.sunriseGold.withOpacity(0.3),
+                      color: AppTheme.sunriseGold.withValues(alpha: 0.3),
                       width: 1,
                     ),
                   ),
                   child: Text(
                     '#$tag',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: AppTheme.sunriseGold,
-                      fontWeight: FontWeight.w500,
-                    ),
+                          color: AppTheme.sunriseGold,
+                          fontWeight: FontWeight.w500,
+                        ),
                   ),
                 );
               }).toList(),
@@ -251,7 +252,7 @@ class _PrayerTextDisplayState extends State<PrayerTextDisplay>
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -277,7 +278,9 @@ class _PrayerTextDisplayState extends State<PrayerTextDisplay>
           const SizedBox(width: 12),
           Expanded(
             child: _buildActionButton(
-              icon: widget.prayer.isFavorite ? Icons.favorite : Icons.favorite_outline,
+              icon: widget.prayer.isFavorite
+                  ? Icons.favorite
+                  : Icons.favorite_outline,
               label: widget.prayer.isFavorite ? 'Favorited' : 'Favorite',
               onPressed: _toggleFavorite,
               color: widget.prayer.isFavorite ? AppTheme.crisisColor : null,
@@ -295,16 +298,16 @@ class _PrayerTextDisplayState extends State<PrayerTextDisplay>
     Color? color,
   }) {
     final buttonColor = color ?? AppTheme.healingTeal;
-    
+
     return GestureDetector(
       onTap: onPressed,
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-          color: buttonColor.withOpacity(0.1),
+          color: buttonColor.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
-            color: buttonColor.withOpacity(0.3),
+            color: buttonColor.withValues(alpha: 0.3),
             width: 1,
           ),
         ),
@@ -320,10 +323,10 @@ class _PrayerTextDisplayState extends State<PrayerTextDisplay>
             Text(
               label,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: buttonColor,
-                fontWeight: FontWeight.w600,
-                fontSize: 11,
-              ),
+                    color: buttonColor,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 11,
+                  ),
             ),
           ],
         ),
@@ -358,8 +361,8 @@ class _PrayerTextDisplayState extends State<PrayerTextDisplay>
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          widget.prayer.isFavorite 
-              ? 'Removed from favorites' 
+          widget.prayer.isFavorite
+              ? 'Removed from favorites'
               : 'Added to favorites',
         ),
         backgroundColor: AppTheme.healingTeal,

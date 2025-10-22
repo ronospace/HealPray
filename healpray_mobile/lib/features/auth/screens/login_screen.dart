@@ -20,7 +20,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  
+
   bool _isPasswordVisible = false;
   bool _rememberMe = false;
 
@@ -64,7 +64,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       child: Column(
         children: [
           const SizedBox(height: 40),
-          
+
           // Back button
           Row(
             children: [
@@ -77,32 +77,32 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               ),
             ],
           ),
-          
+
           const SizedBox(height: 20),
-          
+
           // Header
           _buildHeader(context),
-          
+
           const SizedBox(height: 48),
-          
+
           // Login form
           _buildLoginForm(context),
-          
+
           const SizedBox(height: 32),
-          
+
           // Divider with "Or"
           _buildDivider(),
-          
+
           const SizedBox(height: 24),
-          
+
           // Social login options
           _buildSocialOptions(context),
-          
+
           const SizedBox(height: 32),
-          
+
           // Sign up link
           _buildSignUpLink(context),
-          
+
           const SizedBox(height: 24),
         ],
       ),
@@ -115,18 +115,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         Text(
           'Welcome Back',
           style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
         ),
-        
         const SizedBox(height: 12),
-        
         Text(
           'Continue your spiritual journey',
           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-            color: Colors.white.withOpacity(0.8),
-          ),
+                color: Colors.white.withValues(alpha: 0.8),
+              ),
         ),
       ],
     );
@@ -147,9 +145,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             prefixIcon: Icons.email_outlined,
             validator: _validateEmail,
           ),
-          
+
           const SizedBox(height: 20),
-          
+
           // Password field
           AuthTextField(
             controller: _passwordController,
@@ -165,14 +163,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               },
               icon: Icon(
                 _isPasswordVisible ? Icons.visibility_off : Icons.visibility,
-                color: Colors.white.withOpacity(0.7),
+                color: Colors.white.withValues(alpha: 0.7),
               ),
             ),
             validator: _validatePassword,
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Remember me and forgot password
           Row(
             children: [
@@ -186,15 +184,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 activeColor: AppTheme.sunriseGold,
                 checkColor: AppTheme.midnightBlue,
                 side: BorderSide(
-                  color: Colors.white.withOpacity(0.7),
+                  color: Colors.white.withValues(alpha: 0.7),
                   width: 2,
                 ),
               ),
               Text(
                 'Remember me',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.white.withOpacity(0.8),
-                ),
+                      color: Colors.white.withValues(alpha: 0.8),
+                    ),
               ),
               const Spacer(),
               TextButton(
@@ -202,16 +200,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 child: Text(
                   'Forgot Password?',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppTheme.sunriseGold,
-                    decoration: TextDecoration.underline,
-                  ),
+                        color: AppTheme.sunriseGold,
+                        decoration: TextDecoration.underline,
+                      ),
                 ),
               ),
             ],
           ),
-          
+
           const SizedBox(height: 32),
-          
+
           // Sign in button
           ElevatedButton(
             onPressed: _handleEmailSignIn,
@@ -223,14 +221,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 borderRadius: BorderRadius.circular(12),
               ),
               elevation: 8,
-              shadowColor: AppTheme.healingTeal.withOpacity(0.3),
+              shadowColor: AppTheme.healingTeal.withValues(alpha: 0.3),
             ),
             child: Text(
               'Sign In',
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
-              ),
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                  ),
             ),
           ),
         ],
@@ -243,7 +241,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       children: [
         Expanded(
           child: Divider(
-            color: Colors.white.withOpacity(0.3),
+            color: Colors.white.withValues(alpha: 0.3),
             thickness: 1,
           ),
         ),
@@ -252,13 +250,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           child: Text(
             'Or',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Colors.white.withOpacity(0.7),
-            ),
+                  color: Colors.white.withValues(alpha: 0.7),
+                ),
           ),
         ),
         Expanded(
           child: Divider(
-            color: Colors.white.withOpacity(0.3),
+            color: Colors.white.withValues(alpha: 0.3),
             thickness: 1,
           ),
         ),
@@ -289,16 +287,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               Text(
                 'Continue with Google',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
+                      fontWeight: FontWeight.w500,
+                    ),
               ),
             ],
           ),
         ),
-        
+
         if (Theme.of(context).platform == TargetPlatform.iOS) ...[
           const SizedBox(height: 16),
-          
+
           // Apple sign in
           OutlinedButton(
             onPressed: _handleAppleSignIn,
@@ -319,8 +317,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 Text(
                   'Continue with Apple',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w500,
-                  ),
+                        fontWeight: FontWeight.w500,
+                      ),
                 ),
               ],
             ),
@@ -337,18 +335,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         Text(
           "Don't have an account? ",
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: Colors.white.withOpacity(0.7),
-          ),
+                color: Colors.white.withValues(alpha: 0.7),
+              ),
         ),
         TextButton(
           onPressed: () => context.pushReplacement('/auth/register'),
           child: Text(
             'Sign Up',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: AppTheme.sunriseGold,
-              fontWeight: FontWeight.w600,
-              decoration: TextDecoration.underline,
-            ),
+                  color: AppTheme.sunriseGold,
+                  fontWeight: FontWeight.w600,
+                  decoration: TextDecoration.underline,
+                ),
           ),
         ),
       ],
@@ -379,9 +377,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     await ref.read(authProvider.notifier).signInWithEmail(
-      email: _emailController.text.trim(),
-      password: _passwordController.text,
-    );
+          email: _emailController.text.trim(),
+          password: _passwordController.text,
+        );
   }
 
   Future<void> _handleGoogleSignIn() async {

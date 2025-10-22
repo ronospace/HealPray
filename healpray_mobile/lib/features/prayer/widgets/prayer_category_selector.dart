@@ -86,16 +86,16 @@ class PrayerCategorySelector extends StatelessWidget {
             duration: const Duration(milliseconds: 200),
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: isSelected ? color.withOpacity(0.2) : Colors.white,
+              color: isSelected ? color.withValues(alpha: 0.2) : Colors.white,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: isSelected ? color : color.withOpacity(0.3),
+                color: isSelected ? color : color.withValues(alpha: 0.3),
                 width: isSelected ? 2 : 1,
               ),
               boxShadow: [
                 if (isSelected)
                   BoxShadow(
-                    color: color.withOpacity(0.3),
+                    color: color.withValues(alpha: 0.3),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
@@ -106,16 +106,17 @@ class PrayerCategorySelector extends StatelessWidget {
               children: [
                 Icon(
                   category['icon'] as IconData,
-                  color: isSelected ? color : color.withOpacity(0.7),
+                  color: isSelected ? color : color.withValues(alpha: 0.7),
                   size: 20,
                 ),
                 const SizedBox(width: 8),
                 Text(
                   category['name'],
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: isSelected ? color : AppTheme.textSecondary,
-                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                  ),
+                        color: isSelected ? color : AppTheme.textSecondary,
+                        fontWeight:
+                            isSelected ? FontWeight.w600 : FontWeight.w500,
+                      ),
                 ),
               ],
             ),

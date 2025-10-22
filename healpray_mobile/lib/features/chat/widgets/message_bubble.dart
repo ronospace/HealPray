@@ -19,26 +19,28 @@ class MessageBubble extends StatelessWidget {
   Widget build(BuildContext context) {
     final isUser = message.type == MessageType.user;
     final isError = message.isError == true;
-    
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: Row(
-        mainAxisAlignment: isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment:
+            isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (!isUser) ...[
             _buildAvatar(isUser: false, isError: isError),
             const SizedBox(width: 12),
           ],
-          
           Flexible(
             child: Column(
-              crossAxisAlignment: isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+              crossAxisAlignment:
+                  isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
               children: [
                 GestureDetector(
                   onLongPress: () => _showMessageOptions(context),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
                     decoration: _buildBubbleDecoration(isUser, isError),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -51,7 +53,6 @@ class MessageBubble extends StatelessWidget {
                             height: 1.4,
                           ),
                         ),
-                        
                         if (isError && message.errorMessage != null) ...[
                           const SizedBox(height: 8),
                           Text(
@@ -67,9 +68,7 @@ class MessageBubble extends StatelessWidget {
                     ),
                   ),
                 ),
-                
                 const SizedBox(height: 4),
-                
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -80,13 +79,13 @@ class MessageBubble extends StatelessWidget {
                         fontSize: 12,
                       ),
                     ),
-                    
                     if (isError && onRetry != null) ...[
                       const SizedBox(width: 8),
                       GestureDetector(
                         onTap: onRetry,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 6, vertical: 2),
                           decoration: BoxDecoration(
                             color: Colors.red.shade100,
                             borderRadius: BorderRadius.circular(8),
@@ -107,7 +106,6 @@ class MessageBubble extends StatelessWidget {
               ],
             ),
           ),
-          
           if (isUser) ...[
             const SizedBox(width: 12),
             _buildAvatar(isUser: true, isError: false),
@@ -123,10 +121,10 @@ class MessageBubble extends StatelessWidget {
       height: 36,
       decoration: BoxDecoration(
         color: isUser
-            ? AppTheme.calmBlue.withOpacity(0.1)
+            ? AppTheme.calmBlue.withValues(alpha: 0.1)
             : isError
-                ? Colors.red.withOpacity(0.1)
-                : AppTheme.healingTeal.withOpacity(0.1),
+                ? Colors.red.withValues(alpha: 0.1)
+                : AppTheme.healingTeal.withValues(alpha: 0.1),
         shape: BoxShape.circle,
       ),
       child: Icon(
@@ -157,13 +155,16 @@ class MessageBubble extends StatelessWidget {
     return BoxDecoration(
       color: color,
       borderRadius: BorderRadius.circular(18).copyWith(
-        bottomLeft: isUser ? const Radius.circular(18) : const Radius.circular(4),
-        bottomRight: isUser ? const Radius.circular(4) : const Radius.circular(18),
+        bottomLeft:
+            isUser ? const Radius.circular(18) : const Radius.circular(4),
+        bottomRight:
+            isUser ? const Radius.circular(4) : const Radius.circular(18),
       ),
-      border: borderColor != null ? Border.all(color: borderColor, width: 1) : null,
+      border:
+          borderColor != null ? Border.all(color: borderColor, width: 1) : null,
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withOpacity(0.05),
+          color: Colors.black.withValues(alpha: 0.05),
           blurRadius: 4,
           offset: const Offset(0, 1),
         ),
@@ -216,9 +217,9 @@ class MessageBubble extends StatelessWidget {
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
-            
+
             const SizedBox(height: 20),
-            
+
             // Copy option
             ListTile(
               leading: const Icon(Icons.copy),
@@ -234,7 +235,7 @@ class MessageBubble extends StatelessWidget {
                 );
               },
             ),
-            
+
             // Share option
             ListTile(
               leading: const Icon(Icons.share),
@@ -244,7 +245,7 @@ class MessageBubble extends StatelessWidget {
                 // TODO: Implement share functionality
               },
             ),
-            
+
             if (message.type == MessageType.ai) ...[
               // Regenerate response option
               ListTile(
@@ -258,7 +259,7 @@ class MessageBubble extends StatelessWidget {
                 },
               ),
             ],
-            
+
             const SizedBox(height: 20),
           ],
         ),
@@ -287,7 +288,7 @@ class _TypingIndicatorState extends State<TypingIndicator>
       duration: const Duration(milliseconds: 1500),
       vsync: this,
     )..repeat();
-    
+
     _animation = Tween<double>(
       begin: 0.0,
       end: 1.0,
@@ -313,7 +314,7 @@ class _TypingIndicatorState extends State<TypingIndicator>
             width: 36,
             height: 36,
             decoration: BoxDecoration(
-              color: AppTheme.healingTeal.withOpacity(0.1),
+              color: AppTheme.healingTeal.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: const Icon(
@@ -356,7 +357,7 @@ class _TypingIndicatorState extends State<TypingIndicator>
       builder: (context, child) {
         final progress = (_animation.value - (index * 0.2)).clamp(0.0, 1.0);
         final opacity = (Curves.easeInOut.transform(progress) * 0.8 + 0.2);
-        
+
         return Opacity(
           opacity: opacity,
           child: Container(

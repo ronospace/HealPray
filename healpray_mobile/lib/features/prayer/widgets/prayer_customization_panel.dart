@@ -66,22 +66,22 @@ class PrayerCustomizationPanel extends StatelessWidget {
         Text(
           'Prayer Tone',
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-            color: AppTheme.textPrimary,
-          ),
+                fontWeight: FontWeight.w600,
+                color: AppTheme.textPrimary,
+              ),
         ),
         const SizedBox(height: 12),
         _buildToneSelector(),
-        
+
         const SizedBox(height: 24),
-        
+
         // Length Selection
         Text(
           'Prayer Length',
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-            color: AppTheme.textPrimary,
-          ),
+                fontWeight: FontWeight.w600,
+                color: AppTheme.textPrimary,
+              ),
         ),
         const SizedBox(height: 12),
         _buildLengthSelector(),
@@ -97,7 +97,7 @@ class PrayerCustomizationPanel extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -106,21 +106,19 @@ class PrayerCustomizationPanel extends StatelessWidget {
       child: Column(
         children: _tones.map((tone) {
           final isSelected = selectedTone == tone['id'];
-          
+
           return GestureDetector(
             onTap: () => onToneChanged(tone['id']!),
             child: Container(
               margin: const EdgeInsets.only(bottom: 8),
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: isSelected 
-                    ? AppTheme.healingTeal.withOpacity(0.1) 
+                color: isSelected
+                    ? AppTheme.healingTeal.withValues(alpha: 0.1)
                     : Colors.transparent,
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
-                  color: isSelected 
-                      ? AppTheme.healingTeal 
-                      : Colors.transparent,
+                  color: isSelected ? AppTheme.healingTeal : Colors.transparent,
                   width: 1,
                 ),
               ),
@@ -131,9 +129,8 @@ class PrayerCustomizationPanel extends StatelessWidget {
                     height: 12,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: isSelected 
-                          ? AppTheme.healingTeal 
-                          : Colors.grey[300],
+                      color:
+                          isSelected ? AppTheme.healingTeal : Colors.grey[300],
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -145,8 +142,8 @@ class PrayerCustomizationPanel extends StatelessWidget {
                           tone['name']!,
                           style: TextStyle(
                             fontWeight: FontWeight.w600,
-                            color: isSelected 
-                                ? AppTheme.healingTeal 
+                            color: isSelected
+                                ? AppTheme.healingTeal
                                 : AppTheme.textPrimary,
                           ),
                         ),
@@ -178,7 +175,7 @@ class PrayerCustomizationPanel extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -188,7 +185,7 @@ class PrayerCustomizationPanel extends StatelessWidget {
         children: _lengths.map((length) {
           final isSelected = selectedLength == length['id'];
           final index = _lengths.indexOf(length);
-          
+
           return Expanded(
             child: GestureDetector(
               onTap: () => onLengthChanged(length['id']!),
@@ -196,16 +193,16 @@ class PrayerCustomizationPanel extends StatelessWidget {
                 margin: EdgeInsets.only(
                   right: index < _lengths.length - 1 ? 8 : 0,
                 ),
-                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
                 decoration: BoxDecoration(
-                  color: isSelected 
-                      ? AppTheme.sunriseGold.withOpacity(0.1) 
+                  color: isSelected
+                      ? AppTheme.sunriseGold.withValues(alpha: 0.1)
                       : Colors.grey[50],
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
-                    color: isSelected 
-                        ? AppTheme.sunriseGold 
-                        : Colors.grey[300]!,
+                    color:
+                        isSelected ? AppTheme.sunriseGold : Colors.grey[300]!,
                     width: isSelected ? 2 : 1,
                   ),
                 ),
@@ -216,8 +213,8 @@ class PrayerCustomizationPanel extends StatelessWidget {
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 14,
-                        color: isSelected 
-                            ? AppTheme.sunriseGold 
+                        color: isSelected
+                            ? AppTheme.sunriseGold
                             : AppTheme.textPrimary,
                       ),
                     ),

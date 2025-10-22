@@ -33,58 +33,56 @@ class PreferenceCard extends StatelessWidget {
             vertical: 14,
           ),
           decoration: BoxDecoration(
-            color: isSelected 
-                ? AppTheme.sunriseGold.withOpacity(0.2)
-                : Colors.white.withOpacity(0.1),
+            color: isSelected
+                ? AppTheme.sunriseGold.withValues(alpha: 0.2)
+                : Colors.white.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: isSelected 
+              color: isSelected
                   ? AppTheme.sunriseGold
-                  : Colors.white.withOpacity(0.3),
+                  : Colors.white.withValues(alpha: 0.3),
               width: isSelected ? 2 : 1,
             ),
-            boxShadow: isSelected ? [
-              BoxShadow(
-                color: AppTheme.sunriseGold.withOpacity(0.3),
-                blurRadius: 8,
-                spreadRadius: 1,
-              ),
-            ] : null,
+            boxShadow: isSelected
+                ? [
+                    BoxShadow(
+                      color: AppTheme.sunriseGold.withValues(alpha: 0.3),
+                      blurRadius: 8,
+                      spreadRadius: 1,
+                    ),
+                  ]
+                : null,
           ),
           child: Row(
             mainAxisSize: fullWidth ? MainAxisSize.max : MainAxisSize.min,
-            mainAxisAlignment: fullWidth 
-                ? MainAxisAlignment.start 
-                : MainAxisAlignment.center,
+            mainAxisAlignment:
+                fullWidth ? MainAxisAlignment.start : MainAxisAlignment.center,
             children: [
               if (icon != null) ...[
                 Icon(
                   icon,
-                  color: isSelected 
+                  color: isSelected
                       ? AppTheme.sunriseGold
-                      : Colors.white.withOpacity(0.8),
+                      : Colors.white.withValues(alpha: 0.8),
                   size: 20,
                 ),
                 const SizedBox(width: 8),
               ],
-              
               Flexible(
                 child: Text(
                   label,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: isSelected 
-                        ? Colors.white
-                        : Colors.white.withOpacity(0.9),
-                    fontWeight: isSelected 
-                        ? FontWeight.w600 
-                        : FontWeight.w500,
-                  ),
+                        color: isSelected
+                            ? Colors.white
+                            : Colors.white.withValues(alpha: 0.9),
+                        fontWeight:
+                            isSelected ? FontWeight.w600 : FontWeight.w500,
+                      ),
                   textAlign: fullWidth ? TextAlign.start : TextAlign.center,
                   overflow: TextOverflow.ellipsis,
                   maxLines: 2,
                 ),
               ),
-              
               if (fullWidth) ...[
                 const Spacer(),
                 AnimatedContainer(
@@ -92,14 +90,13 @@ class PreferenceCard extends StatelessWidget {
                   width: 20,
                   height: 20,
                   decoration: BoxDecoration(
-                    color: isSelected 
-                        ? AppTheme.sunriseGold
-                        : Colors.transparent,
+                    color:
+                        isSelected ? AppTheme.sunriseGold : Colors.transparent,
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: isSelected 
+                      color: isSelected
                           ? AppTheme.sunriseGold
-                          : Colors.white.withOpacity(0.5),
+                          : Colors.white.withValues(alpha: 0.5),
                       width: 2,
                     ),
                   ),

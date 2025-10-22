@@ -1,0 +1,180 @@
+name: HealPray CI/CD
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  analyze:
+    name: Flutter Analyze & Test
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.35.2'
+        channel: 'stable'
+        
+    - name: Get Flutter dependencies
+      run: flutter pub get
+      
+    - name: Check Flutter format
+      run: dart format --output none --set-exit-if-changed lib/
+      
+    - name: Flutter analyze
+      run: flutter analyze
+      
+    - name: Run tests
+      run: flutter test --coverage
+      
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v4
+      with:
+        file: coverage/lcov.info
+      continue-on-error: true
+
+  build-android:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+    needs: analyze
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.35.2'
+        channel: 'stable'
+        
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'zulu'
+        java-version: '17'
+        
+    - name: Get Flutter dependencies
+      run: flutter pub get
+      
+    - name: Build Android APK
+      run: flutter build apk --release --no-obfuscate
+      
+    - name: Upload APK artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: android-apk
+        path: build/app/outputs/flutter-apk/app-release.apk
+        retention-days: 7
+
+  build-ios:
+    name: Build iOS IPA
+    runs-on: macos-latest
+    needs: analyze
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.35.2'
+        channel: 'stable'
+        
+    - name: Get Flutter dependencies
+      run: flutter pub get
+      
+    - name: Setup iOS build environment
+      run: |
+        cd ios
+        pod install
+        
+    - name: Build iOS (no signing)
+      run: flutter build ios --release --no-codesign --no-obfuscate
+      
+    - name: Upload iOS build artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ios-build
+        path: build/ios/iphoneos/
+        retention-days: 7
+
+  security-scan:
+    name: Security & License Check
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.35.2'
+        channel: 'stable'
+        
+    - name: Get dependencies
+      run: flutter pub get
+      
+    - name: Check for vulnerable dependencies
+      run: |
+        dart pub audit
+      continue-on-error: true
+      
+    - name: License check
+      run: |
+        flutter pub deps --json | jq '.packages[] | select(.kind == "direct" or .kind == "transitive") | .name' | sort | uniq > licenses.txt
+        echo "Dependencies checked for licenses"
+      continue-on-error: true
+
+  performance-test:
+    name: Performance Testing
+    runs-on: ubuntu-latest
+    needs: analyze
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.35.2'
+        channel: 'stable'
+        
+    - name: Get dependencies
+      run: flutter pub get
+      
+    - name: Build for performance testing
+      run: flutter build apk --profile
+      
+    - name: Analyze build size
+      run: |
+        APK_SIZE=$(stat -c%s build/app/outputs/flutter-apk/app-profile.apk)
+        echo "APK Size: $(($APK_SIZE / 1024 / 1024))MB"
+        if [ $APK_SIZE -gt 104857600 ]; then
+          echo "Warning: APK size exceeds 100MB"
+          exit 1
+        fi
+
+  notify-status:
+    name: Notify Build Status
+    runs-on: ubuntu-latest
+    needs: [build-android, build-ios]
+    if: always()
+    steps:
+    - name: Report Success
+      if: ${{ needs.build-android.result == 'success' && needs.build-ios.result == 'success' }}
+      run: |
+        echo "✅ All builds successful!"
+        echo "Android APK and iOS builds completed successfully."
+        
+    - name: Report Failure
+      if: ${{ needs.build-android.result == 'failure' || needs.build-ios.result == 'failure' }}
+      run: |
+        echo "❌ Build failure detected!"
+        echo "Android: ${{ needs.build-android.result }}"
+        echo "iOS: ${{ needs.build-ios.result }}"
+        exit 1

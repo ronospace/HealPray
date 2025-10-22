@@ -8,34 +8,34 @@ part 'prayer.g.dart';
 class Prayer extends Equatable {
   @HiveField(0)
   final String id;
-  
+
   @HiveField(1)
   final String title;
-  
+
   @HiveField(2)
   final String content;
-  
+
   @HiveField(3)
   final String category;
-  
+
   @HiveField(4)
   final String tone;
-  
+
   @HiveField(5)
   final String length;
-  
+
   @HiveField(6)
   final String? customIntention;
-  
+
   @HiveField(7)
   final DateTime createdAt;
-  
+
   @HiveField(8)
   final DateTime? updatedAt;
-  
+
   @HiveField(9)
   final bool isFavorite;
-  
+
   @HiveField(10)
   final List<String> tags;
 
@@ -125,7 +125,7 @@ class Prayer extends Equatable {
       length: json['length'] as String,
       customIntention: json['customIntention'] as String?,
       createdAt: DateTime.parse(json['createdAt'] as String),
-      updatedAt: json['updatedAt'] != null 
+      updatedAt: json['updatedAt'] != null
           ? DateTime.parse(json['updatedAt'] as String)
           : null,
       isFavorite: json['isFavorite'] as bool? ?? false,

@@ -10,8 +10,14 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:healpray/app.dart';
+import 'package:healpray/core/config/app_config.dart';
 
 void main() {
+  setUpAll(() async {
+    // Initialize AppConfig for testing
+    await AppConfig.initialize();
+  });
+  
   testWidgets('HealPray app loads correctly', (WidgetTester tester) async {
     // Build our app and trigger a frame.
     await tester.pumpWidget(const ProviderScope(

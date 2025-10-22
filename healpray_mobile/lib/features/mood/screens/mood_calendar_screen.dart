@@ -18,11 +18,11 @@ class MoodCalendarScreen extends ConsumerStatefulWidget {
 
 class _MoodCalendarScreenState extends ConsumerState<MoodCalendarScreen> {
   final MoodService _moodService = MoodService.instance;
-  
+
   late DateTime _selectedDay;
   late DateTime _focusedDay;
   late PageController _pageController;
-  
+
   Map<DateTime, List<SimpleMoodEntry>> _groupedEntries = {};
   List<SimpleMoodEntry> _selectedDayEntries = [];
   bool _isLoading = true;
@@ -44,11 +44,11 @@ class _MoodCalendarScreenState extends ConsumerState<MoodCalendarScreen> {
 
   Future<void> _loadMoodEntries() async {
     setState(() => _isLoading = true);
-    
+
     try {
       await _moodService.initialize();
       final entries = _moodService.getAllMoodEntries();
-      
+
       // Group entries by date (without time)
       _groupedEntries = {};
       for (final entry in entries) {
@@ -57,17 +57,16 @@ class _MoodCalendarScreenState extends ConsumerState<MoodCalendarScreen> {
           entry.timestamp.month,
           entry.timestamp.day,
         );
-        
+
         _groupedEntries.putIfAbsent(dateKey, () => []).add(entry);
       }
-      
+
       // Sort entries within each day by timestamp
       _groupedEntries.forEach((date, entries) {
         entries.sort((a, b) => a.timestamp.compareTo(b.timestamp));
       });
-      
+
       _updateSelectedDayEntries();
-      
     } catch (e) {
       debugPrint('Error loading mood entries: $e');
     } finally {
@@ -148,7 +147,7 @@ class _MoodCalendarScreenState extends ConsumerState<MoodCalendarScreen> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -192,7 +191,7 @@ class _MoodCalendarScreenState extends ConsumerState<MoodCalendarScreen> {
             fontWeight: FontWeight.w500,
           ),
           todayDecoration: BoxDecoration(
-            color: AppTheme.sunriseGold.withOpacity(0.3),
+            color: AppTheme.sunriseGold.withValues(alpha: 0.3),
             shape: BoxShape.circle,
           ),
           selectedDecoration: const BoxDecoration(
@@ -221,10 +220,10 @@ class _MoodCalendarScreenState extends ConsumerState<MoodCalendarScreen> {
         calendarBuilders: CalendarBuilders(
           markerBuilder: (context, date, events) {
             if (events.isEmpty) return const SizedBox();
-            
+
             final entries = events.cast<SimpleMoodEntry>();
             final averageMood = _calculateAverageMood(entries);
-            
+
             return Positioned(
               bottom: 1,
               right: 1,
@@ -280,9 +279,10 @@ class _MoodCalendarScreenState extends ConsumerState<MoodCalendarScreen> {
             const Spacer(),
             if (_selectedDayEntries.isNotEmpty) ...[
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                 decoration: BoxDecoration(
-                  color: AppTheme.healingTeal.withOpacity(0.1),
+                  color: AppTheme.healingTeal.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
@@ -308,7 +308,7 @@ class _MoodCalendarScreenState extends ConsumerState<MoodCalendarScreen> {
   Widget _buildEmptyDayState() {
     final isToday = isSameDay(_selectedDay, DateTime.now());
     final isPast = _selectedDay.isBefore(DateTime.now());
-    
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(32),
@@ -317,7 +317,7 @@ class _MoodCalendarScreenState extends ConsumerState<MoodCalendarScreen> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -329,7 +329,7 @@ class _MoodCalendarScreenState extends ConsumerState<MoodCalendarScreen> {
             width: 64,
             height: 64,
             decoration: BoxDecoration(
-              color: AppTheme.healingTeal.withOpacity(0.1),
+              color: AppTheme.healingTeal.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: const Icon(
@@ -340,7 +340,7 @@ class _MoodCalendarScreenState extends ConsumerState<MoodCalendarScreen> {
           ),
           const SizedBox(height: 16),
           Text(
-            isToday 
+            isToday
                 ? 'No mood entries for today'
                 : isPast
                     ? 'No mood entries for this day'
@@ -371,7 +371,8 @@ class _MoodCalendarScreenState extends ConsumerState<MoodCalendarScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppTheme.healingTeal,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -399,7 +400,7 @@ class _MoodCalendarScreenState extends ConsumerState<MoodCalendarScreen> {
   Widget _buildDayEntries() {
     // Calculate average mood for the day
     final averageMood = _calculateAverageMood(_selectedDayEntries);
-    
+
     return Column(
       children: [
         // Day summary card
@@ -411,7 +412,7 @@ class _MoodCalendarScreenState extends ConsumerState<MoodCalendarScreen> {
             gradient: LinearGradient(
               colors: [
                 _getMoodColor(averageMood),
-                _getMoodColor(averageMood).withOpacity(0.8),
+                _getMoodColor(averageMood).withValues(alpha: 0.8),
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -419,7 +420,7 @@ class _MoodCalendarScreenState extends ConsumerState<MoodCalendarScreen> {
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: _getMoodColor(averageMood).withOpacity(0.3),
+                color: _getMoodColor(averageMood).withValues(alpha: 0.3),
                 blurRadius: 20,
                 offset: const Offset(0, 8),
               ),
@@ -444,22 +445,22 @@ class _MoodCalendarScreenState extends ConsumerState<MoodCalendarScreen> {
                 _getMoodDescription(averageMood.round()),
                 style: TextStyle(
                   fontSize: 14,
-                  color: Colors.white.withOpacity(0.9),
+                  color: Colors.white.withValues(alpha: 0.9),
                   fontWeight: FontWeight.w500,
                 ),
               ),
             ],
           ),
         ),
-        
+
         // Individual entries
         ..._selectedDayEntries.map((entry) => Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: MoodEntryCard(
-            entry: entry,
-            onTap: () => _showEntryDetails(entry),
-          ),
-        )).toList(),
+              padding: const EdgeInsets.only(bottom: 12),
+              child: MoodEntryCard(
+                entry: entry,
+                onTap: () => _showEntryDetails(entry),
+              ),
+            )),
       ],
     );
   }
@@ -487,7 +488,7 @@ class _MoodCalendarScreenState extends ConsumerState<MoodCalendarScreen> {
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
-            
+
             // Content
             Expanded(
               child: Padding(
@@ -502,7 +503,8 @@ class _MoodCalendarScreenState extends ConsumerState<MoodCalendarScreen> {
                           width: 50,
                           height: 50,
                           decoration: BoxDecoration(
-                            color: _getMoodColor(entry.score.toDouble()).withOpacity(0.1),
+                            color: _getMoodColor(entry.score.toDouble())
+                                .withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Center(
@@ -537,9 +539,9 @@ class _MoodCalendarScreenState extends ConsumerState<MoodCalendarScreen> {
                         ),
                       ],
                     ),
-                    
+
                     const SizedBox(height: 24),
-                    
+
                     // Emotions
                     if (entry.emotions.isNotEmpty) ...[
                       const Text(
@@ -554,25 +556,29 @@ class _MoodCalendarScreenState extends ConsumerState<MoodCalendarScreen> {
                       Wrap(
                         spacing: 8,
                         runSpacing: 4,
-                        children: entry.emotions.map((emotion) => Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: AppTheme.healingTeal.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: Text(
-                            emotion,
-                            style: const TextStyle(
-                              color: AppTheme.healingTeal,
-                              fontWeight: FontWeight.w500,
-                              fontSize: 12,
-                            ),
-                          ),
-                        )).toList(),
+                        children: entry.emotions
+                            .map((emotion) => Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 12, vertical: 6),
+                                  decoration: BoxDecoration(
+                                    color: AppTheme.healingTeal
+                                        .withValues(alpha: 0.1),
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  child: Text(
+                                    emotion,
+                                    style: const TextStyle(
+                                      color: AppTheme.healingTeal,
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ))
+                            .toList(),
                       ),
                       const SizedBox(height: 16),
                     ],
-                    
+
                     // Triggers
                     if (entry.metadata['triggers'] != null) ...[
                       const Text(
@@ -587,25 +593,29 @@ class _MoodCalendarScreenState extends ConsumerState<MoodCalendarScreen> {
                       Wrap(
                         spacing: 8,
                         runSpacing: 4,
-                        children: (entry.metadata['triggers'] as List).map((trigger) => Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: AppTheme.sunriseGold.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: Text(
-                            trigger.toString(),
-                            style: const TextStyle(
-                              color: AppTheme.sunriseGold,
-                              fontWeight: FontWeight.w500,
-                              fontSize: 12,
-                            ),
-                          ),
-                        )).toList(),
+                        children: (entry.metadata['triggers'] as List)
+                            .map((trigger) => Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 12, vertical: 6),
+                                  decoration: BoxDecoration(
+                                    color: AppTheme.sunriseGold
+                                        .withValues(alpha: 0.1),
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  child: Text(
+                                    trigger.toString(),
+                                    style: const TextStyle(
+                                      color: AppTheme.sunriseGold,
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ))
+                            .toList(),
                       ),
                       const SizedBox(height: 16),
                     ],
-                    
+
                     // Activities
                     if (entry.metadata['activities'] != null) ...[
                       const Text(
@@ -620,25 +630,29 @@ class _MoodCalendarScreenState extends ConsumerState<MoodCalendarScreen> {
                       Wrap(
                         spacing: 8,
                         runSpacing: 4,
-                        children: (entry.metadata['activities'] as List).map((activity) => Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: AppTheme.midnightBlue.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: Text(
-                            activity.toString(),
-                            style: const TextStyle(
-                              color: AppTheme.midnightBlue,
-                              fontWeight: FontWeight.w500,
-                              fontSize: 12,
-                            ),
-                          ),
-                        )).toList(),
+                        children: (entry.metadata['activities'] as List)
+                            .map((activity) => Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 12, vertical: 6),
+                                  decoration: BoxDecoration(
+                                    color: AppTheme.midnightBlue
+                                        .withValues(alpha: 0.1),
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  child: Text(
+                                    activity.toString(),
+                                    style: const TextStyle(
+                                      color: AppTheme.midnightBlue,
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ))
+                            .toList(),
                       ),
                       const SizedBox(height: 16),
                     ],
-                    
+
                     // Notes
                     if (entry.notes != null && entry.notes!.isNotEmpty) ...[
                       const Text(
@@ -692,26 +706,14 @@ class _MoodCalendarScreenState extends ConsumerState<MoodCalendarScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            _buildLegendItem(_getMoodColor(9), 'Great Mood (8-10)',
+                'Excellent and amazing days'),
             _buildLegendItem(
-              _getMoodColor(9), 
-              'Great Mood (8-10)',
-              'Excellent and amazing days'
-            ),
-            _buildLegendItem(
-              _getMoodColor(7), 
-              'Good Mood (6-7)',
-              'Good and very good days'
-            ),
-            _buildLegendItem(
-              _getMoodColor(5), 
-              'Neutral Mood (4-5)',
-              'Average and neutral days'
-            ),
-            _buildLegendItem(
-              _getMoodColor(2), 
-              'Low Mood (1-3)',
-              'Challenging and difficult days'
-            ),
+                _getMoodColor(7), 'Good Mood (6-7)', 'Good and very good days'),
+            _buildLegendItem(_getMoodColor(5), 'Neutral Mood (4-5)',
+                'Average and neutral days'),
+            _buildLegendItem(_getMoodColor(2), 'Low Mood (1-3)',
+                'Challenging and difficult days'),
             const SizedBox(height: 16),
             const Text(
               'Numbers on circles show entry count for that day.',
@@ -793,33 +795,55 @@ class _MoodCalendarScreenState extends ConsumerState<MoodCalendarScreen> {
 
   String _getMoodEmoji(int score) {
     switch (score) {
-      case 1: return '😢';
-      case 2: return '😞';
-      case 3: return '😕';
-      case 4: return '😐';
-      case 5: return '🙂';
-      case 6: return '😊';
-      case 7: return '😄';
-      case 8: return '😁';
-      case 9: return '🤗';
-      case 10: return '🥳';
-      default: return '🙂';
+      case 1:
+        return '😢';
+      case 2:
+        return '😞';
+      case 3:
+        return '😕';
+      case 4:
+        return '😐';
+      case 5:
+        return '🙂';
+      case 6:
+        return '😊';
+      case 7:
+        return '😄';
+      case 8:
+        return '😁';
+      case 9:
+        return '🤗';
+      case 10:
+        return '🥳';
+      default:
+        return '🙂';
     }
   }
 
   String _getMoodDescription(int score) {
     switch (score) {
-      case 1: return 'Very Low';
-      case 2: return 'Low';
-      case 3: return 'Below Average';
-      case 4: return 'Slightly Low';
-      case 5: return 'Neutral';
-      case 6: return 'Good';
-      case 7: return 'Very Good';
-      case 8: return 'Great';
-      case 9: return 'Excellent';
-      case 10: return 'Amazing';
-      default: return 'Neutral';
+      case 1:
+        return 'Very Low';
+      case 2:
+        return 'Low';
+      case 3:
+        return 'Below Average';
+      case 4:
+        return 'Slightly Low';
+      case 5:
+        return 'Neutral';
+      case 6:
+        return 'Good';
+      case 7:
+        return 'Very Good';
+      case 8:
+        return 'Great';
+      case 9:
+        return 'Excellent';
+      case 10:
+        return 'Amazing';
+      default:
+        return 'Neutral';
     }
   }
 
@@ -831,8 +855,18 @@ class _MoodCalendarScreenState extends ConsumerState<MoodCalendarScreen> {
       return 'Yesterday';
     } else {
       final months = [
-        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec'
       ];
       return '${months[date.month - 1]} ${date.day}, ${date.year}';
     }
@@ -841,9 +875,9 @@ class _MoodCalendarScreenState extends ConsumerState<MoodCalendarScreen> {
   String _formatEntryTime(DateTime dateTime) {
     final hour = dateTime.hour;
     final minute = dateTime.minute.toString().padLeft(2, '0');
-    
+
     if (hour == 0) {
-      return '12:${minute} AM';
+      return '12:$minute AM';
     } else if (hour < 12) {
       return '$hour:$minute AM';
     } else if (hour == 12) {

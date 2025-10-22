@@ -21,7 +21,7 @@ class MoodEntryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 2,
-      shadowColor: Colors.black.withOpacity(0.1),
+      shadowColor: Colors.black.withValues(alpha: 0.1),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
@@ -40,7 +40,8 @@ class MoodEntryCard extends StatelessWidget {
                     width: compact ? 32 : 40,
                     height: compact ? 32 : 40,
                     decoration: BoxDecoration(
-                      color: _getMoodColor(entry.score.toDouble()).withOpacity(0.1),
+                      color: _getMoodColor(entry.score.toDouble())
+                          .withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Center(
@@ -53,7 +54,7 @@ class MoodEntryCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  
+
                   // Mood details
                   Expanded(
                     child: Column(
@@ -91,7 +92,7 @@ class MoodEntryCard extends StatelessWidget {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          showDate 
+                          showDate
                               ? _formatDateTime(entry.timestamp)
                               : _formatTime(entry.timestamp),
                           style: TextStyle(
@@ -102,13 +103,14 @@ class MoodEntryCard extends StatelessWidget {
                       ],
                     ),
                   ),
-                  
+
                   // Entry count badge
                   if (!compact && entry.emotions.isNotEmpty)
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: AppTheme.healingTeal.withOpacity(0.1),
+                        color: AppTheme.healingTeal.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Row(
@@ -133,7 +135,6 @@ class MoodEntryCard extends StatelessWidget {
                     ),
                 ],
               ),
-              
               if (!compact) ...[
                 // Emotions preview
                 if (entry.emotions.isNotEmpty) ...[
@@ -141,21 +142,26 @@ class MoodEntryCard extends StatelessWidget {
                   Wrap(
                     spacing: 6,
                     runSpacing: 4,
-                    children: entry.emotions.take(3).map((emotion) => Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: AppTheme.healingTeal.withOpacity(0.08),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        emotion,
-                        style: const TextStyle(
-                          fontSize: 11,
-                          color: AppTheme.healingTeal,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    )).toList(),
+                    children: entry.emotions
+                        .take(3)
+                        .map((emotion) => Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: AppTheme.healingTeal
+                                    .withValues(alpha: 0.08),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                emotion,
+                                style: const TextStyle(
+                                  fontSize: 11,
+                                  color: AppTheme.healingTeal,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ))
+                        .toList(),
                   ),
                   if (entry.emotions.length > 3)
                     Padding(
@@ -170,7 +176,7 @@ class MoodEntryCard extends StatelessWidget {
                       ),
                     ),
                 ],
-                
+
                 // Notes preview
                 if (entry.notes != null && entry.notes!.isNotEmpty) ...[
                   const SizedBox(height: 8),
@@ -202,42 +208,64 @@ class MoodEntryCard extends StatelessWidget {
 
   String _getMoodEmoji(int score) {
     switch (score) {
-      case 1: return '😢';
-      case 2: return '😞';
-      case 3: return '😕';
-      case 4: return '😐';
-      case 5: return '🙂';
-      case 6: return '😊';
-      case 7: return '😄';
-      case 8: return '😁';
-      case 9: return '🤗';
-      case 10: return '🥳';
-      default: return '🙂';
+      case 1:
+        return '😢';
+      case 2:
+        return '😞';
+      case 3:
+        return '😕';
+      case 4:
+        return '😐';
+      case 5:
+        return '🙂';
+      case 6:
+        return '😊';
+      case 7:
+        return '😄';
+      case 8:
+        return '😁';
+      case 9:
+        return '🤗';
+      case 10:
+        return '🥳';
+      default:
+        return '🙂';
     }
   }
 
   String _getMoodDescription(int score) {
     switch (score) {
-      case 1: return 'Very Low';
-      case 2: return 'Low';
-      case 3: return 'Below Average';
-      case 4: return 'Slightly Low';
-      case 5: return 'Neutral';
-      case 6: return 'Good';
-      case 7: return 'Very Good';
-      case 8: return 'Great';
-      case 9: return 'Excellent';
-      case 10: return 'Amazing';
-      default: return 'Neutral';
+      case 1:
+        return 'Very Low';
+      case 2:
+        return 'Low';
+      case 3:
+        return 'Below Average';
+      case 4:
+        return 'Slightly Low';
+      case 5:
+        return 'Neutral';
+      case 6:
+        return 'Good';
+      case 7:
+        return 'Very Good';
+      case 8:
+        return 'Great';
+      case 9:
+        return 'Excellent';
+      case 10:
+        return 'Amazing';
+      default:
+        return 'Neutral';
     }
   }
 
   String _formatTime(DateTime dateTime) {
     final hour = dateTime.hour;
     final minute = dateTime.minute.toString().padLeft(2, '0');
-    
+
     if (hour == 0) {
-      return '12:${minute} AM';
+      return '12:$minute AM';
     } else if (hour < 12) {
       return '$hour:$minute AM';
     } else if (hour == 12) {
@@ -252,7 +280,7 @@ class MoodEntryCard extends StatelessWidget {
     final date = DateTime(dateTime.year, dateTime.month, dateTime.day);
     final today = DateTime(now.year, now.month, now.day);
     final yesterday = today.subtract(const Duration(days: 1));
-    
+
     String dateStr;
     if (date == today) {
       dateStr = 'Today';
@@ -260,12 +288,22 @@ class MoodEntryCard extends StatelessWidget {
       dateStr = 'Yesterday';
     } else {
       final months = [
-        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec'
       ];
       dateStr = '${months[dateTime.month - 1]} ${dateTime.day}';
     }
-    
+
     return '$dateStr at ${_formatTime(dateTime)}';
   }
 }

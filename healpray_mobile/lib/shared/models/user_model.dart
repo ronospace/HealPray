@@ -57,15 +57,17 @@ class UserModel extends Equatable {
       displayName: data['displayName'] as String?,
       photoURL: data['photoURL'] as String?,
       createdAt: (data['createdAt'] as Timestamp).toDate(),
-      lastSignIn: data['lastSignIn'] != null 
-          ? (data['lastSignIn'] as Timestamp).toDate() 
+      lastSignIn: data['lastSignIn'] != null
+          ? (data['lastSignIn'] as Timestamp).toDate()
           : null,
-      lastActivity: data['lastActivity'] != null 
-          ? (data['lastActivity'] as Timestamp).toDate() 
+      lastActivity: data['lastActivity'] != null
+          ? (data['lastActivity'] as Timestamp).toDate()
           : null,
       signInMethod: data['signInMethod'] as String,
-      preferences: UserPreferences.fromMap(data['preferences'] as Map<String, dynamic>),
-      analytics: UserAnalytics.fromMap(data['analytics'] as Map<String, dynamic>),
+      preferences:
+          UserPreferences.fromMap(data['preferences'] as Map<String, dynamic>),
+      analytics:
+          UserAnalytics.fromMap(data['analytics'] as Map<String, dynamic>),
       fcmToken: data['fcmToken'] as String?,
     );
   }
@@ -79,7 +81,8 @@ class UserModel extends Equatable {
       'photoURL': photoURL,
       'createdAt': Timestamp.fromDate(createdAt),
       'lastSignIn': lastSignIn != null ? Timestamp.fromDate(lastSignIn!) : null,
-      'lastActivity': lastActivity != null ? Timestamp.fromDate(lastActivity!) : null,
+      'lastActivity':
+          lastActivity != null ? Timestamp.fromDate(lastActivity!) : null,
       'signInMethod': signInMethod,
       'preferences': preferences.toMap(),
       'analytics': analytics.toMap(),
@@ -122,10 +125,10 @@ class UserModel extends Equatable {
 class UserPreferences extends Equatable {
   @HiveField(0)
   final NotificationPreferences notifications;
-  
+
   @HiveField(1)
   final PrivacyPreferences privacy;
-  
+
   @HiveField(2)
   final SpiritualPreferences spiritual;
 
@@ -140,9 +143,12 @@ class UserPreferences extends Equatable {
 
   factory UserPreferences.fromMap(Map<String, dynamic> map) {
     return UserPreferences(
-      notifications: NotificationPreferences.fromMap(map['notifications'] as Map<String, dynamic>),
-      privacy: PrivacyPreferences.fromMap(map['privacy'] as Map<String, dynamic>),
-      spiritual: SpiritualPreferences.fromMap(map['spiritual'] as Map<String, dynamic>),
+      notifications: NotificationPreferences.fromMap(
+          map['notifications'] as Map<String, dynamic>),
+      privacy:
+          PrivacyPreferences.fromMap(map['privacy'] as Map<String, dynamic>),
+      spiritual: SpiritualPreferences.fromMap(
+          map['spiritual'] as Map<String, dynamic>),
     );
   }
 
@@ -172,16 +178,16 @@ class UserPreferences extends Equatable {
 class NotificationPreferences extends Equatable {
   @HiveField(0)
   final bool morning;
-  
+
   @HiveField(1)
   final bool midday;
-  
+
   @HiveField(2)
   final bool evening;
-  
+
   @HiveField(3)
   final bool community;
-  
+
   @HiveField(4)
   final bool crisisSupport;
 
@@ -194,7 +200,8 @@ class NotificationPreferences extends Equatable {
   });
 
   @override
-  List<Object> get props => [morning, midday, evening, community, crisisSupport];
+  List<Object> get props =>
+      [morning, midday, evening, community, crisisSupport];
 
   factory NotificationPreferences.fromMap(Map<String, dynamic> map) {
     return NotificationPreferences(
@@ -238,7 +245,7 @@ class NotificationPreferences extends Equatable {
 class PrivacyPreferences extends Equatable {
   @HiveField(0)
   final bool shareAnalytics;
-  
+
   @HiveField(1)
   final bool shareCommunity;
 
@@ -280,13 +287,13 @@ class PrivacyPreferences extends Equatable {
 class SpiritualPreferences extends Equatable {
   @HiveField(0)
   final String denomination;
-  
+
   @HiveField(1)
   final String language;
-  
+
   @HiveField(2)
   final String tone;
-  
+
   @HiveField(3)
   final String length;
 
@@ -338,16 +345,16 @@ class SpiritualPreferences extends Equatable {
 class UserAnalytics extends Equatable {
   @HiveField(0)
   final int totalPrayers;
-  
+
   @HiveField(1)
   final int totalMoodEntries;
-  
+
   @HiveField(2)
   final double averageMood;
-  
+
   @HiveField(3)
   final int longestStreak;
-  
+
   @HiveField(4)
   final int currentStreak;
 

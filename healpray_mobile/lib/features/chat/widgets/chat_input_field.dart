@@ -79,9 +79,9 @@ class _ChatInputFieldState extends State<ChatInputField> {
               minHeight: 40,
             ),
           ),
-          
+
           const SizedBox(width: 8),
-          
+
           // Message input field
           Expanded(
             child: Container(
@@ -118,9 +118,9 @@ class _ChatInputFieldState extends State<ChatInputField> {
               ),
             ),
           ),
-          
+
           const SizedBox(width: 8),
-          
+
           // Send button
           AnimatedContainer(
             duration: const Duration(milliseconds: 200),
@@ -175,9 +175,9 @@ class _ChatInputFieldState extends State<ChatInputField> {
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
-            
+
             const SizedBox(height: 20),
-            
+
             const Text(
               'Quick Actions',
               style: TextStyle(
@@ -185,9 +185,9 @@ class _ChatInputFieldState extends State<ChatInputField> {
                 fontWeight: FontWeight.w600,
               ),
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Quick action buttons
             Wrap(
               spacing: 12,
@@ -195,7 +195,7 @@ class _ChatInputFieldState extends State<ChatInputField> {
               children: [
                 _buildQuickActionChip(
                   'Prayer Request',
-                  Icons.prayer_times,
+                  Icons.accessibility_new,
                   'I have a prayer request...',
                 ),
                 _buildQuickActionChip(
@@ -225,7 +225,7 @@ class _ChatInputFieldState extends State<ChatInputField> {
                 ),
               ],
             ),
-            
+
             const SizedBox(height: 32),
           ],
         ),
@@ -245,10 +245,10 @@ class _ChatInputFieldState extends State<ChatInputField> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: AppTheme.healingTeal.withOpacity(0.1),
+          color: AppTheme.healingTeal.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: AppTheme.healingTeal.withOpacity(0.3),
+            color: AppTheme.healingTeal.withValues(alpha: 0.3),
             width: 1,
           ),
         ),

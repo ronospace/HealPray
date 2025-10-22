@@ -45,5 +45,36 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	
+	<!-- App Transport Security -->
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<false/>
+		<key>NSAllowsArbitraryLoadsInWebContent</key>
+		<false/>
+	</dict>
+	
+	<!-- Privacy Permissions -->
+	<key>NSMicrophoneUsageDescription</key>
+	<string>HealPray needs microphone access for voice prayer recording and meditation features.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>HealPray needs camera access to capture moments for mood tracking.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>HealPray uses location to provide contextual spiritual content and find nearby spiritual communities.</string>
+	<key>NSHealthShareUsageDescription</key>
+	<string>HealPray integrates with Apple Health to track your wellness and mood data for better spiritual insights.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>HealPray writes mood and wellness data to Apple Health to maintain a comprehensive health profile.</string>
+	<key>NSUserNotificationsUsageDescription</key>
+	<string>HealPray sends prayer reminders, crisis support alerts, and spiritual encouragement notifications.</string>
+	
+	<!-- Background Modes -->
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>background-processing</string>
+		<string>background-fetch</string>
+	</array>
+	
 </dict>
 </plist>

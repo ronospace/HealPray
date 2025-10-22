@@ -3,15 +3,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/utils/logger.dart';
 import '../../../shared/services/firebase_service.dart';
+import '../../../core/services/advanced_analytics_service.dart';
 import '../models/mood_entry.dart';
 import '../models/emotion_type.dart';
 import '../models/mood_enums.dart';
 import '../models/mood_analytics.dart';
+import '../models/simple_mood_entry.dart';
 
 /// Service for managing mood tracking with Firestore integration
 class MoodTrackingService {
   static const String _collectionName = 'mood_entries';
-  
+
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   /// Create a new mood entry
@@ -54,12 +56,29 @@ class MoodTrackingService {
         updatedAt: now,
       );
 
-      final docRef = await _firestore
-          .collection(_collectionName)
-          .add(entry.toFirestore());
+      final docRef =
+          await _firestore.collection(_collectionName).add(entry.toFirestore());
 
       AppLogger.info('Created mood entry: ${docRef.id}');
       
+      // Track mood entry analytics
+      final simpleMoodEntry = SimpleMoodEntry(
+        id: docRef.id,
+        score: _calculateMoodScore(emotions, intensity),
+        emotions: emotions.map((e) => e.name).toList(),
+        notes: notes,
+        timestamp: now,
+        metadata: {
+          'triggers': triggers.map((t) => t.name).toList(),
+          'intensity': intensity.name,
+        },
+      );
+      
+      AdvancedAnalyticsService.instance.trackMoodEntry(
+        moodEntry: simpleMoodEntry,
+        entryMethod: 'manual',
+      );
+
       return entry.copyWith(id: docRef.id);
     } catch (error, stackTrace) {
       AppLogger.error('Failed to create mood entry', error, stackTrace);
@@ -71,14 +90,14 @@ class MoodTrackingService {
   Future<MoodEntry> updateMoodEntry(MoodEntry entry) async {
     try {
       final updatedEntry = entry.copyWithUpdatedAt();
-      
+
       await _firestore
           .collection(_collectionName)
           .doc(entry.id)
           .update(updatedEntry.toFirestore());
 
       AppLogger.info('Updated mood entry: ${entry.id}');
-      
+
       return updatedEntry;
     } catch (error, stackTrace) {
       AppLogger.error('Failed to update mood entry', error, stackTrace);
@@ -89,10 +108,7 @@ class MoodTrackingService {
   /// Delete a mood entry
   Future<void> deleteMoodEntry(String entryId) async {
     try {
-      await _firestore
-          .collection(_collectionName)
-          .doc(entryId)
-          .delete();
+      await _firestore.collection(_collectionName).doc(entryId).delete();
 
       AppLogger.info('Deleted mood entry: $entryId');
     } catch (error, stackTrace) {
@@ -104,10 +120,8 @@ class MoodTrackingService {
   /// Get mood entry by ID
   Future<MoodEntry?> getMoodEntry(String entryId) async {
     try {
-      final doc = await _firestore
-          .collection(_collectionName)
-          .doc(entryId)
-          .get();
+      final doc =
+          await _firestore.collection(_collectionName).doc(entryId).get();
 
       if (!doc.exists) return null;
 
@@ -137,10 +151,12 @@ class MoodTrackingService {
 
       // Apply date filters
       if (startDate != null) {
-        query = query.where('timestamp', isGreaterThanOrEqualTo: Timestamp.fromDate(startDate));
+        query = query.where('timestamp',
+            isGreaterThanOrEqualTo: Timestamp.fromDate(startDate));
       }
       if (endDate != null) {
-        query = query.where('timestamp', isLessThanOrEqualTo: Timestamp.fromDate(endDate));
+        query = query.where('timestamp',
+            isLessThanOrEqualTo: Timestamp.fromDate(endDate));
       }
 
       // Apply limit
@@ -149,7 +165,9 @@ class MoodTrackingService {
       }
 
       return query.snapshots().map((snapshot) {
-        return snapshot.docs.map((doc) => MoodEntry.fromFirestore(doc)).toList();
+        return snapshot.docs
+            .map((doc) => MoodEntry.fromFirestore(doc))
+            .toList();
       });
     } catch (error, stackTrace) {
       AppLogger.error('Failed to get mood entries stream', error, stackTrace);
@@ -176,10 +194,12 @@ class MoodTrackingService {
 
       // Apply date filters
       if (startDate != null) {
-        query = query.where('timestamp', isGreaterThanOrEqualTo: Timestamp.fromDate(startDate));
+        query = query.where('timestamp',
+            isGreaterThanOrEqualTo: Timestamp.fromDate(startDate));
       }
       if (endDate != null) {
-        query = query.where('timestamp', isLessThanOrEqualTo: Timestamp.fromDate(endDate));
+        query = query.where('timestamp',
+            isLessThanOrEqualTo: Timestamp.fromDate(endDate));
       }
 
       // Apply limit
@@ -243,11 +263,11 @@ class MoodTrackingService {
       // Calculate streak from today backwards
       int streak = 0;
       final today = DateTime.now();
-      
+
       for (int i = 0; i < 30; i++) {
         final checkDate = today.subtract(Duration(days: i));
         final dateKey = _formatDateKey(checkDate);
-        
+
         if (entriesByDate.containsKey(dateKey)) {
           streak++;
         } else {
@@ -270,7 +290,7 @@ class MoodTrackingService {
 
       // Get all entries for the user
       final entries = await getMoodEntries();
-      
+
       if (entries.isEmpty) return 0;
 
       // Group entries by date
@@ -282,18 +302,19 @@ class MoodTrackingService {
 
       // Sort dates
       final sortedDates = entriesByDate.keys.toList()..sort();
-      
+
       int longestStreak = 0;
       int currentStreak = 1;
 
       for (int i = 1; i < sortedDates.length; i++) {
         final currentDate = DateTime.parse(sortedDates[i]);
         final previousDate = DateTime.parse(sortedDates[i - 1]);
-        
+
         if (currentDate.difference(previousDate).inDays == 1) {
           currentStreak++;
         } else {
-          longestStreak = longestStreak > currentStreak ? longestStreak : currentStreak;
+          longestStreak =
+              longestStreak > currentStreak ? longestStreak : currentStreak;
           currentStreak = 1;
         }
       }
@@ -350,23 +371,26 @@ class MoodTrackingService {
 
       for (final entry in entries) {
         totalMoodScore += entry.moodScore;
-        
+
         if (entry.isPositive) {
           positiveEntries++;
         }
 
         // Build mood distribution
         final moodScoreInt = entry.moodScore.round();
-        moodDistribution[moodScoreInt] = (moodDistribution[moodScoreInt] ?? 0) + 1;
+        moodDistribution[moodScoreInt] =
+            (moodDistribution[moodScoreInt] ?? 0) + 1;
 
         // Count emotions by name instead of category (since category doesn't exist)
         for (final emotion in entry.emotions) {
-          emotionCategoryCounts[emotion.name] = (emotionCategoryCounts[emotion.name] ?? 0) + 1;
+          emotionCategoryCounts[emotion.name] =
+              (emotionCategoryCounts[emotion.name] ?? 0) + 1;
         }
 
         // Count triggers by name instead of category (since category doesn't exist)
         for (final trigger in entry.triggers) {
-          triggerCategoryCounts[trigger.name] = (triggerCategoryCounts[trigger.name] ?? 0) + 1;
+          triggerCategoryCounts[trigger.name] =
+              (triggerCategoryCounts[trigger.name] ?? 0) + 1;
         }
       }
 
@@ -405,16 +429,16 @@ class MoodTrackingService {
     DateTime endDate,
   ) {
     final weeklyScores = <String, List<double>>{};
-    
+
     for (final entry in entries) {
       final weekKey = _getWeekKey(entry.timestamp);
       weeklyScores.putIfAbsent(weekKey, () => []).add(entry.moodScore);
     }
 
     return weeklyScores.map((key, scores) => MapEntry(
-      key,
-      scores.reduce((a, b) => a + b) / scores.length,
-    ));
+          key,
+          scores.reduce((a, b) => a + b) / scores.length,
+        ));
   }
 
   /// Calculate monthly mood averages
@@ -424,16 +448,17 @@ class MoodTrackingService {
     DateTime endDate,
   ) {
     final monthlyScores = <String, List<double>>{};
-    
+
     for (final entry in entries) {
-      final monthKey = '${entry.timestamp.year}-${entry.timestamp.month.toString().padLeft(2, '0')}';
+      final monthKey =
+          '${entry.timestamp.year}-${entry.timestamp.month.toString().padLeft(2, '0')}';
       monthlyScores.putIfAbsent(monthKey, () => []).add(entry.moodScore);
     }
 
     return monthlyScores.map((key, scores) => MapEntry(
-      key,
-      scores.reduce((a, b) => a + b) / scores.length,
-    ));
+          key,
+          scores.reduce((a, b) => a + b) / scores.length,
+        ));
   }
 
   /// Helper to format date as string key
@@ -460,7 +485,8 @@ class MoodTrackingService {
         return entries.where((entry) => entry.indicatesDistress).toList();
       });
     } catch (error, stackTrace) {
-      AppLogger.error('Failed to get distress entries stream', error, stackTrace);
+      AppLogger.error(
+          'Failed to get distress entries stream', error, stackTrace);
       return Stream.error(error);
     }
   }
@@ -470,9 +496,9 @@ class MoodTrackingService {
     try {
       lookbackDays ??= 7;
       final startDate = DateTime.now().subtract(Duration(days: lookbackDays));
-      
+
       final entries = await getMoodEntries(startDate: startDate);
-      
+
       if (entries.isEmpty) {
         return ['Daily Prayer', 'Gratitude Journaling', 'Scripture Reading'];
       }
@@ -488,6 +514,37 @@ class MoodTrackingService {
       AppLogger.error('Failed to get suggested practices', error, stackTrace);
       return ['Daily Prayer', 'Gratitude Journaling', 'Scripture Reading'];
     }
+  }
+  
+  /// Calculate mood score from emotions and intensity for analytics
+  int _calculateMoodScore(List<EmotionType> emotions, MoodIntensity intensity) {
+    if (emotions.isEmpty) return 5;
+    
+    // Base score from intensity (1-10)
+    final intensityScore = switch (intensity) {
+      MoodIntensity.veryLow => 1,
+      MoodIntensity.low => 3,
+      MoodIntensity.moderate => 5,
+      MoodIntensity.high => 7,
+      MoodIntensity.veryHigh => 9,
+    };
+    
+    // Adjust based on emotion positivity/negativity
+    double emotionAdjustment = 0.0;
+    for (final emotion in emotions) {
+      // Positive emotions
+      if (['joy', 'peace', 'hope', 'gratitude', 'love', 'contentment'].contains(emotion.name.toLowerCase())) {
+        emotionAdjustment += 0.5;
+      }
+      // Negative emotions
+      else if (['anxiety', 'sadness', 'fear', 'anger', 'frustration', 'overwhelmed'].contains(emotion.name.toLowerCase())) {
+        emotionAdjustment -= 0.5;
+      }
+    }
+    
+    // Clamp between 1-10
+    final finalScore = (intensityScore + emotionAdjustment).round();
+    return finalScore.clamp(1, 10);
   }
 }
 

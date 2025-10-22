@@ -5,71 +5,78 @@ import '../repositories/simple_mood_repository.dart';
 class MoodService {
   static MoodService? _instance;
   static MoodService get instance => _instance ??= MoodService._internal();
-  
+
   MoodService._internal();
-  
+
   final SimpleMoodRepository _repository = SimpleMoodRepository.instance;
-  
+
   /// Save a mood entry
   Future<void> saveMoodEntry(SimpleMoodEntry entry) async {
     await _repository.saveMoodEntry(entry);
   }
-  
+
   /// Get mood entry by ID
   SimpleMoodEntry? getMoodEntry(String id) {
     return _repository.getMoodEntryById(id);
   }
-  
+
   /// Get all mood entries
   List<SimpleMoodEntry> getAllMoodEntries() {
     return _repository.getAllMoodEntries();
   }
-  
+
   /// Get recent mood entries with optional limit
   List<SimpleMoodEntry> getRecentMoodEntries({int days = 30, int? limit}) {
     final entries = _repository.getRecentMoodEntries(days: days);
-    
+
     if (limit != null && limit > 0) {
       return entries.take(limit).toList();
     }
-    
+
     return entries;
   }
-  
+
+  /// Get recent entries (async version for compatibility)
+  Future<List<SimpleMoodEntry>> getRecentEntries({int limit = 10}) async {
+    return getRecentMoodEntries(limit: limit);
+  }
+
   /// Get mood entries for today
   List<SimpleMoodEntry> getTodaysMoodEntries() {
     return _repository.getMoodEntriesForDate(DateTime.now());
   }
-  
+
   /// Get mood entries for this week
   List<SimpleMoodEntry> getThisWeeksMoodEntries() {
     final now = DateTime.now();
     final startOfWeek = now.subtract(Duration(days: now.weekday - 1));
     final endOfWeek = startOfWeek.add(const Duration(days: 6));
-    
+
     return _repository.getMoodEntriesByDateRange(
       startDate: DateTime(startOfWeek.year, startOfWeek.month, startOfWeek.day),
-      endDate: DateTime(endOfWeek.year, endOfWeek.month, endOfWeek.day, 23, 59, 59),
+      endDate:
+          DateTime(endOfWeek.year, endOfWeek.month, endOfWeek.day, 23, 59, 59),
     );
   }
-  
+
   /// Get mood entries for this month
   List<SimpleMoodEntry> getThisMonthsMoodEntries() {
     final now = DateTime.now();
     final startOfMonth = DateTime(now.year, now.month, 1);
     final endOfMonth = DateTime(now.year, now.month + 1, 0);
-    
+
     return _repository.getMoodEntriesByDateRange(
       startDate: startOfMonth,
-      endDate: DateTime(endOfMonth.year, endOfMonth.month, endOfMonth.day, 23, 59, 59),
+      endDate: DateTime(
+          endOfMonth.year, endOfMonth.month, endOfMonth.day, 23, 59, 59),
     );
   }
-  
+
   /// Delete a mood entry
   Future<bool> deleteMoodEntry(String id) async {
     return await _repository.deleteMoodEntry(id);
   }
-  
+
   /// Search mood entries
   List<SimpleMoodEntry> searchMoodEntries({
     String? query,
@@ -84,14 +91,14 @@ class MoodService {
       maxScore: maxScore,
     );
   }
-  
+
   /// Get mood statistics for a date range
   MoodStatistics getMoodStatistics({
     DateTime? startDate,
     DateTime? endDate,
   }) {
     List<SimpleMoodEntry> entries;
-    
+
     if (startDate != null && endDate != null) {
       entries = _repository.getMoodEntriesByDateRange(
         startDate: startDate,
@@ -100,38 +107,39 @@ class MoodService {
     } else {
       entries = _repository.getAllMoodEntries();
     }
-    
+
     if (entries.isEmpty) {
       return MoodStatistics.empty();
     }
-    
+
     // Calculate basic statistics
     final scores = entries.map((e) => e.score).toList();
-    final averageScore = scores.fold<double>(0, (sum, score) => sum + score) / scores.length;
-    
+    final averageScore =
+        scores.fold<double>(0, (sum, score) => sum + score) / scores.length;
+
     scores.sort();
     final medianScore = scores.length % 2 == 0
         ? (scores[scores.length ~/ 2 - 1] + scores[scores.length ~/ 2]) / 2.0
         : scores[scores.length ~/ 2].toDouble();
-    
+
     final minScore = scores.first;
     final maxScore = scores.last;
-    
+
     // Get emotion frequency
     final emotionFrequency = _repository.getEmotionFrequency(
       startDate: startDate,
       endDate: endDate,
     );
-    
+
     // Get score distribution
     final scoreDistribution = _repository.getMoodScoreDistribution(
       startDate: startDate,
       endDate: endDate,
     );
-    
+
     // Calculate trends
     final trend = _calculateMoodTrend(entries);
-    
+
     return MoodStatistics(
       totalEntries: entries.length,
       averageScore: averageScore,
@@ -144,24 +152,27 @@ class MoodService {
       dateRange: DateRange(startDate, endDate),
     );
   }
-  
+
   /// Get mood insights based on patterns
   List<MoodInsight> getMoodInsights({int days = 30}) {
     final entries = _repository.getRecentMoodEntries(days: days);
     final insights = <MoodInsight>[];
-    
+
     if (entries.isEmpty) return insights;
-    
+
     // Average mood insight
-    final averageScore = entries.fold<double>(0, (sum, entry) => sum + entry.score) / entries.length;
+    final averageScore =
+        entries.fold<double>(0, (sum, entry) => sum + entry.score) /
+            entries.length;
     insights.add(MoodInsight(
       type: MoodInsightType.average,
       title: 'Your Average Mood',
-      description: 'Over the last $days days, your average mood score is ${averageScore.toStringAsFixed(1)}/10.',
+      description:
+          'Over the last $days days, your average mood score is ${averageScore.toStringAsFixed(1)}/10.',
       score: averageScore,
       icon: '📊',
     ));
-    
+
     // Most common emotion
     final emotionFreq = _repository.getEmotionFrequency(limit: 1);
     if (emotionFreq.isNotEmpty) {
@@ -169,12 +180,13 @@ class MoodService {
       insights.add(MoodInsight(
         type: MoodInsightType.emotion,
         title: 'Most Common Emotion',
-        description: 'You\'ve been feeling "${topEmotion.key}" most often (${topEmotion.value} times).',
+        description:
+            'You\'ve been feeling "${topEmotion.key}" most often (${topEmotion.value} times).',
         emotion: topEmotion.key,
         icon: '😊',
       ));
     }
-    
+
     // Trend analysis
     final trend = _calculateMoodTrend(entries);
     if (trend != MoodTrend.stable) {
@@ -188,123 +200,127 @@ class MoodService {
         icon: trend == MoodTrend.improving ? '📈' : '📉',
       ));
     }
-    
+
     // High mood days
     final highMoodEntries = entries.where((e) => e.score >= 8).length;
     if (highMoodEntries > 0) {
       insights.add(MoodInsight(
         type: MoodInsightType.positive,
         title: 'Great Days',
-        description: 'You\'ve had $highMoodEntries great days (8+ mood score) in the last $days days!',
+        description:
+            'You\'ve had $highMoodEntries great days (8+ mood score) in the last $days days!',
         count: highMoodEntries,
         icon: '🌟',
       ));
     }
-    
+
     // Low mood pattern detection
     final lowMoodEntries = entries.where((e) => e.score <= 3).length;
-    if (lowMoodEntries > days * 0.3) { // More than 30% low mood days
+    if (lowMoodEntries > days * 0.3) {
+      // More than 30% low mood days
       insights.add(MoodInsight(
         type: MoodInsightType.concern,
         title: 'Support Reminder',
-        description: 'You\'ve had several challenging days recently. Remember that it\'s okay to seek support and practice self-care.',
+        description:
+            'You\'ve had several challenging days recently. Remember that it\'s okay to seek support and practice self-care.',
         count: lowMoodEntries,
         icon: '💙',
       ));
     }
-    
+
     return insights;
   }
-  
+
   /// Check if user has logged mood today
   bool hasLoggedMoodToday() {
     final todaysEntries = getTodaysMoodEntries();
     return todaysEntries.isNotEmpty;
   }
-  
+
   /// Get streak of consecutive days with mood entries
   int getMoodLoggingStreak() {
     final entries = _repository.getAllMoodEntries();
     if (entries.isEmpty) return 0;
-    
+
     // Group entries by date
     final entriesByDate = <String, List<SimpleMoodEntry>>{};
     for (final entry in entries) {
-      final dateKey = '${entry.timestamp.year}-${entry.timestamp.month}-${entry.timestamp.day}';
+      final dateKey =
+          '${entry.timestamp.year}-${entry.timestamp.month}-${entry.timestamp.day}';
       entriesByDate.putIfAbsent(dateKey, () => []).add(entry);
     }
-    
+
     // Count consecutive days from today backwards
     int streak = 0;
     final today = DateTime.now();
-    
-    for (int i = 0; i < 365; i++) { // Check up to a year
+
+    for (int i = 0; i < 365; i++) {
+      // Check up to a year
       final checkDate = today.subtract(Duration(days: i));
       final dateKey = '${checkDate.year}-${checkDate.month}-${checkDate.day}';
-      
+
       if (entriesByDate.containsKey(dateKey)) {
         streak++;
       } else {
         break;
       }
     }
-    
+
     return streak;
   }
-  
+
   /// Get recommended check-in time based on user patterns
   TimeOfDay? getRecommendedCheckInTime() {
     final entries = _repository.getRecentMoodEntries(days: 30);
     if (entries.isEmpty) return null;
-    
+
     // Find the most common hour for mood entries
     final hourCounts = <int, int>{};
     for (final entry in entries) {
       final hour = entry.timestamp.hour;
       hourCounts[hour] = (hourCounts[hour] ?? 0) + 1;
     }
-    
-    final mostCommonHour = hourCounts.entries
-        .reduce((a, b) => a.value > b.value ? a : b)
-        .key;
-    
+
+    final mostCommonHour =
+        hourCounts.entries.reduce((a, b) => a.value > b.value ? a : b).key;
+
     return TimeOfDay(hour: mostCommonHour, minute: 0);
   }
-  
+
   /// Calculate mood trend from entries
   MoodTrend _calculateMoodTrend(List<SimpleMoodEntry> entries) {
     if (entries.length < 3) return MoodTrend.stable;
-    
+
     // Sort by timestamp (oldest first)
     final sortedEntries = List<SimpleMoodEntry>.from(entries)
       ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
-    
+
     // Calculate trend using linear regression approach
-    final recentEntries = sortedEntries.length > 10 
+    final recentEntries = sortedEntries.length > 10
         ? sortedEntries.sublist(sortedEntries.length - 10)
         : sortedEntries;
-    
+
     double sumX = 0, sumY = 0, sumXY = 0, sumXX = 0;
     final n = recentEntries.length;
-    
+
     for (int i = 0; i < n; i++) {
       final x = i.toDouble();
       final y = recentEntries[i].score.toDouble();
-      
+
       sumX += x;
       sumY += y;
       sumXY += x * y;
       sumXX += x * x;
     }
-    
+
     final slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
-    
+
     // Determine trend based on slope
     if (slope > 0.1) return MoodTrend.improving;
     if (slope < -0.1) return MoodTrend.declining;
     return MoodTrend.stable;
   }
-  
+
   /// Export mood data
   String exportMoodData({
     DateTime? startDate,
@@ -315,12 +331,12 @@ class MoodService {
       endDate: endDate,
     );
   }
-  
+
   /// Import mood data
   Future<int> importMoodData(String jsonData) async {
     return await _repository.importFromJson(jsonData);
   }
-  
+
   /// Initialize the service
   Future<void> initialize() async {
     await _repository.loadFromStorage();
@@ -338,7 +354,7 @@ class MoodStatistics {
   final Map<int, int> scoreDistribution;
   final MoodTrend trend;
   final DateRange dateRange;
-  
+
   const MoodStatistics({
     required this.totalEntries,
     required this.averageScore,
@@ -350,7 +366,7 @@ class MoodStatistics {
     required this.trend,
     required this.dateRange,
   });
-  
+
   factory MoodStatistics.empty() {
     return const MoodStatistics(
       totalEntries: 0,
@@ -370,7 +386,7 @@ class MoodStatistics {
 class DateRange {
   final DateTime? start;
   final DateTime? end;
-  
+
   const DateRange(this.start, this.end);
 }
 
@@ -384,7 +400,7 @@ class MoodInsight {
   final String? emotion;
   final int? count;
   final MoodTrend? trend;
-  
+
   const MoodInsight({
     required this.type,
     required this.title,
@@ -419,9 +435,9 @@ enum MoodTrend {
 class TimeOfDay {
   final int hour;
   final int minute;
-  
+
   const TimeOfDay({required this.hour, required this.minute});
-  
+
   @override
   String toString() {
     final hourStr = hour.toString().padLeft(2, '0');

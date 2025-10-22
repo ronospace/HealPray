@@ -12,13 +12,15 @@ class EnhancedMoodEntryScreen extends ConsumerStatefulWidget {
   const EnhancedMoodEntryScreen({super.key});
 
   @override
-  ConsumerState<EnhancedMoodEntryScreen> createState() => _EnhancedMoodEntryScreenState();
+  ConsumerState<EnhancedMoodEntryScreen> createState() =>
+      _EnhancedMoodEntryScreenState();
 }
 
-class _EnhancedMoodEntryScreenState extends ConsumerState<EnhancedMoodEntryScreen> {
+class _EnhancedMoodEntryScreenState
+    extends ConsumerState<EnhancedMoodEntryScreen> {
   final _uuid = const Uuid();
   final _notesController = TextEditingController();
-  
+
   double _moodScore = 5.0;
   final Set<String> _selectedEmotions = {};
   final Set<String> _selectedTriggers = {};
@@ -108,32 +110,32 @@ class _EnhancedMoodEntryScreenState extends ConsumerState<EnhancedMoodEntryScree
           children: [
             // Mood Score Section
             _buildMoodScoreSection(),
-            
+
             const SizedBox(height: 32),
-            
+
             // Emotions Section
             _buildEmotionsSection(),
-            
+
             const SizedBox(height: 32),
-            
+
             // Triggers Section
             _buildTriggersSection(),
-            
+
             const SizedBox(height: 32),
-            
-            // Activities Section  
+
+            // Activities Section
             _buildActivitiesSection(),
-            
+
             const SizedBox(height: 32),
-            
+
             // Notes Section
             _buildNotesSection(),
-            
+
             const SizedBox(height: 40),
-            
+
             // Save Button
             _buildSaveButton(),
-            
+
             const SizedBox(height: 20),
           ],
         ),
@@ -149,7 +151,7 @@ class _EnhancedMoodEntryScreenState extends ConsumerState<EnhancedMoodEntryScree
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: AppTheme.healingTeal.withOpacity(0.3),
+            color: AppTheme.healingTeal.withValues(alpha: 0.3),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -160,20 +162,20 @@ class _EnhancedMoodEntryScreenState extends ConsumerState<EnhancedMoodEntryScree
           Text(
             'How are you feeling?',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              color: Colors.white,
-              fontWeight: FontWeight.w600,
-            ),
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
             textAlign: TextAlign.center,
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Mood visual indicator
           Container(
             width: 100,
             height: 100,
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withValues(alpha: 0.2),
               shape: BoxShape.circle,
             ),
             child: Center(
@@ -183,26 +185,26 @@ class _EnhancedMoodEntryScreenState extends ConsumerState<EnhancedMoodEntryScree
               ),
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           Text(
             '${_moodScore.round()}/10 - ${_getMoodDescription(_moodScore.round())}',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              color: Colors.white,
-              fontWeight: FontWeight.w500,
-            ),
+                  color: Colors.white,
+                  fontWeight: FontWeight.w500,
+                ),
           ),
-          
+
           const SizedBox(height: 20),
-          
+
           // Mood slider
           SliderTheme(
             data: SliderTheme.of(context).copyWith(
               activeTrackColor: Colors.white,
-              inactiveTrackColor: Colors.white.withOpacity(0.3),
+              inactiveTrackColor: Colors.white.withValues(alpha: 0.3),
               thumbColor: AppTheme.sunriseGold,
-              overlayColor: AppTheme.sunriseGold.withOpacity(0.2),
+              overlayColor: AppTheme.sunriseGold.withValues(alpha: 0.2),
               trackHeight: 4,
             ),
             child: Slider(
@@ -229,18 +231,17 @@ class _EnhancedMoodEntryScreenState extends ConsumerState<EnhancedMoodEntryScree
         Text(
           'What emotions are you experiencing?',
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-            color: AppTheme.textPrimary,
-          ),
+                fontWeight: FontWeight.w600,
+                color: AppTheme.textPrimary,
+              ),
         ),
         const SizedBox(height: 16),
-        
         Wrap(
           spacing: 8,
           runSpacing: 8,
           children: _availableEmotions.map((emotion) {
             final isSelected = _selectedEmotions.contains(emotion['name']);
-            
+
             return GestureDetector(
               onTap: () {
                 setState(() {
@@ -252,22 +253,22 @@ class _EnhancedMoodEntryScreenState extends ConsumerState<EnhancedMoodEntryScree
                 });
               },
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 decoration: BoxDecoration(
-                  color: isSelected 
-                      ? AppTheme.healingTeal.withOpacity(0.2)
+                  color: isSelected
+                      ? AppTheme.healingTeal.withValues(alpha: 0.2)
                       : Colors.white,
                   borderRadius: BorderRadius.circular(24),
                   border: Border.all(
-                    color: isSelected 
-                        ? AppTheme.healingTeal
-                        : Colors.grey[300]!,
+                    color:
+                        isSelected ? AppTheme.healingTeal : Colors.grey[300]!,
                     width: 2,
                   ),
                   boxShadow: [
                     if (!isSelected)
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
+                        color: Colors.black.withValues(alpha: 0.05),
                         blurRadius: 5,
                         offset: const Offset(0, 2),
                       ),
@@ -284,12 +285,11 @@ class _EnhancedMoodEntryScreenState extends ConsumerState<EnhancedMoodEntryScree
                     Text(
                       emotion['name']!,
                       style: TextStyle(
-                        color: isSelected 
+                        color: isSelected
                             ? AppTheme.healingTeal
                             : AppTheme.textPrimary,
-                        fontWeight: isSelected 
-                            ? FontWeight.w600
-                            : FontWeight.w500,
+                        fontWeight:
+                            isSelected ? FontWeight.w600 : FontWeight.w500,
                       ),
                     ),
                   ],
@@ -309,18 +309,17 @@ class _EnhancedMoodEntryScreenState extends ConsumerState<EnhancedMoodEntryScree
         Text(
           'What influenced your mood?',
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-            color: AppTheme.textPrimary,
-          ),
+                fontWeight: FontWeight.w600,
+                color: AppTheme.textPrimary,
+              ),
         ),
         const SizedBox(height: 16),
-        
         Wrap(
           spacing: 8,
           runSpacing: 8,
           children: _commonTriggers.map((trigger) {
             final isSelected = _selectedTriggers.contains(trigger);
-            
+
             return GestureDetector(
               onTap: () {
                 setState(() {
@@ -332,28 +331,26 @@ class _EnhancedMoodEntryScreenState extends ConsumerState<EnhancedMoodEntryScree
                 });
               },
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
-                  color: isSelected 
-                      ? AppTheme.sunriseGold.withOpacity(0.2)
+                  color: isSelected
+                      ? AppTheme.sunriseGold.withValues(alpha: 0.2)
                       : Colors.white,
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                    color: isSelected 
-                        ? AppTheme.sunriseGold
-                        : Colors.grey[300]!,
+                    color:
+                        isSelected ? AppTheme.sunriseGold : Colors.grey[300]!,
                     width: 1,
                   ),
                 ),
                 child: Text(
                   trigger,
                   style: TextStyle(
-                    color: isSelected 
+                    color: isSelected
                         ? AppTheme.sunriseGold
                         : AppTheme.textSecondary,
-                    fontWeight: isSelected 
-                        ? FontWeight.w600
-                        : FontWeight.w400,
+                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
                     fontSize: 13,
                   ),
                 ),
@@ -372,18 +369,17 @@ class _EnhancedMoodEntryScreenState extends ConsumerState<EnhancedMoodEntryScree
         Text(
           'What activities were you doing?',
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-            color: AppTheme.textPrimary,
-          ),
+                fontWeight: FontWeight.w600,
+                color: AppTheme.textPrimary,
+              ),
         ),
         const SizedBox(height: 16),
-        
         Wrap(
           spacing: 8,
           runSpacing: 8,
           children: _commonActivities.map((activity) {
             final isSelected = _selectedActivities.contains(activity);
-            
+
             return GestureDetector(
               onTap: () {
                 setState(() {
@@ -395,28 +391,26 @@ class _EnhancedMoodEntryScreenState extends ConsumerState<EnhancedMoodEntryScree
                 });
               },
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
-                  color: isSelected 
-                      ? AppTheme.midnightBlue.withOpacity(0.1)
+                  color: isSelected
+                      ? AppTheme.midnightBlue.withValues(alpha: 0.1)
                       : Colors.white,
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                    color: isSelected 
-                        ? AppTheme.midnightBlue
-                        : Colors.grey[300]!,
+                    color:
+                        isSelected ? AppTheme.midnightBlue : Colors.grey[300]!,
                     width: 1,
                   ),
                 ),
                 child: Text(
                   activity,
                   style: TextStyle(
-                    color: isSelected 
+                    color: isSelected
                         ? AppTheme.midnightBlue
                         : AppTheme.textSecondary,
-                    fontWeight: isSelected 
-                        ? FontWeight.w600
-                        : FontWeight.w400,
+                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
                     fontSize: 13,
                   ),
                 ),
@@ -435,19 +429,18 @@ class _EnhancedMoodEntryScreenState extends ConsumerState<EnhancedMoodEntryScree
         Text(
           'Additional notes (optional)',
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-            color: AppTheme.textPrimary,
-          ),
+                fontWeight: FontWeight.w600,
+                color: AppTheme.textPrimary,
+              ),
         ),
         const SizedBox(height: 12),
-        
         Container(
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withValues(alpha: 0.05),
                 blurRadius: 10,
                 offset: const Offset(0, 2),
               ),
@@ -486,7 +479,7 @@ class _EnhancedMoodEntryScreenState extends ConsumerState<EnhancedMoodEntryScree
           backgroundColor: AppTheme.healingTeal,
           foregroundColor: Colors.white,
           elevation: 8,
-          shadowColor: AppTheme.healingTeal.withOpacity(0.3),
+          shadowColor: AppTheme.healingTeal.withValues(alpha: 0.3),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -494,9 +487,9 @@ class _EnhancedMoodEntryScreenState extends ConsumerState<EnhancedMoodEntryScree
         child: Text(
           'Save Mood Entry',
           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-            color: Colors.white,
-            fontWeight: FontWeight.w600,
-          ),
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+              ),
         ),
       ),
     );
@@ -518,7 +511,7 @@ class _EnhancedMoodEntryScreenState extends ConsumerState<EnhancedMoodEntryScree
     try {
       // Save to mood service
       await MoodService.instance.saveMoodEntry(moodEntry);
-      
+
       // Show success message
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -548,33 +541,55 @@ class _EnhancedMoodEntryScreenState extends ConsumerState<EnhancedMoodEntryScree
 
   String _getMoodEmoji(int mood) {
     switch (mood) {
-      case 1: return '😢';
-      case 2: return '😞';
-      case 3: return '😕';
-      case 4: return '😐';
-      case 5: return '🙂';
-      case 6: return '😊';
-      case 7: return '😄';
-      case 8: return '😁';
-      case 9: return '🤗';
-      case 10: return '🥳';
-      default: return '🙂';
+      case 1:
+        return '😢';
+      case 2:
+        return '😞';
+      case 3:
+        return '😕';
+      case 4:
+        return '😐';
+      case 5:
+        return '🙂';
+      case 6:
+        return '😊';
+      case 7:
+        return '😄';
+      case 8:
+        return '😁';
+      case 9:
+        return '🤗';
+      case 10:
+        return '🥳';
+      default:
+        return '🙂';
     }
   }
 
   String _getMoodDescription(int mood) {
     switch (mood) {
-      case 1: return 'Very Low';
-      case 2: return 'Low';
-      case 3: return 'Below Average';
-      case 4: return 'Slightly Low';
-      case 5: return 'Neutral';
-      case 6: return 'Good';
-      case 7: return 'Very Good';
-      case 8: return 'Great';
-      case 9: return 'Excellent';
-      case 10: return 'Amazing';
-      default: return 'Neutral';
+      case 1:
+        return 'Very Low';
+      case 2:
+        return 'Low';
+      case 3:
+        return 'Below Average';
+      case 4:
+        return 'Slightly Low';
+      case 5:
+        return 'Neutral';
+      case 6:
+        return 'Good';
+      case 7:
+        return 'Very Good';
+      case 8:
+        return 'Great';
+      case 9:
+        return 'Excellent';
+      case 10:
+        return 'Amazing';
+      default:
+        return 'Neutral';
     }
   }
 }

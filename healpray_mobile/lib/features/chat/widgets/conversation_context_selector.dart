@@ -21,7 +21,7 @@ class ConversationContextSelector extends StatelessWidget {
       decoration: const BoxDecoration(
         color: Colors.white,
         border: Border(
-          bottom: BorderSide(color: AppTheme.borderColor, width: 1),
+          bottom: BorderSide(color: AppTheme.lightGray, width: 1),
         ),
       ),
       child: Column(
@@ -42,20 +42,20 @@ class ConversationContextSelector extends StatelessWidget {
             children: ChatContext.values.map((context) {
               final isSelected = context == currentContext;
               final contextInfo = _getContextInfo(context);
-              
+
               return GestureDetector(
                 onTap: () => onContextChanged(context),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   decoration: BoxDecoration(
-                    color: isSelected 
+                    color: isSelected
                         ? AppTheme.healingTeal
-                        : contextInfo.color.withOpacity(0.1),
+                        : contextInfo.color.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: isSelected 
-                          ? AppTheme.healingTeal
-                          : contextInfo.color,
+                      color:
+                          isSelected ? AppTheme.healingTeal : contextInfo.color,
                       width: 1.5,
                     ),
                   ),
@@ -65,17 +65,13 @@ class ConversationContextSelector extends StatelessWidget {
                       Icon(
                         contextInfo.icon,
                         size: 18,
-                        color: isSelected 
-                            ? Colors.white
-                            : contextInfo.color,
+                        color: isSelected ? Colors.white : contextInfo.color,
                       ),
                       const SizedBox(width: 8),
                       Text(
                         contextInfo.label,
                         style: TextStyle(
-                          color: isSelected 
-                              ? Colors.white
-                              : contextInfo.color,
+                          color: isSelected ? Colors.white : contextInfo.color,
                           fontWeight: FontWeight.w600,
                           fontSize: 14,
                         ),
@@ -110,7 +106,7 @@ class ConversationContextSelector extends StatelessWidget {
         );
       case ChatContext.prayer:
         return ContextInfo(
-          icon: Icons.prayer_times,
+          icon: Icons.accessibility_new,
           label: 'Prayer',
           color: AppTheme.calmBlue,
         );

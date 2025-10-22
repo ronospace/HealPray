@@ -1,6 +1,5 @@
 import 'package:hive/hive.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:json_annotation/json_annotation.dart';
 
 part 'chat_message.freezed.dart';
 part 'chat_message.g.dart';
@@ -10,13 +9,13 @@ part 'chat_message.g.dart';
 enum MessageType {
   @HiveField(0)
   user,
-  
+
   @HiveField(1)
   ai,
-  
+
   @HiveField(2)
   system,
-  
+
   @HiveField(3)
   suggestion,
 }
@@ -26,22 +25,22 @@ enum MessageType {
 enum ChatContext {
   @HiveField(0)
   general,
-  
+
   @HiveField(1)
   spiritual,
-  
+
   @HiveField(2)
   prayer,
-  
+
   @HiveField(3)
   mood,
-  
+
   @HiveField(4)
   crisis,
-  
+
   @HiveField(5)
   meditation,
-  
+
   @HiveField(6)
   guidance,
 }
@@ -121,28 +120,23 @@ class SpiritualGuidancePrompts {
 You are a compassionate spiritual companion providing guidance rooted in love, wisdom, and understanding. 
 Offer supportive advice that helps the user grow spiritually while respecting their beliefs and journey.
 ''',
-    
     ChatContext.prayer: '''
 You are a prayer companion helping users connect with the divine through meaningful prayer. 
 Provide guidance on prayer practices, suggest relevant prayers, and help deepen their spiritual connection.
 ''',
-    
     ChatContext.mood: '''
 You are an empathetic spiritual counselor helping users process their emotions through a spiritual lens. 
 Offer comfort, biblical wisdom, and spiritual practices that can help improve their emotional well-being.
 ''',
-    
     ChatContext.crisis: '''
 You are a crisis spiritual counselor providing immediate comfort and guidance during difficult times. 
 Offer hope, spiritual strength, and practical steps while encouraging professional help when needed.
 IMPORTANT: If someone expresses thoughts of self-harm, encourage them to seek immediate professional help.
 ''',
-    
     ChatContext.meditation: '''
 You are a meditation guide helping users find peace and connection with the divine through contemplative practices.
 Offer guided meditations, breathing exercises, and spiritual reflection techniques.
 ''',
-    
     ChatContext.guidance: '''
 You are a wise spiritual mentor providing life guidance through spiritual principles and wisdom.
 Help users make decisions aligned with their values and spiritual beliefs.
@@ -150,13 +144,15 @@ Help users make decisions aligned with their values and spiritual beliefs.
   };
 
   /// Get system prompt based on context and user's mood
-  static String getSystemPrompt(ChatContext context, {Map<String, dynamic>? moodData}) {
-    String basePrompt = contextPrompts[context] ?? contextPrompts[ChatContext.general]!;
-    
+  static String getSystemPrompt(ChatContext context,
+      {Map<String, dynamic>? moodData}) {
+    String basePrompt =
+        contextPrompts[context] ?? contextPrompts[ChatContext.general]!;
+
     if (moodData != null) {
       final moodScore = moodData['score'] as int? ?? 5;
       final emotions = moodData['emotions'] as List? ?? [];
-      
+
       String moodContext = '''
       
 CURRENT USER MOOD CONTEXT:
@@ -165,7 +161,7 @@ CURRENT USER MOOD CONTEXT:
 
 Please be especially sensitive to their current emotional state and provide appropriate spiritual support.
 ''';
-      
+
       if (moodScore <= 3) {
         moodContext += '''
 The user is experiencing low mood. Offer extra compassion, hope, and gentle encouragement.
@@ -177,10 +173,10 @@ The user is in a positive mood. Help them maintain this joy and perhaps explore 
 Encourage them to use this positive energy for spiritual growth and helping others.
 ''';
       }
-      
+
       basePrompt += moodContext;
     }
-    
+
     return basePrompt;
   }
 }
@@ -193,25 +189,21 @@ class QuickSpiritualResponses {
       'Blessings! I\'m here to listen and offer spiritual guidance. What\'s on your heart?',
       'Welcome, dear soul. How may I help you find peace and spiritual clarity today?',
     ],
-    
     'anxiety': [
       'I understand you\'re feeling anxious. Let\'s breathe together and remember that you are held in divine love.',
       'Anxiety can feel overwhelming, but remember: "Cast all your anxiety on Him because He cares for you." You\'re not alone.',
       'Your worries are valid. Let\'s find some peace together through prayer and spiritual grounding.',
     ],
-    
     'gratitude': [
       'What a beautiful heart of gratitude you have! Gratitude truly transforms our spiritual perspective.',
       'I\'m so glad you\'re experiencing joy and thankfulness. These moments of gratitude are sacred gifts.',
       'Your grateful spirit is inspiring! How wonderful to witness the blessings in your life.',
     ],
-    
     'doubt': [
       'Spiritual doubt is often part of a deeper journey toward faith. Your questions are valid and important.',
       'Even in uncertainty, you are beloved and held. Doubt can sometimes be the pathway to deeper understanding.',
       'It\'s okay to question and seek. Many spiritual seekers have walked this path of uncertainty before finding clarity.',
     ],
-    
     'prayer_request': [
       'I would be honored to pray with you. What is weighing on your heart that we can bring to the divine?',
       'Prayer is a powerful way to connect with the sacred. Tell me what you\'d like to pray about.',

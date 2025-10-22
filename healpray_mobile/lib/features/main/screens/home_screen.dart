@@ -3,6 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/animated_gradient_background.dart';
+import '../../../core/widgets/glass_card.dart';
+import '../../../core/widgets/gradient_text.dart';
 import '../../../shared/providers/auth_provider.dart';
 import '../widgets/spiritual_quote_card.dart';
 import '../widgets/daily_streak_card.dart';
@@ -18,48 +21,52 @@ class HomeScreen extends ConsumerWidget {
     final user = ref.watch(currentUserProvider);
 
     return Scaffold(
-      body: SafeArea(
-        child: RefreshIndicator(
-          onRefresh: () async {
-            // TODO: Refresh user data
-            await Future.delayed(const Duration(seconds: 1));
-          },
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(20),
-            child: Column(
+      body: AnimatedGradientBackground(
+        child: SafeArea(
+          child: RefreshIndicator(
+            onRefresh: () async {
+              // TODO: Refresh user data
+              await Future.delayed(const Duration(seconds: 1));
+            },
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(20),
+              child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Header
                 _buildHeader(context, user?.displayName),
-                
+
                 const SizedBox(height: 24),
-                
+
                 // Daily quote
                 const SpiritualQuoteCard(),
-                
+
                 const SizedBox(height: 20),
-                
+
                 // Stats row
                 Row(
                   children: [
-                    Expanded(child: DailyStreakCard(streak: user?.analytics.currentStreak ?? 0)),
+                    Expanded(
+                        child: DailyStreakCard(
+                            streak: user?.analytics.currentStreak ?? 0)),
                     const SizedBox(width: 12),
                     const Expanded(child: MoodSummaryCard()),
                   ],
                 ),
-                
+
                 const SizedBox(height: 24),
-                
+
                 // Quick actions
                 _buildQuickActions(context),
-                
+
                 const SizedBox(height: 24),
-                
+
                 // Recent activities
                 _buildRecentActivities(context),
-                
+
                 const SizedBox(height: 20),
               ],
+            ),
             ),
           ),
         ),
@@ -70,7 +77,7 @@ class HomeScreen extends ConsumerWidget {
   Widget _buildHeader(BuildContext context, String? displayName) {
     final hour = DateTime.now().hour;
     String greeting = 'Good morning';
-    
+
     if (hour >= 12 && hour < 17) {
       greeting = 'Good afternoon';
     } else if (hour >= 17) {
@@ -84,23 +91,28 @@ class HomeScreen extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                greeting,
+                '$greeting,',
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: Colors.grey[600],
-                ),
+                      color: Colors.white.withOpacity(0.9),
+                      fontWeight: FontWeight.w500,
+                    ),
               ),
               const SizedBox(height: 4),
-              Text(
+              AnimatedGradientText(
                 displayName ?? 'Friend',
+                colors: const [
+                  Colors.white,
+                  Color(0xFFFFE5E5),
+                  Colors.white,
+                ],
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: AppTheme.midnightBlue,
-                ),
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
             ],
           ),
         ),
-        
+
         // Profile/notifications
         Row(
           children: [
@@ -131,16 +143,14 @@ class HomeScreen extends ConsumerWidget {
                 ],
               ),
             ),
-            
             const SizedBox(width: 8),
-            
             GestureDetector(
               onTap: () => context.push('/settings'),
               child: CircleAvatar(
                 radius: 20,
-                backgroundColor: AppTheme.healingTeal.withOpacity(0.2),
+                backgroundColor: AppTheme.healingTeal.withValues(alpha: 0.2),
                 child: Text(
-                  displayName?.isNotEmpty == true 
+                  displayName?.isNotEmpty == true
                       ? displayName![0].toUpperCase()
                       : '👤',
                   style: const TextStyle(
@@ -163,13 +173,11 @@ class HomeScreen extends ConsumerWidget {
         Text(
           'Quick Actions',
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.w600,
-            color: AppTheme.midnightBlue,
-          ),
+                fontWeight: FontWeight.w600,
+                color: AppTheme.midnightBlue,
+              ),
         ),
-        
         const SizedBox(height: 16),
-        
         Row(
           children: [
             Expanded(
@@ -180,9 +188,7 @@ class HomeScreen extends ConsumerWidget {
                 onTap: () => context.push('/prayer'),
               ),
             ),
-            
             const SizedBox(width: 12),
-            
             Expanded(
               child: QuickActionCard(
                 icon: Icons.favorite,
@@ -193,9 +199,7 @@ class HomeScreen extends ConsumerWidget {
             ),
           ],
         ),
-        
         const SizedBox(height: 12),
-        
         Row(
           children: [
             Expanded(
@@ -206,9 +210,7 @@ class HomeScreen extends ConsumerWidget {
                 onTap: () => context.push('/chat'),
               ),
             ),
-            
             const SizedBox(width: 12),
-            
             Expanded(
               child: QuickActionCard(
                 icon: Icons.analytics,
@@ -233,9 +235,9 @@ class HomeScreen extends ConsumerWidget {
             Text(
               'Recent Activities',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: AppTheme.midnightBlue,
-              ),
+                    fontWeight: FontWeight.w600,
+                    color: AppTheme.midnightBlue,
+                  ),
             ),
             TextButton(
               onPressed: () => context.push('/analytics'),
@@ -243,9 +245,9 @@ class HomeScreen extends ConsumerWidget {
             ),
           ],
         ),
-        
+
         const SizedBox(height: 16),
-        
+
         // Recent activities list
         _buildActivityItem(
           context,
@@ -254,7 +256,7 @@ class HomeScreen extends ConsumerWidget {
           '2 hours ago',
           AppTheme.healingTeal,
         ),
-        
+
         _buildActivityItem(
           context,
           Icons.favorite,
@@ -262,7 +264,7 @@ class HomeScreen extends ConsumerWidget {
           '5 hours ago',
           AppTheme.sunriseGold,
         ),
-        
+
         _buildActivityItem(
           context,
           Icons.chat_bubble,
@@ -285,10 +287,10 @@ class HomeScreen extends ConsumerWidget {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.05),
+        color: color.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: color.withOpacity(0.1),
+          color: color.withValues(alpha: 0.1),
           width: 1,
         ),
       ),
@@ -298,7 +300,7 @@ class HomeScreen extends ConsumerWidget {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
+              color: color.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Icon(
@@ -307,9 +309,7 @@ class HomeScreen extends ConsumerWidget {
               size: 20,
             ),
           ),
-          
           const SizedBox(width: 16),
-          
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -317,21 +317,20 @@ class HomeScreen extends ConsumerWidget {
                 Text(
                   title,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w500,
-                    color: AppTheme.midnightBlue,
-                  ),
+                        fontWeight: FontWeight.w500,
+                        color: AppTheme.midnightBlue,
+                      ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   time,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.grey[600],
-                  ),
+                        color: Colors.grey[600],
+                      ),
                 ),
               ],
             ),
           ),
-          
           Icon(
             Icons.arrow_forward_ios,
             color: Colors.grey[400],
