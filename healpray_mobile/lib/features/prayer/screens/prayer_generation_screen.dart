@@ -3,6 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/animated_gradient_background.dart';
+import '../../../core/widgets/enhanced_glass_card.dart';
+import '../../../core/widgets/gradient_text.dart';
 import '../../../shared/models/prayer.dart';
 import '../services/prayer_service.dart';
 import '../widgets/prayer_category_selector.dart';
@@ -38,13 +41,15 @@ class _PrayerGenerationScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.lightBackground,
       appBar: AppBar(
-        title: const Text(
+        title: const GradientText(
           'Generate Prayer',
+          gradient: LinearGradient(
+            colors: [Colors.white, Color(0xFFE5F0FF)],
+          ),
           style: TextStyle(
             fontWeight: FontWeight.w600,
-            color: AppTheme.textPrimary,
+            fontSize: 20,
           ),
         ),
         backgroundColor: Colors.transparent,
@@ -53,7 +58,7 @@ class _PrayerGenerationScreenState
           onPressed: () => context.pop(),
           icon: const Icon(
             Icons.arrow_back_ios,
-            color: AppTheme.textPrimary,
+            color: Colors.white,
           ),
         ),
         actions: [
@@ -62,7 +67,7 @@ class _PrayerGenerationScreenState
               onPressed: _savePrayer,
               icon: const Icon(
                 Icons.bookmark_outline,
-                color: AppTheme.textPrimary,
+                color: Colors.white,
               ),
               tooltip: 'Save Prayer',
             ),
@@ -71,16 +76,18 @@ class _PrayerGenerationScreenState
               onPressed: _sharePrayer,
               icon: const Icon(
                 Icons.share,
-                color: AppTheme.textPrimary,
+                color: Colors.white,
               ),
               tooltip: 'Share Prayer',
             ),
         ],
       ),
-      body: SafeArea(
-        child: _generatedPrayer == null
-            ? _buildGenerationInterface()
-            : _buildPrayerDisplay(),
+      body: AnimatedGradientBackground(
+        child: SafeArea(
+          child: _generatedPrayer == null
+              ? _buildGenerationInterface()
+              : _buildPrayerDisplay(),
+        ),
       ),
     );
   }
@@ -92,19 +99,9 @@ class _PrayerGenerationScreenState
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Header
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              gradient: AppTheme.morningGradient,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: AppTheme.healingTeal.withValues(alpha: 0.3),
-                  blurRadius: 20,
-                  offset: const Offset(0, 10),
-                ),
-              ],
-            ),
+          EnhancedGlassCard(
+            borderRadius: 20,
+            enableShimmer: true,
             child: Column(
               children: [
                 const Icon(
@@ -140,7 +137,7 @@ class _PrayerGenerationScreenState
             'Prayer Category',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: AppTheme.textPrimary,
+                  color: Colors.white,
                 ),
           ),
           const SizedBox(height: 12),
@@ -160,30 +157,23 @@ class _PrayerGenerationScreenState
             'Personal Intention (Optional)',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: AppTheme.textPrimary,
+                  color: Colors.white,
                 ),
           ),
           const SizedBox(height: 12),
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
+          EnhancedGlassCard(
+            padding: EdgeInsets.zero,
+            borderRadius: 12,
+            enableShimmer: false,
             child: TextField(
               controller: _intentionController,
               maxLines: 3,
+              style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
                 hintText:
                     'Share what\'s on your heart or specific prayers needs...',
                 hintStyle: TextStyle(
-                  color: Colors.grey[600],
+                  color: Colors.white.withOpacity(0.6),
                 ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
