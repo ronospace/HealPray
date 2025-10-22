@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/enhanced_glass_card.dart';
 
 /// Daily streak tracking card
 class DailyStreakCard extends StatelessWidget {
@@ -12,24 +13,10 @@ class DailyStreakCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return EnhancedGlassCard(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            spreadRadius: 0,
-            offset: const Offset(0, 2),
-          ),
-        ],
-        border: Border.all(
-          color: AppTheme.sunriseGold.withValues(alpha: 0.2),
-          width: 1,
-        ),
-      ),
+      borderRadius: 16,
+      enableShimmer: true,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -39,19 +26,19 @@ class DailyStreakCard extends StatelessWidget {
                 width: 32,
                 height: 32,
                 decoration: BoxDecoration(
-                  color: AppTheme.sunriseGold.withValues(alpha: 0.1),
+                  color: Colors.white.withOpacity(0.3),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: const Icon(
                   Icons.local_fire_department,
-                  color: AppTheme.sunriseGold,
+                  color: Colors.white,
                   size: 18,
                 ),
               ),
               const Spacer(),
               Icon(
                 Icons.trending_up,
-                color: Colors.grey[400],
+                color: Colors.white.withOpacity(0.7),
                 size: 16,
               ),
             ],
@@ -61,7 +48,7 @@ class DailyStreakCard extends StatelessWidget {
             '$streak',
             style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: AppTheme.sunriseGold,
+                  color: Colors.white,
                   fontSize: 32,
                 ),
           ),
@@ -69,7 +56,7 @@ class DailyStreakCard extends StatelessWidget {
           Text(
             'Day Streak',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.grey[600],
+                  color: Colors.white.withOpacity(0.8),
                   fontWeight: FontWeight.w500,
                 ),
           ),

@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/animated_gradient_background.dart';
-import '../../../core/widgets/glass_card.dart';
+import '../../../core/widgets/enhanced_glass_card.dart';
 import '../../../core/widgets/gradient_text.dart';
 import '../../../shared/providers/auth_provider.dart';
 import '../widgets/spiritual_quote_card.dart';
@@ -174,7 +174,7 @@ class HomeScreen extends ConsumerWidget {
           'Quick Actions',
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.w600,
-                color: AppTheme.midnightBlue,
+                color: Colors.white,
               ),
         ),
         const SizedBox(height: 16),
@@ -236,11 +236,14 @@ class HomeScreen extends ConsumerWidget {
               'Recent Activities',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.w600,
-                    color: AppTheme.midnightBlue,
+                    color: Colors.white,
                   ),
             ),
             TextButton(
               onPressed: () => context.push('/analytics'),
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.white,
+              ),
               child: const Text('View All'),
             ),
           ],
@@ -283,29 +286,23 @@ class HomeScreen extends ConsumerWidget {
     String time,
     Color color,
   ) {
-    return Container(
+    return EnhancedGlassCard(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: color.withValues(alpha: 0.1),
-          width: 1,
-        ),
-      ),
+      borderRadius: 12,
+      enableShimmer: false,
       child: Row(
         children: [
           Container(
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.1),
+              color: Colors.white.withOpacity(0.3),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Icon(
               icon,
-              color: color,
+              color: Colors.white,
               size: 20,
             ),
           ),
@@ -318,14 +315,14 @@ class HomeScreen extends ConsumerWidget {
                   title,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.w500,
-                        color: AppTheme.midnightBlue,
+                        color: Colors.white,
                       ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   time,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.grey[600],
+                        color: Colors.white.withOpacity(0.7),
                       ),
                 ),
               ],
@@ -333,7 +330,7 @@ class HomeScreen extends ConsumerWidget {
           ),
           Icon(
             Icons.arrow_forward_ios,
-            color: Colors.grey[400],
+            color: Colors.white.withOpacity(0.6),
             size: 14,
           ),
         ],

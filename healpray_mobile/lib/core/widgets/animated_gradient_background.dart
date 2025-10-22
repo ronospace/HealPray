@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'floating_particles.dart';
 
 /// Flow AI-style animated gradient background
 /// Smooth transitions between colors based on time and context
@@ -8,11 +9,13 @@ class AnimatedGradientBackground extends StatefulWidget {
     required this.child,
     this.gradientColors,
     this.animationDuration = const Duration(seconds: 3),
+    this.enableParticles = true,
   });
 
   final Widget child;
   final List<Color>? gradientColors;
   final Duration animationDuration;
+  final bool enableParticles;
 
   @override
   State<AnimatedGradientBackground> createState() =>
@@ -64,7 +67,20 @@ class _AnimatedGradientBackgroundState
               ],
             ),
           ),
-          child: widget.child,
+          child: Stack(
+            children: [
+              // Floating particles layer
+              if (widget.enableParticles)
+                const Positioned.fill(
+                  child: FloatingParticles(
+                    numberOfParticles: 30,
+                    colors: [Colors.white, Color(0xFFE5F0FF)],
+                  ),
+                ),
+              // Content
+              widget.child,
+            ],
+          ),
         );
       },
     );

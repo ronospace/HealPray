@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/enhanced_glass_card.dart';
 
 /// Spiritual quote card for daily inspiration
 class SpiritualQuoteCard extends StatelessWidget {
@@ -48,21 +49,11 @@ class SpiritualQuoteCard extends StatelessWidget {
         DateTime.now().difference(DateTime(DateTime.now().year)).inDays;
     final quote = _quotes[dayOfYear % _quotes.length];
 
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: AppTheme.morningGradient,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: AppTheme.healingTeal.withValues(alpha: 0.3),
-            blurRadius: 20,
-            spreadRadius: 0,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      ),
+    return EnhancedGlassCard(
+      enableShimmer: true,
+      borderRadius: 20,
+      blur: 20,
+      opacity: 0.2,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
