@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../config/admob_config.dart';
-import '../utils/logger.dart';
+import '../utils/logger.dart' as app_logger;
 import 'enhanced_glass_card.dart';
 
 /// AdMob banner widget with Flow AI design integration
@@ -39,10 +39,10 @@ class _AdMobBannerState extends State<AdMobBanner> {
           setState(() {
             _isLoaded = true;
           });
-          Logger.info('📢 Banner ad loaded');
+          app_logger.AppLogger.info('📢 Banner ad loaded');
         },
         onAdFailedToLoad: (ad, error) {
-          Logger.error('❌ Banner ad failed to load: $error');
+          app_logger.AppLogger.error('❌ Banner ad failed to load: $error');
           ad.dispose();
         },
       ),

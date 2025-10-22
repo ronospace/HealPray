@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../config/admob_config.dart';
-import '../utils/logger.dart';
+import '../utils/logger.dart' as app_logger;
 
 /// AdMob service for managing ads throughout the app
 class AdMobService {
@@ -31,9 +31,9 @@ class AdMobService {
       }
 
       _isInitialized = true;
-      Logger.info('✅ AdMob initialized successfully');
+      app_logger.AppLogger.info('✅ AdMob initialized successfully');
     } catch (e) {
-      Logger.error('❌ Failed to initialize AdMob: $e');
+      app_logger.AppLogger.error('❌ Failed to initialize AdMob: $e');
     }
   }
 
@@ -47,10 +47,10 @@ class AdMobService {
       adLoadCallback: InterstitialAdLoadCallback(
         onAdLoaded: (ad) {
           _interstitialAd = ad;
-          Logger.info('📢 Interstitial ad loaded');
+          app_logger.AppLogger.info('📢 Interstitial ad loaded');
         },
         onAdFailedToLoad: (error) {
-          Logger.error('❌ Interstitial ad failed to load: $error');
+          app_logger.AppLogger.error('❌ Interstitial ad failed to load: $error');
         },
       ),
     );
@@ -59,7 +59,7 @@ class AdMobService {
   /// Show interstitial ad
   Future<void> showInterstitialAd() async {
     if (_interstitialAd == null) {
-      Logger.warning('⚠️ Interstitial ad not ready');
+      app_logger.AppLogger.warning('⚠️ Interstitial ad not ready');
       await loadInterstitialAd();
       return;
     }
@@ -71,7 +71,7 @@ class AdMobService {
         loadInterstitialAd(); // Preload next ad
       },
       onAdFailedToShowFullScreenContent: (ad, error) {
-        Logger.error('❌ Interstitial ad failed to show: $error');
+        app_logger.AppLogger.error('❌ Interstitial ad failed to show: $error');
         ad.dispose();
         _interstitialAd = null;
       },
@@ -90,10 +90,10 @@ class AdMobService {
       rewardedAdLoadCallback: RewardedAdLoadCallback(
         onAdLoaded: (ad) {
           _rewardedAd = ad;
-          Logger.info('🎁 Rewarded ad loaded');
+          app_logger.AppLogger.info('🎁 Rewarded ad loaded');
         },
         onAdFailedToLoad: (error) {
-          Logger.error('❌ Rewarded ad failed to load: $error');
+          app_logger.AppLogger.error('❌ Rewarded ad failed to load: $error');
         },
       ),
     );
@@ -105,7 +105,7 @@ class AdMobService {
     VoidCallback? onAdDismissed,
   }) async {
     if (_rewardedAd == null) {
-      Logger.warning('⚠️ Rewarded ad not ready');
+      app_logger.AppLogger.warning('⚠️ Rewarded ad not ready');
       await loadRewardedAd();
       return;
     }
@@ -118,7 +118,7 @@ class AdMobService {
         loadRewardedAd(); // Preload next ad
       },
       onAdFailedToShowFullScreenContent: (ad, error) {
-        Logger.error('❌ Rewarded ad failed to show: $error');
+        app_logger.AppLogger.error('❌ Rewarded ad failed to show: $error');
         ad.dispose();
         _rewardedAd = null;
       },
@@ -141,20 +141,19 @@ class AdMobService {
       adLoadCallback: AppOpenAdLoadCallback(
         onAdLoaded: (ad) {
           _appOpenAd = ad;
-          Logger.info('🚀 App open ad loaded');
+          app_logger.AppLogger.info('🚀 App open ad loaded');
         },
         onAdFailedToLoad: (error) {
-          Logger.error('❌ App open ad failed to load: $error');
+          app_logger.AppLogger.error('❌ App open ad failed to load: $error');
         },
       ),
-      orientation: AppOpenAd.orientationPortrait,
     );
   }
 
   /// Show app open ad
   Future<void> showAppOpenAd() async {
     if (_appOpenAd == null) {
-      Logger.warning('⚠️ App open ad not ready');
+      app_logger.AppLogger.warning('⚠️ App open ad not ready');
       return;
     }
 
@@ -165,7 +164,7 @@ class AdMobService {
         loadAppOpenAd(); // Preload next ad
       },
       onAdFailedToShowFullScreenContent: (ad, error) {
-        Logger.error('❌ App open ad failed to show: $error');
+        app_logger.AppLogger.error('❌ App open ad failed to show: $error');
         ad.dispose();
         _appOpenAd = null;
       },
