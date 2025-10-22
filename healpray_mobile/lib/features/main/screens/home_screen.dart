@@ -124,7 +124,7 @@ class HomeScreen extends ConsumerWidget {
                 children: [
                   Icon(
                     Icons.notifications_outlined,
-                    color: Colors.grey[600],
+                    color: Colors.white.withOpacity(0.9),
                     size: 24,
                   ),
                   // Notification badge
@@ -134,9 +134,13 @@ class HomeScreen extends ConsumerWidget {
                     child: Container(
                       width: 8,
                       height: 8,
-                      decoration: const BoxDecoration(
-                        color: AppTheme.sunriseNova,
+                      decoration: BoxDecoration(
+                        color: Colors.red.shade400,
                         shape: BoxShape.circle,
+                        border: Border.all(
+                          color: Colors.white,
+                          width: 1.5,
+                        ),
                       ),
                     ),
                   ),
@@ -146,16 +150,34 @@ class HomeScreen extends ConsumerWidget {
             const SizedBox(width: 8),
             GestureDetector(
               onTap: () => context.push('/settings'),
-              child: CircleAvatar(
-                radius: 20,
-                backgroundColor: AppTheme.healingTeal.withValues(alpha: 0.2),
-                child: Text(
-                  displayName?.isNotEmpty == true
-                      ? displayName![0].toUpperCase()
-                      : '👤',
-                  style: const TextStyle(
-                    color: AppTheme.healingTeal,
-                    fontWeight: FontWeight.w600,
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.white.withOpacity(0.3),
+                      Colors.white.withOpacity(0.15),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  border: Border.all(
+                    color: Colors.white.withOpacity(0.5),
+                    width: 2,
+                  ),
+                ),
+                child: Center(
+                  child: Text(
+                    displayName?.isNotEmpty == true
+                        ? displayName![0].toUpperCase()
+                        : '👤',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                    ),
                   ),
                 ),
               ),
