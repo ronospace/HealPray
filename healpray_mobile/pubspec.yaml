@@ -109,6 +109,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   dynamic_color: ^1.6.8
+  google_mobile_ads: ^6.0.0
 
 dev_dependencies:
   flutter_test:

@@ -6,6 +6,7 @@ import 'core/utils/logger.dart';
 import 'core/services/advanced_analytics_service.dart';
 import 'core/services/ab_test_service.dart';
 import 'core/services/user_feedback_service.dart';
+import 'core/services/admob_service.dart';
 import 'app.dart';
 
 void main() async {
@@ -28,6 +29,10 @@ Future<void> _initializeApp() async {
     // Initialize app configuration
     await AppConfig.initialize();
     AppLogger.info('✅ App configuration loaded');
+    
+    // Initialize AdMob
+    await AdMobService().initialize();
+    AppLogger.info('✅ AdMob initialized');
     
     // Initialize analytics services
     await _initializeAnalyticsServices();

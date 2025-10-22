@@ -6,6 +6,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/animated_gradient_background.dart';
 import '../../../core/widgets/enhanced_glass_card.dart';
 import '../../../core/widgets/gradient_text.dart';
+import '../../../core/widgets/admob_banner.dart';
 import '../../../shared/providers/auth_provider.dart';
 import '../widgets/spiritual_quote_card.dart';
 import '../widgets/daily_streak_card.dart';
@@ -64,6 +65,11 @@ class HomeScreen extends ConsumerWidget {
                 // Recent activities
                 _buildRecentActivities(context),
 
+                const SizedBox(height: 20),
+                
+                // AdMob Banner
+                const AdMobBanner(),
+                
                 const SizedBox(height: 20),
               ],
             ),
