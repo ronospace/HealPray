@@ -155,11 +155,8 @@ class DailyInspirationCard extends StatelessWidget {
                     ),
                   ],
                 ),
-              ],
-            ),
+            ],
           ),
-        ),
-      ),
     );
   }
 
@@ -194,6 +191,8 @@ class DailyInspirationCard extends StatelessWidget {
               ),
             ],
           ),
+        ),
+      ),
     );
   }
 
