@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:path_provider/path_provider.dart';
 import 'core/config/app_config.dart';
 import 'core/utils/logger.dart';
 import 'core/services/advanced_analytics_service.dart';
@@ -25,6 +27,10 @@ void main() async {
 Future<void> _initializeApp() async {
   try {
     AppLogger.info('🚀 Initializing HealPray app...');
+
+    // Initialize Hive for local storage
+    await _initializeHive();
+    AppLogger.info('✅ Hive initialized');
 
     // Initialize app configuration
     await AppConfig.initialize();
@@ -75,6 +81,22 @@ Future<void> _initializeApp() async {
       ),
     );
     return;
+  }
+}
+
+/// Initialize Hive local database
+Future<void> _initializeHive() async {
+  try {
+    // Get application documents directory
+    final appDocumentDir = await getApplicationDocumentsDirectory();
+    
+    // Initialize Hive
+    await Hive.initFlutter(appDocumentDir.path);
+    
+    AppLogger.debug('Hive initialized at: ${appDocumentDir.path}');
+  } catch (e, stackTrace) {
+    AppLogger.error('Failed to initialize Hive', e, stackTrace);
+    rethrow;
   }
 }
 
