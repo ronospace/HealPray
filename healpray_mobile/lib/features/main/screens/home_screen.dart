@@ -7,6 +7,7 @@ import '../../../core/widgets/animated_gradient_background.dart';
 import '../../../core/widgets/enhanced_glass_card.dart';
 import '../../../core/widgets/gradient_text.dart';
 import '../../../core/widgets/admob_banner.dart';
+import '../../../core/widgets/floating_particles.dart';
 import '../../../shared/providers/auth_provider.dart';
 import '../widgets/spiritual_quote_card.dart';
 import '../widgets/daily_streak_card.dart';
@@ -14,16 +15,69 @@ import '../widgets/mood_summary_card.dart';
 import '../widgets/quick_action_card.dart';
 
 /// Home dashboard screen
-class HomeScreen extends ConsumerWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends ConsumerState<HomeScreen>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  late List<Animation<double>> _cardAnimations;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 1200),
+      vsync: this,
+    );
+
+    // Create staggered animations for cards
+    _cardAnimations = List.generate(
+      6,
+      (index) => Tween<double>(begin: 0.0, end: 1.0).animate(
+        CurvedAnimation(
+          parent: _animationController,
+          curve: Interval(
+            index * 0.1,
+            0.4 + (index * 0.1),
+            curve: Curves.easeOutCubic,
+          ),
+        ),
+      ),
+    );
+
+    _animationController.forward();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final user = ref.watch(currentUserProvider);
 
     return Scaffold(
       body: AnimatedGradientBackground(
-        child: SafeArea(
+        child: Stack(
+          children: [
+            // Floating particles background
+            const Positioned.fill(
+              child: FloatingParticles(
+                particleCount: 20,
+                minSize: 4,
+                maxSize: 12,
+              ),
+            ),
+            
+            // Main content
+            SafeArea(
           child: RefreshIndicator(
             onRefresh: () async {
               // TODO: Refresh user data
@@ -39,44 +93,80 @@ class HomeScreen extends ConsumerWidget {
 
                 const SizedBox(height: 24),
 
-                // Daily quote
-                const SpiritualQuoteCard(),
+                // Daily quote with animation
+                _buildAnimatedCard(
+                  animation: _cardAnimations[0],
+                  child: const SpiritualQuoteCard(),
+                ),
 
                 const SizedBox(height: 20),
 
-                // Stats row
-                Row(
-                  children: [
-                    Expanded(
-                        child: DailyStreakCard(
-                            streak: user?.analytics.currentStreak ?? 0)),
-                    const SizedBox(width: 12),
-                    const Expanded(child: MoodSummaryCard()),
-                  ],
+                // Stats row with animation
+                _buildAnimatedCard(
+                  animation: _cardAnimations[1],
+                  child: Row(
+                    children: [
+                      Expanded(
+                          child: DailyStreakCard(
+                              streak: user?.analytics.currentStreak ?? 0)),
+                      const SizedBox(width: 12),
+                      const Expanded(child: MoodSummaryCard()),
+                    ],
+                  ),
                 ),
 
                 const SizedBox(height: 24),
 
-                // Quick actions
-                _buildQuickActions(context),
+                // Quick actions with animation
+                _buildAnimatedCard(
+                  animation: _cardAnimations[2],
+                  child: _buildQuickActions(context),
+                ),
 
                 const SizedBox(height: 24),
 
-                // Recent activities
-                _buildRecentActivities(context),
+                // Recent activities with animation
+                _buildAnimatedCard(
+                  animation: _cardAnimations[3],
+                  child: _buildRecentActivities(context),
+                ),
 
                 const SizedBox(height: 20),
                 
-                // AdMob Banner
-                const AdMobBanner(),
+                // AdMob Banner with animation
+                _buildAnimatedCard(
+                  animation: _cardAnimations[4],
+                  child: const AdMobBanner(),
+                ),
                 
                 const SizedBox(height: 20),
               ],
             ),
             ),
           ),
+            ],
+          ),
         ),
       ),
+    );
+  }
+
+  Widget _buildAnimatedCard({
+    required Animation<double> animation,
+    required Widget child,
+  }) {
+    return AnimatedBuilder(
+      animation: animation,
+      builder: (context, child) {
+        return Transform.translate(
+          offset: Offset(0, 20 * (1 - animation.value)),
+          child: Opacity(
+            opacity: animation.value,
+            child: child,
+          ),
+        );
+      },
+      child: child,
     );
   }
 
