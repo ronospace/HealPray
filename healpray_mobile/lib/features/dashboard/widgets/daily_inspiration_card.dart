@@ -51,7 +51,7 @@ class DailyInspirationCard extends StatelessWidget {
                     ),
                     child: const Icon(
                       Icons.auto_awesome,
-                      color: AppTheme.sunriseGold,
+                      color: Colors.white,
                       size: 20,
                     ),
                   ),
@@ -65,6 +65,13 @@ class DailyInspirationCard extends StatelessWidget {
                             Theme.of(context).textTheme.titleMedium?.copyWith(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white,
+                                  shadows: [
+                                    Shadow(
+                                      color: Colors.black.withOpacity(0.3),
+                                      offset: const Offset(0, 1),
+                                      blurRadius: 3,
+                                    ),
+                                  ],
                                 ),
                       ),
                       Text(
@@ -118,7 +125,7 @@ class DailyInspirationCard extends StatelessWidget {
                               .textTheme
                               .bodyMedium
                               ?.copyWith(
-                                color: AppTheme.healingTeal,
+                                color: Colors.white.withOpacity(0.9),
                                 fontWeight: FontWeight.w600,
                               ),
                         ),
@@ -179,13 +186,13 @@ class DailyInspirationCard extends StatelessWidget {
               Icon(
                 icon,
                 size: 16,
-                color: AppTheme.healingTeal,
+                color: Colors.white,
               ),
               const SizedBox(width: 4),
               Text(
                 label,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: AppTheme.healingTeal,
+                      color: Colors.white,
                       fontWeight: FontWeight.w600,
                     ),
               ),

@@ -16,6 +16,15 @@ class QuickActionsGrid extends StatelessWidget {
           'Quick Actions',
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
+                color: Colors.white,
+                fontSize: 22,
+                shadows: [
+                  Shadow(
+                    color: Colors.black.withOpacity(0.3),
+                    offset: const Offset(0, 2),
+                    blurRadius: 4,
+                  ),
+                ],
               ),
         ),
         const SizedBox(height: 16),
@@ -89,10 +98,22 @@ class QuickActionsGrid extends StatelessWidget {
     required String subtitle,
     required VoidCallback onTap,
   }) {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.15),
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Colors.white.withOpacity(0.2),
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 20,
+            spreadRadius: 0,
+            offset: const Offset(0, 10),
+          ),
+        ],
       ),
       child: InkWell(
         onTap: onTap,
@@ -107,13 +128,13 @@ class QuickActionsGrid extends StatelessWidget {
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: iconColor.withValues(alpha: 0.1),
+                  color: Colors.white.withOpacity(0.25),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
                   icon,
-                  color: iconColor,
-                  size: 22,
+                  color: Colors.white,
+                  size: 24,
                 ),
               ),
               const SizedBox(height: 6),
@@ -122,6 +143,7 @@ class QuickActionsGrid extends StatelessWidget {
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.w600,
                       fontSize: 13,
+                      color: Colors.white,
                     ),
                 textAlign: TextAlign.center,
                 maxLines: 1,
@@ -131,7 +153,7 @@ class QuickActionsGrid extends StatelessWidget {
               Text(
                 subtitle,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.grey[600],
+                      color: Colors.white.withOpacity(0.7),
                       fontSize: 11,
                     ),
                 textAlign: TextAlign.center,

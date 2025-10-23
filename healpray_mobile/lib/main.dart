@@ -9,6 +9,7 @@ import 'core/services/advanced_analytics_service.dart';
 import 'core/services/ab_test_service.dart';
 import 'core/services/user_feedback_service.dart';
 import 'core/services/admob_service.dart';
+import 'features/chat/models/chat_message.dart';
 import 'app.dart';
 
 void main() async {
@@ -93,7 +94,25 @@ Future<void> _initializeHive() async {
     // Initialize Hive
     await Hive.initFlutter(appDocumentDir.path);
     
+    // Register Hive adapters for chat models (from chat_message.dart)
+    if (!Hive.isAdapterRegistered(4)) {
+      Hive.registerAdapter(MessageTypeAdapter()); // typeId: 4
+    }
+    if (!Hive.isAdapterRegistered(5)) {
+      Hive.registerAdapter(ChatContextAdapter()); // typeId: 5
+    }
+    if (!Hive.isAdapterRegistered(6)) {
+      Hive.registerAdapter(ChatMessageAdapter()); // typeId: 6
+    }
+    if (!Hive.isAdapterRegistered(7)) {
+      Hive.registerAdapter(ConversationAdapter()); // typeId: 7
+    }
+    if (!Hive.isAdapterRegistered(8)) {
+      Hive.registerAdapter(ChatSessionAdapter()); // typeId: 8
+    }
+    
     AppLogger.debug('Hive initialized at: ${appDocumentDir.path}');
+    AppLogger.debug('Hive adapters registered successfully');
   } catch (e, stackTrace) {
     AppLogger.error('Failed to initialize Hive', e, stackTrace);
     rethrow;

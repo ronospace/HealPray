@@ -78,18 +78,32 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen>
 
     return Scaffold(
       appBar: AppBar(
-        title: const GradientText(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: const Text(
           'Mood Tracking',
-          gradient: LinearGradient(
-            colors: [Colors.white, Color(0xFFE5F0FF)],
-          ),
           style: TextStyle(
+            color: Colors.white,
             fontWeight: FontWeight.w600,
             fontSize: 20,
           ),
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                AppTheme.healingTeal.withOpacity(0.7),
+                AppTheme.healingTeal.withOpacity(0.5),
+              ],
+            ),
+          ),
+        ),
         actions: [
           IconButton(
             onPressed: () => context.push('/mood/calendar'),

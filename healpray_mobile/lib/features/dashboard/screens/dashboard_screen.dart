@@ -239,30 +239,47 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
           'Recent Activity',
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
+                color: Colors.white,
+                fontSize: 22,
+                shadows: [
+                  Shadow(
+                    color: Colors.black.withOpacity(0.3),
+                    offset: const Offset(0, 2),
+                    blurRadius: 4,
+                  ),
+                ],
               ),
         ),
         const SizedBox(height: 12),
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.grey[50],
+            color: Colors.white.withOpacity(0.15),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: Colors.grey[200]!,
-              width: 1,
+              color: Colors.white.withOpacity(0.2),
+              width: 1.5,
             ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 20,
+                spreadRadius: 0,
+                offset: const Offset(0, 10),
+              ),
+            ],
           ),
           child: Column(
             children: [
               _buildActivityItem(
                 context,
                 icon: Icons.favorite,
-                iconColor: Colors.red[400]!,
+                iconColor: Colors.red[300]!,
                 title: 'Morning Prayer',
                 subtitle: 'Started your day with gratitude',
                 time: 'Today, 7:30 AM',
               ),
-              const Divider(height: 24),
+              Divider(height: 24, color: Colors.white.withOpacity(0.2)),
               _buildActivityItem(
                 context,
                 icon: Icons.sentiment_satisfied_alt,
@@ -271,11 +288,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                 subtitle: 'Feeling peaceful and hopeful',
                 time: 'Yesterday, 8:15 PM',
               ),
-              const Divider(height: 24),
+              Divider(height: 24, color: Colors.white.withOpacity(0.2)),
               _buildActivityItem(
                 context,
                 icon: Icons.self_improvement,
-                iconColor: AppTheme.healingTeal,
+                iconColor: Colors.lightGreenAccent,
                 title: 'Meditation Session',
                 subtitle: '10 minutes of mindful breathing',
                 time: 'Yesterday, 6:00 PM',
@@ -319,13 +336,14 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                 title,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.w600,
+                      color: Colors.white,
                     ),
               ),
               const SizedBox(height: 2),
               Text(
                 subtitle,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.grey[600],
+                      color: Colors.white.withOpacity(0.7),
                     ),
               ),
             ],
@@ -334,7 +352,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
         Text(
           time,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Colors.grey[500],
+                color: Colors.white.withOpacity(0.6),
               ),
         ),
       ],
