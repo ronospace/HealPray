@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/floating_particles.dart';
+import '../../../core/widgets/animated_gradient_background.dart';
 import '../../../shared/providers/auth_provider.dart';
 import '../widgets/mood_tracking_card.dart';
 import '../widgets/prayer_streak_card.dart';
@@ -11,16 +13,89 @@ import '../widgets/quick_actions_grid.dart';
 import '../widgets/crisis_support_banner.dart';
 
 /// Main dashboard screen - the heart of the HealPray app
-class DashboardScreen extends ConsumerWidget {
+class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends ConsumerState<DashboardScreen>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  late List<Animation<double>> _cardAnimations;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 1200),
+      vsync: this,
+    );
+
+    // Create staggered animations for cards
+    _cardAnimations = List.generate(
+      5,
+      (index) => Tween<double>(begin: 0.0, end: 1.0).animate(
+        CurvedAnimation(
+          parent: _animationController,
+          curve: Interval(
+            index * 0.1,
+            0.4 + (index * 0.1),
+            curve: Curves.easeOutCubic,
+          ),
+        ),
+      ),
+    );
+
+    _animationController.forward();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  Widget _buildAnimatedCard({
+    required Animation<double> animation,
+    required Widget child,
+  }) {
+    return AnimatedBuilder(
+      animation: animation,
+      builder: (context, child) {
+        return Transform.translate(
+          offset: Offset(0, 20 * (1 - animation.value)),
+          child: Opacity(
+            opacity: animation.value,
+            child: child,
+          ),
+        );
+      },
+      child: child,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
     final user = authState.user;
 
     return Scaffold(
-      body: CustomScrollView(
+      body: AnimatedGradientBackground(
+        child: Stack(
+          children: [
+            // Floating particles background
+            const Positioned.fill(
+              child: FloatingParticles(
+                particleCount: 20,
+                minSize: 4,
+                maxSize: 12,
+              ),
+            ),
+            
+            // Main content
+            CustomScrollView(
         slivers: [
           // App bar with gradient background
           _buildSliverAppBar(context, user?.displayName ?? 'Friend'),
@@ -30,45 +105,63 @@ class DashboardScreen extends ConsumerWidget {
             padding: const EdgeInsets.all(16.0),
             sliver: SliverList(
               delegate: SliverChildListDelegate([
-                // Crisis support banner (if needed)
-                const CrisisSupportBanner(),
+                // Crisis support banner (if needed) with animation
+                _buildAnimatedCard(
+                  animation: _cardAnimations[0],
+                  child: const CrisisSupportBanner(),
+                ),
                 const SizedBox(height: 16),
 
-                // Daily inspiration
-                const DailyInspirationCard(),
-                const SizedBox(height: 20),
-
-                // Mood and prayer streak row
-                Row(
-                  children: [
-                    Expanded(
-                      child: MoodTrackingCard(
-                        currentMood: (user?.analytics.averageMood) ?? 5.0,
-                        streak: (user?.analytics.currentStreak) ?? 0,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: PrayerStreakCard(
-                        currentStreak: (user?.analytics.currentStreak) ?? 0,
-                        totalPrayers: (user?.analytics.totalPrayers) ?? 0,
-                      ),
-                    ),
-                  ],
+                // Daily inspiration with animation
+                _buildAnimatedCard(
+                  animation: _cardAnimations[1],
+                  child: const DailyInspirationCard(),
                 ),
                 const SizedBox(height: 20),
 
-                // Quick actions
-                const QuickActionsGrid(),
+                // Mood and prayer streak row with animation
+                _buildAnimatedCard(
+                  animation: _cardAnimations[2],
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: MoodTrackingCard(
+                          currentMood: (user?.analytics.averageMood) ?? 5.0,
+                          streak: (user?.analytics.currentStreak) ?? 0,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: PrayerStreakCard(
+                          currentStreak: (user?.analytics.currentStreak) ?? 0,
+                          totalPrayers: (user?.analytics.totalPrayers) ?? 0,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
                 const SizedBox(height: 20),
 
-                // Recent activity section
-                _buildRecentActivity(context),
+                // Quick actions with animation
+                _buildAnimatedCard(
+                  animation: _cardAnimations[3],
+                  child: const QuickActionsGrid(),
+                ),
+                const SizedBox(height: 20),
+
+                // Recent activity section with animation
+                _buildAnimatedCard(
+                  animation: _cardAnimations[4],
+                  child: _buildRecentActivity(context),
+                ),
                 const SizedBox(height: 100), // Bottom padding for navigation
               ]),
             ),
           ),
         ],
+            ),
+          ],
+        ),
       ),
     );
   }
