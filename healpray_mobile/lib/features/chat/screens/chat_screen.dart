@@ -121,7 +121,13 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       backgroundColor: Colors.transparent,
       elevation: 0,
       leading: IconButton(
-        onPressed: () => context.pop(),
+        onPressed: () {
+          if (Navigator.of(context).canPop()) {
+            context.pop();
+          } else {
+            context.go('/');
+          }
+        },
         icon: const Icon(
           Icons.arrow_back_ios,
           color: Colors.white,
