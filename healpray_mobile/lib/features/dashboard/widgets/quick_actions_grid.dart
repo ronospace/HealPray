@@ -72,8 +72,8 @@ class QuickActionsGrid extends StatelessWidget {
               context,
               icon: Icons.psychology,
               iconColor: Colors.purple[400]!,
-              label: 'AI Chat',
-              subtitle: 'Spiritual guide',
+              label: 'Chat',
+              subtitle: 'Ask Sophia',
               onTap: () => context.push('/ai-chat'),
             ),
             _buildActionCard(

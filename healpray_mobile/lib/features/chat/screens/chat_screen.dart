@@ -99,7 +99,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           GradientText(
-            _currentConversation?.title ?? 'Spiritual Companion',
+            _currentConversation?.title ?? 'Chat with Sophia',
             gradient: const LinearGradient(
               colors: [Colors.white, Color(0xFFE5F0FF)],
             ),
@@ -180,7 +180,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           ),
           SizedBox(height: 16),
           Text(
-            'Preparing your spiritual companion...',
+            'Sophia is getting ready to chat with you...',
             style: TextStyle(
               color: AppTheme.textSecondary,
               fontSize: 16,
