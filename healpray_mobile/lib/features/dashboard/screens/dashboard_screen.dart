@@ -88,9 +88,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
             // Floating particles background
             const Positioned.fill(
               child: FloatingParticles(
-                particleCount: 20,
-                minSize: 4,
-                maxSize: 12,
+                numberOfParticles: 20,
+                minSize: 4.0,
+                maxSize: 12.0,
               ),
             ),
             
