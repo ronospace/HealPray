@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/glass_card.dart';
 
 /// Widget displaying prayer streak and total prayer count
 class PrayerStreakCard extends StatelessWidget {
@@ -16,16 +17,10 @@ class PrayerStreakCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: InkWell(
-        onTap: () => context.push('/prayer'),
-        borderRadius: BorderRadius.circular(16),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
+    return GlassCard(
+      onTap: () => context.push('/prayer'),
+      borderRadius: 16,
+      padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -35,12 +30,12 @@ class PrayerStreakCard extends StatelessWidget {
                     width: 32,
                     height: 32,
                     decoration: BoxDecoration(
-                      color: AppTheme.healingTeal.withValues(alpha: 0.1),
+                      color: Colors.white.withOpacity(0.3),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: const Icon(
                       Icons.favorite,
-                      color: AppTheme.healingTeal,
+                      color: Colors.white,
                       size: 18,
                     ),
                   ),
@@ -49,6 +44,7 @@ class PrayerStreakCard extends StatelessWidget {
                     'Prayer',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.w600,
+                          color: Colors.white,
                         ),
                   ),
                 ],
@@ -61,7 +57,7 @@ class PrayerStreakCard extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: AppTheme.healingTeal.withValues(alpha: 0.1),
+                      color: Colors.white.withOpacity(0.3),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: const Text(
@@ -78,13 +74,13 @@ class PrayerStreakCard extends StatelessWidget {
                         style:
                             Theme.of(context).textTheme.headlineSmall?.copyWith(
                                   fontWeight: FontWeight.bold,
-                                  color: AppTheme.healingTeal,
+                                  color: Colors.white,
                                 ),
                       ),
                       Text(
                         'day streak',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Colors.grey[600],
+                              color: Colors.white.withOpacity(0.7),
                             ),
                       ),
                     ],
@@ -97,21 +93,19 @@ class PrayerStreakCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: Colors.grey[100],
+                  color: Colors.white.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
                   '$totalPrayers total prayers',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.grey[700],
+                        color: Colors.white.withOpacity(0.9),
                         fontWeight: FontWeight.w500,
                       ),
                 ),
               ),
             ],
           ),
-        ),
-      ),
     );
   }
 }

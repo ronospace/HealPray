@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/animated_gradient_background.dart';
+import '../../../core/widgets/floating_particles.dart';
 import '../../../core/widgets/glass_card.dart';
 import '../../../core/widgets/gradient_text.dart';
 import 'mood_analytics_screen.dart';
@@ -15,7 +16,62 @@ class MoodTrackingScreen extends ConsumerStatefulWidget {
   ConsumerState<MoodTrackingScreen> createState() => _MoodTrackingScreenState();
 }
 
-class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen> {
+class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  late List<Animation<double>> _cardAnimations;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 1200),
+      vsync: this,
+    );
+
+    // Create staggered animations for cards (header + 5 option cards)
+    _cardAnimations = List.generate(
+      6,
+      (index) => Tween<double>(begin: 0.0, end: 1.0).animate(
+        CurvedAnimation(
+          parent: _animationController,
+          curve: Interval(
+            index * 0.1,
+            0.4 + (index * 0.1),
+            curve: Curves.easeOutCubic,
+          ),
+        ),
+      ),
+    );
+
+    _animationController.forward();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  Widget _buildAnimatedCard({
+    required Animation<double> animation,
+    required Widget child,
+  }) {
+    return AnimatedBuilder(
+      animation: animation,
+      builder: (context, child) {
+        return Transform.translate(
+          offset: Offset(0, 20 * (1 - animation.value)),
+          child: Opacity(
+            opacity: animation.value,
+            child: child,
+          ),
+        );
+      },
+      child: child,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // final moodEntries = ref.watch(recentMoodEntriesProvider); // TODO: Implement provider
@@ -62,93 +118,125 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen> {
         ],
       ),
       body: AnimatedGradientBackground(
-        child: SafeArea(
-          child: Column(
-            children: [
-              // Header card with current mood
-              Semantics(
-                label: 'Current mood status',
-                child: GlassCard(
-                  margin: const EdgeInsets.all(16),
-                  child: Column(
-                    children: [
-                      Text(
-                        'How are you feeling today?',
-                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w600,
+        child: Stack(
+          children: [
+            // Floating particles background
+            const Positioned.fill(
+              child: FloatingParticles(
+                numberOfParticles: 20,
+                minSize: 4.0,
+                maxSize: 12.0,
+              ),
+            ),
+            
+            // Main content
+            SafeArea(
+              child: Column(
+                children: [
+                  // Header card with current mood
+                  _buildAnimatedCard(
+                    animation: _cardAnimations[0],
+                    child: Semantics(
+                      label: 'Current mood status',
+                      child: GlassCard(
+                        margin: const EdgeInsets.all(16),
+                        child: Column(
+                          children: [
+                            Text(
+                              'How are you feeling today?',
+                              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                             ),
-                      ),
-                      const SizedBox(height: 16),
-                      const Text(
-                        '😊',
-                        style: TextStyle(fontSize: 48),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Good',
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w500,
+                            const SizedBox(height: 16),
+                            const Text(
+                              '😊',
+                              style: TextStyle(fontSize: 48),
                             ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Good',
+                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ],
+                    ),
                   ),
-                ),
-              ),
 
-              // Mood entry options
-              Expanded(
-                child: ListView(
-                  padding: const EdgeInsets.all(16),
-                  children: [
-                    _buildMoodOptionCard(
-                      title: 'Quick Mood Check',
-                      subtitle: 'Record your current mood',
-                      icon: Icons.mood,
-                      onTap: () => context.push('/mood/entry'),
-                    ),
-                    const SizedBox(height: 12),
-                    _buildMoodOptionCard(
-                      title: 'Detailed Entry',
-                      subtitle: 'Add notes and context',
-                      icon: Icons.edit_note,
-                      onTap: () => context.push('/mood/entry'),
-                    ),
-                    const SizedBox(height: 12),
-                    _buildMoodOptionCard(
-                      title: 'Calendar View',
-                      subtitle: 'See your mood history',
-                      icon: Icons.calendar_month,
-                      onTap: () => context.push('/mood/calendar'),
-                    ),
-                    const SizedBox(height: 12),
-                    _buildMoodOptionCard(
-                      title: 'Mood Patterns',
-                      subtitle: 'View your mood trends',
-                      icon: Icons.show_chart,
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => const MoodAnalyticsScreen(),
+                  // Mood entry options
+                  Expanded(
+                    child: ListView(
+                      padding: const EdgeInsets.all(16),
+                      children: [
+                        _buildAnimatedCard(
+                          animation: _cardAnimations[1],
+                          child: _buildMoodOptionCard(
+                            title: 'Quick Mood Check',
+                            subtitle: 'Record your current mood',
+                            icon: Icons.mood,
+                            onTap: () => context.push('/mood/entry'),
                           ),
-                        );
-                      },
+                        ),
+                        const SizedBox(height: 12),
+                        _buildAnimatedCard(
+                          animation: _cardAnimations[2],
+                          child: _buildMoodOptionCard(
+                            title: 'Detailed Entry',
+                            subtitle: 'Add notes and context',
+                            icon: Icons.edit_note,
+                            onTap: () => context.push('/mood/entry'),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        _buildAnimatedCard(
+                          animation: _cardAnimations[3],
+                          child: _buildMoodOptionCard(
+                            title: 'Calendar View',
+                            subtitle: 'See your mood history',
+                            icon: Icons.calendar_month,
+                            onTap: () => context.push('/mood/calendar'),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        _buildAnimatedCard(
+                          animation: _cardAnimations[4],
+                          child: _buildMoodOptionCard(
+                            title: 'Mood Patterns',
+                            subtitle: 'View your mood trends',
+                            icon: Icons.show_chart,
+                            onTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => const MoodAnalyticsScreen(),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        _buildAnimatedCard(
+                          animation: _cardAnimations[5],
+                          child: _buildMoodOptionCard(
+                            title: 'Reflection Journal',
+                            subtitle: 'Daily thoughts and prayers',
+                            icon: Icons.book,
+                            onTap: () {
+                              // Navigate to journal
+                            },
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 12),
-                    _buildMoodOptionCard(
-                      title: 'Reflection Journal',
-                      subtitle: 'Daily thoughts and prayers',
-                      icon: Icons.book,
-                      onTap: () {
-                        // Navigate to journal
-                      },
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

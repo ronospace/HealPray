@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/glass_card.dart';
 
 /// Widget displaying daily inspiration with verse or quote
 class DailyInspirationCard extends StatelessWidget {
@@ -33,117 +34,99 @@ class DailyInspirationCard extends StatelessWidget {
         DateTime.now().difference(DateTime(DateTime.now().year)).inDays;
     final inspiration = inspirations[dayOfYear % inspirations.length];
 
-    return Card(
-      elevation: 3,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              AppTheme.sunriseGold.withValues(alpha: 0.1),
-              AppTheme.healingTeal.withValues(alpha: 0.1),
-            ],
-          ),
-        ),
-        child: InkWell(
-          onTap: () => context.push('/inspiration'),
-          borderRadius: BorderRadius.circular(16),
-          child: Padding(
-            padding: const EdgeInsets.all(20),
+    return GlassCard(
+      onTap: () => context.push('/inspiration'),
+      borderRadius: 16,
+      padding: const EdgeInsets.all(20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: AppTheme.sunriseGold.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(12),
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: AppTheme.sunriseGold.withOpacity(0.3),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(
+                      Icons.auto_awesome,
+                      color: AppTheme.sunriseGold,
+                      size: 20,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Daily Inspiration',
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
                       ),
-                      child: const Icon(
-                        Icons.auto_awesome,
-                        color: AppTheme.sunriseGold,
-                        size: 20,
+                      Text(
+                        _getDateString(),
+                        style:
+                            Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  color: Colors.white.withOpacity(0.7),
+                                ),
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Daily Inspiration',
-                          style:
-                              Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: AppTheme.midnightBlue,
-                                  ),
-                        ),
-                        Text(
-                          _getDateString(),
-                          style:
-                              Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    color: Colors.grey[600],
-                                  ),
-                        ),
-                      ],
-                    ),
-                    const Spacer(),
-                    Icon(
-                      Icons.arrow_forward_ios,
-                      color: Colors.grey[400],
-                      size: 16,
-                    ),
+                    ],
+                  ),
+                  const Spacer(),
+                  Icon(
+                    Icons.arrow_forward_ios,
+                    color: Colors.white.withOpacity(0.7),
+                    size: 16,
+                  ),
                   ],
                 ),
                 const SizedBox(height: 16),
 
-                // Inspiration text
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.8),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: AppTheme.sunriseGold.withValues(alpha: 0.2),
-                      width: 1,
-                    ),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '"${inspiration['text']}"',
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                              fontStyle: FontStyle.italic,
-                              color: AppTheme.midnightBlue,
-                              height: 1.4,
-                            ),
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          const Spacer(),
-                          Text(
-                            '— ${inspiration['reference']}',
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.copyWith(
-                                  color: AppTheme.healingTeal,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                          ),
-                        ],
-                      ),
-                    ],
+              // Inspiration text
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: Colors.white.withOpacity(0.3),
+                    width: 1,
                   ),
                 ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '"${inspiration['text']}"',
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                            fontStyle: FontStyle.italic,
+                            color: Colors.white,
+                            height: 1.4,
+                          ),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        const Spacer(),
+                        Text(
+                          '— ${inspiration['reference']}',
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium
+                              ?.copyWith(
+                                color: AppTheme.healingTeal,
+                                fontWeight: FontWeight.w600,
+                              ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
 
                 const SizedBox(height: 12),
 
@@ -211,8 +194,6 @@ class DailyInspirationCard extends StatelessWidget {
               ),
             ],
           ),
-        ),
-      ),
     );
   }
 
