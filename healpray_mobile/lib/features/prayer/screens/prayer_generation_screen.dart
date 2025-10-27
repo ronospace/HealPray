@@ -415,7 +415,8 @@ class _PrayerGenerationScreenState
   void _sharePrayer() {
     if (_generatedPrayer == null) return;
 
-    // TODO: Implement sharing functionality
+    // Share functionality using share_plus package - Future feature
+    // Will allow sharing prayers via social media, messaging apps, etc.
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Sharing functionality coming soon!'),

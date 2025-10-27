@@ -50,15 +50,15 @@ Future<void> _initializeApp() async {
     // Initialize Firebase (disabled for development)
     try {
       AppLogger.info('⚠️ Firebase initialization skipped in development mode');
-      // TODO: Enable Firebase when proper configuration is available
+      // Firebase will be enabled when:
+      // 1. Firebase project is properly configured with API keys in .env
+      // 2. google-services.json (Android) and GoogleService-Info.plist (iOS) are added
+      // 3. DefaultFirebaseOptions.currentPlatform is generated via flutterfire configure
+      // Uncomment below when ready:
       // await Firebase.initializeApp(
       //   options: DefaultFirebaseOptions.currentPlatform,
       // );
-      // AppLogger.info('✅ Firebase initialized');
-      //
-      // // Initialize Firebase services
       // await FirebaseService.initialize();
-      // AppLogger.info('✅ Firebase services initialized');
     } catch (firebaseError) {
       AppLogger.warning(
           'Firebase initialization failed, running in offline mode: $firebaseError');

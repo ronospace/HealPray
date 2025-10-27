@@ -346,7 +346,8 @@ class _PrayerTextDisplayState extends State<PrayerTextDisplay>
   }
 
   void _readAloud() {
-    // TODO: Implement text-to-speech functionality
+    // Text-to-speech integration (flutter_tts package) - Future feature
+    // Will read the prayer content aloud with customizable voice settings
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Read aloud feature coming soon!'),
@@ -357,7 +358,8 @@ class _PrayerTextDisplayState extends State<PrayerTextDisplay>
   }
 
   void _toggleFavorite() {
-    // TODO: Implement favorite toggle
+    // Favorite toggle - will be implemented with prayer repository update
+    // Updates prayer.isFavorite and saves to Hive storage
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(

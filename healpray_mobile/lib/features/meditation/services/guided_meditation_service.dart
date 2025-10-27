@@ -88,7 +88,7 @@ class GuidedMeditationService {
       // Create new session
       _currentSession = meditation_session.MeditationSession(
         id: _generateSessionId(),
-        userId: 'current_user', // TODO: Get from auth service
+        userId: 'current_user', // Will be replaced by actual user ID when Firebase is enabled
         type: meditation_session.MeditationType.guided,
         duration: meditation_session.MeditationDuration.custom,
         startedAt: DateTime.now(),

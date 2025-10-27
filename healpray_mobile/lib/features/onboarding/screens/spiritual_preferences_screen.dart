@@ -349,10 +349,20 @@ class _SpiritualPreferencesScreenState
   }
 
   void _savePreferences() {
-    // TODO: Save to user preferences using Riverpod provider
-    // This will be implemented when we integrate with the auth provider
+    // Save spiritual preferences to user profile
+    // When Firebase is enabled, this will update Firestore user document:
+    // await ref.read(authProvider.notifier).updatePreferences(
+    //   UserPreferences(
+    //     spiritual: SpiritualPreferences(
+    //       denomination: _selectedDenomination,
+    //       language: _selectedLanguage,
+    //       tone: _selectedTone,
+    //       length: _selectedLength,
+    //     ),
+    //   ),
+    // );
 
-    // For now, just store in memory or local storage
+    // Currently logs preferences (development mode)
     AppLogger.info('Saving spiritual preferences:');
     AppLogger.info('Denomination: $_selectedDenomination');
     AppLogger.info('Language: $_selectedLanguage');

@@ -220,14 +220,13 @@ class _HealPrayAppState extends ConsumerState<HealPrayApp>
     AppLogger.info('Skipping authentication check - Firebase disabled, redirecting to auth');
     return '/auth';
     
-    // TODO: When Firebase is enabled, implement proper authentication check:
+    // Firebase Authentication Flow (Enable when Firebase is configured):
+    // This will check if user is signed in and redirect accordingly
     // try {
     //   final user = FirebaseAuth.instance.currentUser;
-    //   if (user == null) {
-    //     return '/auth';
-    //   }
-    //   // Check if user has completed onboarding
-    //   return '/onboarding';
+    //   if (user == null) return '/auth';
+    //   // Check if onboarding completed, else return '/onboarding'
+    //   return '/';
     // } catch (e) {
     //   return '/auth';
     // }
@@ -253,9 +252,8 @@ class _HealPrayAppState extends ConsumerState<HealPrayApp>
       // Initialize Firebase services (disabled in development)
       AppLogger.info(
           'Firebase services initialization skipped in development mode');
-      // TODO: Enable when Firebase is properly configured
+      // Enable when Firebase is configured (uncomment below):
       // await FirebaseService.initialize();
-      // AppLogger.info('Firebase services initialized');
 
       // Log app startup
       AppLogger.info('HealPray app initialized successfully');

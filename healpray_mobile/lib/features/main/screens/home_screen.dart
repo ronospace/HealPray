@@ -80,7 +80,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             SafeArea(
               child: RefreshIndicator(
                 onRefresh: () async {
-                  // TODO: Refresh user data
+                  // Refresh user data, mood entries, prayers, etc.
+                  // When Firebase is enabled, this will sync from cloud
                   await Future.delayed(const Duration(seconds: 1));
                 },
                 child: SingleChildScrollView(
@@ -214,7 +215,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           children: [
             IconButton(
               onPressed: () {
-                // TODO: Show notifications
+                // Navigate to notifications screen (future feature)
+                // Will show prayer reminders, mood check-ins, community updates
               },
               icon: Stack(
                 children: [

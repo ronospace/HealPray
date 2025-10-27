@@ -99,7 +99,7 @@ class MeditationService {
       // Create session
       final session = MeditationSession(
         id: _generateSessionId(),
-        userId: 'current_user', // TODO: Get from auth service
+        userId: 'current_user', // Will be replaced by actual user ID when Firebase is enabled
         type: type,
         duration: duration,
         targetDurationMinutes: targetMinutes,
