@@ -457,7 +457,7 @@ class MeditationService {
   String _generateSessionId() {
     final timestamp = DateTime.now().millisecondsSinceEpoch;
     final random = Random().nextInt(1000);
-    return 'med_$timestamp_$random';
+    return 'med_${timestamp}_$random';
   }
 
   String _getDefaultTitle(MeditationType type) {

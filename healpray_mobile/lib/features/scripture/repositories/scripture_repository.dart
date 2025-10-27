@@ -1,3 +1,4 @@
+import 'package:hive_flutter/hive_flutter.dart';
 import '../models/scripture.dart';
 import '../../../core/database/hive_service.dart';
 import '../../../core/utils/logger.dart';
@@ -215,7 +216,7 @@ class ScriptureRepository {
       'uniqueScriptures': uniqueScriptures.length,
       'averageRating': averageRating,
       'currentStreak': streak,
-      'favoriteThemes': [], // TODO: Calculate most common themes
+      'favoriteThemes': _calculateFavoriteThemes(entries),
     };
   }
 
@@ -233,8 +234,8 @@ class ScriptureRepository {
 
   /// Get favorite scriptures
   Future<List<Scripture>> getFavoriteScriptures() async {
-    // TODO: Implement favorites tracking
-    return [];
+    await _loadScriptures();
+    return _cachedScriptures?.where((s) => s.isFavorite).toList() ?? [];
   }
 
   /// Get scriptures by single theme
@@ -278,9 +279,22 @@ class ScriptureRepository {
 
   Future<void> _loadScriptures() async {
     try {
-      // TODO: Load from Hive when properly implemented
-      // For now, return empty list - scriptures will be populated by service
-      _cachedScriptures = [];
+      final box = await Hive.openBox('scriptures');
+      final List<Scripture> scriptures = [];
+      
+      for (var key in box.keys) {
+        final data = box.get(key);
+        if (data is Map) {
+          try {
+            scriptures.add(Scripture.fromJson(Map<String, dynamic>.from(data)));
+          } catch (e) {
+            AppLogger.error('Failed to parse scripture $key', e);
+          }
+        }
+      }
+      
+      _cachedScriptures = scriptures;
+      AppLogger.debug('Loaded ${scriptures.length} scriptures from Hive');
     } catch (e) {
       AppLogger.error('Failed to load scriptures', e);
       _cachedScriptures = [];
@@ -289,8 +303,15 @@ class ScriptureRepository {
 
   Future<void> _saveScriptures() async {
     try {
-      // TODO: Save to Hive when properly implemented
-      AppLogger.debug('Scriptures saved (placeholder)');
+      final box = await Hive.openBox('scriptures');
+      
+      if (_cachedScriptures != null) {
+        for (var scripture in _cachedScriptures!) {
+          await box.put(scripture.id, scripture.toJson());
+        }
+      }
+      
+      AppLogger.debug('Saved ${_cachedScriptures?.length ?? 0} scriptures to Hive');
     } catch (e) {
       AppLogger.error('Failed to save scriptures', e);
     }
@@ -298,8 +319,15 @@ class ScriptureRepository {
 
   Future<void> _loadDailyVerses() async {
     try {
-      // TODO: Load from Hive when properly implemented
-      _dailyVerses = {};
+      final box = await Hive.openBox('app_settings');
+      final data = box.get('daily_verses');
+      
+      if (data is Map) {
+        _dailyVerses = Map<String, String>.from(data);
+        AppLogger.debug('Loaded ${_dailyVerses!.length} daily verses');
+      } else {
+        _dailyVerses = {};
+      }
     } catch (e) {
       AppLogger.error('Failed to load daily verses', e);
       _dailyVerses = {};
@@ -308,8 +336,9 @@ class ScriptureRepository {
 
   Future<void> _saveDailyVerses() async {
     try {
-      // TODO: Save to Hive when properly implemented
-      AppLogger.debug('Daily verses saved (placeholder)');
+      final box = await Hive.openBox('app_settings');
+      await box.put('daily_verses', _dailyVerses ?? {});
+      AppLogger.debug('Saved ${_dailyVerses?.length ?? 0} daily verses to Hive');
     } catch (e) {
       AppLogger.error('Failed to save daily verses', e);
     }
@@ -317,8 +346,24 @@ class ScriptureRepository {
 
   Future<void> _loadReadingEntries() async {
     try {
-      // TODO: Load from Hive when properly implemented
-      _readingEntries = {};
+      final box = await Hive.openBox('scripture_readings');
+      final Map<String, ScriptureReadingEntry> entries = {};
+      
+      for (var key in box.keys) {
+        final data = box.get(key);
+        if (data is Map) {
+          try {
+            entries[key as String] = ScriptureReadingEntry.fromJson(
+              Map<String, dynamic>.from(data),
+            );
+          } catch (e) {
+            AppLogger.error('Failed to parse reading entry $key', e);
+          }
+        }
+      }
+      
+      _readingEntries = entries;
+      AppLogger.debug('Loaded ${entries.length} scripture reading entries');
     } catch (e) {
       AppLogger.error('Failed to load reading entries', e);
       _readingEntries = {};
@@ -327,10 +372,51 @@ class ScriptureRepository {
 
   Future<void> _saveReadingEntries() async {
     try {
-      // TODO: Save to Hive when properly implemented
-      AppLogger.debug('Reading entries saved (placeholder)');
+      final box = await Hive.openBox('scripture_readings');
+      
+      if (_readingEntries != null) {
+        for (var entry in _readingEntries!.entries) {
+          await box.put(entry.key, entry.value.toJson());
+        }
+      }
+      
+      AppLogger.debug('Saved ${_readingEntries?.length ?? 0} reading entries to Hive');
     } catch (e) {
       AppLogger.error('Failed to save reading entries', e);
     }
+  }
+
+  /// Calculate most common themes from reading entries
+  List<String> _calculateFavoriteThemes(Iterable<ScriptureReadingEntry> entries) {
+    final themeCount = <String, int>{};
+    
+    // Count themes from scriptures that were rated highly
+    for (final entry in entries) {
+      if (entry.rating >= 4) {
+        final scripture = _cachedScriptures?.firstWhere(
+          (s) => s.id == entry.scriptureId,
+          orElse: () => Scripture(
+            id: '',
+            book: '',
+            chapter: 0,
+            verse: '',
+            text: '',
+            version: '',
+          ),
+        );
+        
+        if (scripture != null && scripture.id.isNotEmpty) {
+          for (final theme in scripture.themes) {
+            themeCount[theme.displayName] = (themeCount[theme.displayName] ?? 0) + 1;
+          }
+        }
+      }
+    }
+    
+    // Sort by count and return top 3
+    final sorted = themeCount.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+    
+    return sorted.take(3).map((e) => e.key).toList();
   }
 }

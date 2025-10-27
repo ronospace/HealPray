@@ -414,7 +414,7 @@ class GuidedMeditationService {
   String _generateSessionId() {
     final timestamp = DateTime.now().millisecondsSinceEpoch;
     final random = _random.nextInt(1000);
-    return 'meditation_session_$timestamp_$random';
+    return 'meditation_session_${timestamp}_$random';
   }
 
   /// Get all available meditations (in a real app, this would come from a database)

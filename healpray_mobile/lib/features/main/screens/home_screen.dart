@@ -78,74 +78,74 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             
             // Main content
             SafeArea(
-          child: RefreshIndicator(
-            onRefresh: () async {
-              // TODO: Refresh user data
-              await Future.delayed(const Duration(seconds: 1));
-            },
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Header
-                _buildHeader(context, user?.displayName),
-
-                const SizedBox(height: 24),
-
-                // Daily quote with animation
-                _buildAnimatedCard(
-                  animation: _cardAnimations[0],
-                  child: const SpiritualQuoteCard(),
-                ),
-
-                const SizedBox(height: 20),
-
-                // Stats row with animation
-                _buildAnimatedCard(
-                  animation: _cardAnimations[1],
-                  child: Row(
+              child: RefreshIndicator(
+                onRefresh: () async {
+                  // TODO: Refresh user data
+                  await Future.delayed(const Duration(seconds: 1));
+                },
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(
-                          child: DailyStreakCard(
-                              streak: user?.analytics.currentStreak ?? 0)),
-                      const SizedBox(width: 12),
-                      const Expanded(child: MoodSummaryCard()),
+                      // Header
+                      _buildHeader(context, user?.displayName),
+
+                      const SizedBox(height: 24),
+
+                      // Daily quote with animation
+                      _buildAnimatedCard(
+                        animation: _cardAnimations[0],
+                        child: const SpiritualQuoteCard(),
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      // Stats row with animation
+                      _buildAnimatedCard(
+                        animation: _cardAnimations[1],
+                        child: Row(
+                          children: [
+                            Expanded(
+                                child: DailyStreakCard(
+                                    streak: user?.analytics.currentStreak ?? 0)),
+                            const SizedBox(width: 12),
+                            const Expanded(child: MoodSummaryCard()),
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(height: 24),
+
+                      // Quick actions with animation
+                      _buildAnimatedCard(
+                        animation: _cardAnimations[2],
+                        child: _buildQuickActions(context),
+                      ),
+
+                      const SizedBox(height: 24),
+
+                      // Recent activities with animation
+                      _buildAnimatedCard(
+                        animation: _cardAnimations[3],
+                        child: _buildRecentActivities(context),
+                      ),
+
+                      const SizedBox(height: 20),
+                      
+                      // AdMob Banner with animation
+                      _buildAnimatedCard(
+                        animation: _cardAnimations[4],
+                        child: const AdMobBanner(),
+                      ),
+                      
+                      const SizedBox(height: 20),
                     ],
                   ),
                 ),
-
-                const SizedBox(height: 24),
-
-                // Quick actions with animation
-                _buildAnimatedCard(
-                  animation: _cardAnimations[2],
-                  child: _buildQuickActions(context),
-                ),
-
-                const SizedBox(height: 24),
-
-                // Recent activities with animation
-                _buildAnimatedCard(
-                  animation: _cardAnimations[3],
-                  child: _buildRecentActivities(context),
-                ),
-
-                const SizedBox(height: 20),
-                
-                // AdMob Banner with animation
-                _buildAnimatedCard(
-                  animation: _cardAnimations[4],
-                  child: const AdMobBanner(),
-                ),
-                
-                const SizedBox(height: 20),
-              ],
+              ),
             ),
-            ),
-          ),
-            ],
-          ),
+          ],
         ),
       ),
     );

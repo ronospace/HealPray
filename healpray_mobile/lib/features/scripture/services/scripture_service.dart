@@ -670,7 +670,7 @@ class ScriptureService {
   String _generateReadingId() {
     final timestamp = DateTime.now().millisecondsSinceEpoch;
     final random = _random.nextInt(1000);
-    return 'reading_$timestamp_$random';
+    return 'reading_${timestamp}_$random';
   }
 
   int _calculateReadingStreak(List<ScriptureReadingEntry> entries) {

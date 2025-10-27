@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
 
@@ -453,15 +454,80 @@ class NotificationService {
     return (type.hashCode + day).abs() % 100000;
   }
 
-  /// Load saved preferences (placeholder - implement with SharedPreferences or Hive)
+  /// Load saved preferences from Hive
   Future<void> _loadPreferences() async {
-    // TODO: Load from storage
-    AppLogger.debug('Loading notification preferences from storage');
+    try {
+      final box = await Hive.openBox('app_settings');
+      final savedPrefs = box.get('notification_preferences');
+      
+      if (savedPrefs != null && savedPrefs is Map) {
+        _preferences = NotificationPreferences(
+          meditationReminders: savedPrefs['meditationReminders'] as bool? ?? true,
+          meditationTime: _parseTimeOfDay(savedPrefs['meditationTime']),
+          meditationDays: List<int>.from(savedPrefs['meditationDays'] ?? [1, 2, 3, 4, 5, 6, 7]),
+          moodCheckins: savedPrefs['moodCheckins'] as bool? ?? true,
+          moodCheckinTime: _parseTimeOfDay(savedPrefs['moodCheckinTime']),
+          moodCheckinDays: List<int>.from(savedPrefs['moodCheckinDays'] ?? [1, 2, 3, 4, 5, 6, 7]),
+          verseOfDay: savedPrefs['verseOfDay'] as bool? ?? true,
+          verseOfDayTime: _parseTimeOfDay(savedPrefs['verseOfDayTime']),
+          prayerReminders: savedPrefs['prayerReminders'] as bool? ?? false,
+          prayerTimes: (savedPrefs['prayerTimes'] as List?)?.map((t) => _parseTimeOfDay(t)).whereType<TimeOfDay>().toList() ?? [],
+          prayerDays: List<int>.from(savedPrefs['prayerDays'] ?? [1, 2, 3, 4, 5, 6, 7]),
+          spiritualInsights: savedPrefs['spiritualInsights'] as bool? ?? true,
+          crisisAlerts: savedPrefs['crisisAlerts'] as bool? ?? true,
+        );
+        AppLogger.debug('Notification preferences loaded from storage');
+      } else {
+        AppLogger.debug('No saved notification preferences found, using defaults');
+      }
+    } catch (e, stackTrace) {
+      AppLogger.error('Failed to load notification preferences', e, stackTrace);
+    }
   }
 
-  /// Save preferences (placeholder - implement with SharedPreferences or Hive)
+  /// Save preferences to Hive
   Future<void> _savePreferences() async {
-    // TODO: Save to storage
-    AppLogger.debug('Saving notification preferences to storage');
+    try {
+      final box = await Hive.openBox('app_settings');
+      await box.put('notification_preferences', {
+        'meditationReminders': _preferences.meditationReminders,
+        'meditationTime': _preferences.meditationTime != null
+            ? {'hour': _preferences.meditationTime!.hour, 'minute': _preferences.meditationTime!.minute}
+            : null,
+        'meditationDays': _preferences.meditationDays,
+        'moodCheckins': _preferences.moodCheckins,
+        'moodCheckinTime': _preferences.moodCheckinTime != null
+            ? {'hour': _preferences.moodCheckinTime!.hour, 'minute': _preferences.moodCheckinTime!.minute}
+            : null,
+        'moodCheckinDays': _preferences.moodCheckinDays,
+        'verseOfDay': _preferences.verseOfDay,
+        'verseOfDayTime': _preferences.verseOfDayTime != null
+            ? {'hour': _preferences.verseOfDayTime!.hour, 'minute': _preferences.verseOfDayTime!.minute}
+            : null,
+        'prayerReminders': _preferences.prayerReminders,
+        'prayerTimes': _preferences.prayerTimes
+            .map((t) => {'hour': t.hour, 'minute': t.minute})
+            .toList(),
+        'prayerDays': _preferences.prayerDays,
+        'spiritualInsights': _preferences.spiritualInsights,
+        'crisisAlerts': _preferences.crisisAlerts,
+      });
+      AppLogger.debug('Notification preferences saved to storage');
+    } catch (e, stackTrace) {
+      AppLogger.error('Failed to save notification preferences', e, stackTrace);
+    }
+  }
+
+  /// Parse TimeOfDay from map
+  TimeOfDay? _parseTimeOfDay(dynamic data) {
+    if (data == null) return null;
+    if (data is Map) {
+      final hour = data['hour'] as int?;
+      final minute = data['minute'] as int?;
+      if (hour != null && minute != null) {
+        return TimeOfDay(hour: hour, minute: minute);
+      }
+    }
+    return null;
   }
 }

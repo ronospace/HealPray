@@ -443,6 +443,6 @@ class CrisisDetectionService {
   String _generateAlertId() {
     final timestamp = DateTime.now().millisecondsSinceEpoch;
     final random = Random().nextInt(1000);
-    return 'crisis_alert_$timestamp_$random';
+    return 'crisis_alert_${timestamp}_$random';
   }
 }

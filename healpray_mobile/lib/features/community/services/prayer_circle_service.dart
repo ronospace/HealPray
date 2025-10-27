@@ -371,19 +371,19 @@ class PrayerCircleService {
   String _generateCircleId() {
     final timestamp = DateTime.now().millisecondsSinceEpoch;
     final random = _random.nextInt(1000);
-    return 'circle_$timestamp_$random';
+    return 'circle_${timestamp}_$random';
   }
 
   String _generateRequestId() {
     final timestamp = DateTime.now().millisecondsSinceEpoch;
     final random = _random.nextInt(1000);
-    return 'request_$timestamp_$random';
+    return 'request_${timestamp}_$random';
   }
 
   String _generateResponseId() {
     final timestamp = DateTime.now().millisecondsSinceEpoch;
     final random = _random.nextInt(1000);
-    return 'response_$timestamp_$random';
+    return 'response_${timestamp}_$random';
   }
 
   /// Load sample data for demo
