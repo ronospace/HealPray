@@ -22,18 +22,17 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const GradientText(
+        title: const Text(
           'Settings',
-          gradient: LinearGradient(
-            colors: [Colors.white, Color(0xFFE5F0FF)],
-          ),
           style: TextStyle(
+            color: Colors.white,
             fontWeight: FontWeight.w600,
             fontSize: 20,
           ),
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: AnimatedGradientBackground(
         child: SafeArea(
@@ -49,7 +48,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         width: 60,
                         height: 60,
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
+                          color: Colors.white.withValues(alpha: 0.2),
                           shape: BoxShape.circle,
                         ),
                         child: user.photoURL != null
@@ -86,7 +85,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                               user.email ?? '',
                               style: TextStyle(
                                 fontSize: 14,
-                                color: Colors.white.withOpacity(0.7),
+                                color: Colors.white.withValues(alpha: 0.7),
                               ),
                             ),
                           ],
@@ -98,7 +97,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         },
                         icon: Icon(
                           Icons.edit,
-                          color: Colors.white.withOpacity(0.7),
+                          color: Colors.white.withValues(alpha: 0.7),
                         ),
                       ),
                     ],
@@ -318,7 +317,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   if (!isLast)
                     Divider(
                       height: 1,
-                      color: Colors.white.withOpacity(0.2),
+                      color: Colors.white.withValues(alpha: 0.2),
                       indent: 60,
                     ),
                 ],
@@ -343,7 +342,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         width: 40,
         height: 40,
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.2),
+          color: Colors.white.withValues(alpha: 0.2),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Icon(
@@ -363,7 +362,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ? Text(
               subtitle,
               style: TextStyle(
-                color: Colors.white.withOpacity(0.7),
+                color: Colors.white.withValues(alpha: 0.7),
                 fontSize: 13,
               ),
             )
@@ -372,7 +371,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           (onTap != null
               ? Icon(
                   Icons.chevron_right,
-                  color: Colors.white.withOpacity(0.7),
+                  color: Colors.white.withValues(alpha: 0.7),
                 )
               : null),
       onTap: onTap,

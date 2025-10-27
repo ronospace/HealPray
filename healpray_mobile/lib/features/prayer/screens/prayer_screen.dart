@@ -79,7 +79,7 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen> {
                     Text(
                       'Psalm 46:10',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Colors.white.withOpacity(0.8),
+                            color: Colors.white.withValues(alpha: 0.8),
                           ),
                     ),
                   ],
@@ -171,7 +171,7 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen> {
           width: 48,
           height: 48,
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.2),
+            color: Colors.white.withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(
@@ -190,12 +190,12 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen> {
         subtitle: Text(
           subtitle,
           style: TextStyle(
-            color: Colors.white.withOpacity(0.7),
+            color: Colors.white.withValues(alpha: 0.7),
           ),
         ),
         trailing: Icon(
           Icons.chevron_right,
-          color: Colors.white.withOpacity(0.7),
+          color: Colors.white.withValues(alpha: 0.7),
         ),
       ),
     );

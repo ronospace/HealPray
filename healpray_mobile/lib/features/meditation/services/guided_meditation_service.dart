@@ -5,9 +5,8 @@ import '../../../core/utils/logger.dart';
 import '../../../shared/services/analytics_service.dart';
 import '../../mood/services/mood_service.dart';
 import '../models/guided_meditation.dart';
-import '../models/meditation_session.dart' as meditation_session
-    hide MeditationType;
-import '../models/meditation_type.dart';
+import '../models/meditation_session.dart';
+import '../models/meditation_type.dart' as guided_type;
 
 /// Advanced guided meditation service with AI-powered personalization
 class GuidedMeditationService {
@@ -22,8 +21,8 @@ class GuidedMeditationService {
   final Random _random = Random();
 
   Timer? _sessionTimer;
-  StreamController<meditation_session.MeditationSession>? _sessionController;
-  meditation_session.MeditationSession? _currentSession;
+  StreamController<MeditationSession>? _sessionController;
+  MeditationSession? _currentSession;
 
   /// Get personalized meditation recommendations based on current state
   Future<List<GuidedMeditation>> getPersonalizedRecommendations() async {
@@ -34,7 +33,7 @@ class GuidedMeditationService {
       final recentMoods = await _moodService.getRecentEntries(limit: 7);
       final averageMood = recentMoods.isEmpty
           ? 5.0
-          : recentMoods.fold<double>(0, (sum, entry) => sum + entry.moodScore) /
+          : recentMoods.fold<double>(0, (sum, entry) => sum + entry.score) /
               recentMoods.length;
 
       // Analyze current emotional state
@@ -76,7 +75,7 @@ class GuidedMeditationService {
   }
 
   /// Start a guided meditation session
-  Future<Stream<meditation_session.MeditationSession>> startMeditationSession(
+  Future<Stream<MeditationSession>> startMeditationSession(
     GuidedMeditation meditation,
   ) async {
     try {
@@ -86,18 +85,19 @@ class GuidedMeditationService {
       await endCurrentSession();
 
       // Create new session
-      _currentSession = meditation_session.MeditationSession(
+      _currentSession = MeditationSession(
         id: _generateSessionId(),
         userId: 'current_user', // Will be replaced by actual user ID when Firebase is enabled
-        type: meditation_session.MeditationType.guided,
-        duration: meditation_session.MeditationDuration.custom,
+        type: MeditationType.guided,
+        duration: MeditationDuration.custom,
         startedAt: DateTime.now(),
         targetDurationMinutes: meditation.duration.inMinutes,
         title: meditation.title,
+        isActive: true,
       );
 
       _sessionController =
-          StreamController<meditation_session.MeditationSession>.broadcast();
+          StreamController<MeditationSession>.broadcast();
 
       // Start the session timer
       _startSessionTimer(meditation);
@@ -118,7 +118,7 @@ class GuidedMeditationService {
   }
 
   /// End the current meditation session
-  Future<meditation_session.MeditationSession?> endCurrentSession() async {
+  Future<MeditationSession?> endCurrentSession() async{
     if (_currentSession == null) return null;
 
     try {
@@ -140,9 +140,10 @@ class GuidedMeditationService {
       _sessionController = null;
 
       // Track session end
+      final actualDuration = endedSession.elapsedTime ?? Duration.zero;
       await _analytics.trackEvent('meditation_session_ended', {
         'session_id': endedSession.id,
-        'duration_completed': endedSession.actualDuration?.inMinutes ?? 0,
+        'duration_completed': actualDuration.inMinutes,
         'completion_percentage': endedSession.completionPercentage,
         'was_completed': endedSession.isCompleted,
       });
@@ -158,7 +159,7 @@ class GuidedMeditationService {
 
   /// Get meditation by type and preferences
   Future<List<GuidedMeditation>> getMeditationsByType(
-      MeditationType type) async {
+      guided_type.MeditationType type) async {
     final allMeditations = _getAllMeditations();
     return allMeditations.where((m) => m.type == type).toList();
   }
@@ -173,7 +174,7 @@ class GuidedMeditationService {
         'total_minutes': 180,
         'current_streak': 5,
         'longest_streak': 12,
-        'favorite_type': MeditationType.mindfulness.toString(),
+        'favorite_type': guided_type.MeditationType.mindfulness.toString(),
         'average_session_length': 12,
         'sessions_this_week': 7,
         'sessions_this_month': 28,
@@ -218,7 +219,7 @@ class GuidedMeditationService {
     if (_currentSession != null) {
       _currentSession = _currentSession!.copyWith(
         currentPhase: MeditationPhase.completion,
-        isCompleted: true,
+        state: MeditationState.completed,
       );
 
       _sessionController?.add(_currentSession!);
@@ -396,13 +397,13 @@ class GuidedMeditationService {
   }
 
   bool _isHealingMeditation(GuidedMeditation meditation) {
-    return meditation.type == MeditationType.healing ||
+    return meditation.type == guided_type.MeditationType.healing ||
         meditation.tags.any((tag) =>
             ['healing', 'comfort', 'recovery'].contains(tag.toLowerCase()));
   }
 
   bool _isUplifitingMeditation(GuidedMeditation meditation) {
-    return meditation.type == MeditationType.gratitude ||
+    return meditation.type == guided_type.MeditationType.gratitude ||
         meditation.tags.any((tag) => [
               'joy',
               'gratitude',
@@ -426,7 +427,7 @@ class GuidedMeditationService {
         title: 'Morning Intention Setting',
         description:
             'Start your day with purpose and clarity through guided intention setting.',
-        type: MeditationType.mindfulness,
+        type: guided_type.MeditationType.mindfulness,
         duration: const Duration(minutes: 15),
         difficulty: 'Beginner',
         instructor: 'Sarah Chen',
@@ -447,7 +448,7 @@ class GuidedMeditationService {
         title: 'Inner Healing Light',
         description:
             'A gentle healing meditation using visualization and breathing techniques.',
-        type: MeditationType.healing,
+        type: guided_type.MeditationType.healing,
         duration: const Duration(minutes: 20),
         difficulty: 'Intermediate',
         instructor: 'Dr. Michael Rivera',
@@ -468,7 +469,7 @@ class GuidedMeditationService {
         title: 'Progressive Stress Release',
         description:
             'Release tension and stress through progressive relaxation and mindful breathing.',
-        type: MeditationType.relaxation,
+        type: guided_type.MeditationType.relaxation,
         duration: const Duration(minutes: 18),
         difficulty: 'Beginner',
         instructor: 'Lisa Thompson',
@@ -489,7 +490,7 @@ class GuidedMeditationService {
         title: 'Grateful Heart Practice',
         description:
             'Cultivate gratitude and joy through heart-centered meditation.',
-        type: MeditationType.gratitude,
+        type: guided_type.MeditationType.gratitude,
         duration: const Duration(minutes: 12),
         difficulty: 'Beginner',
         instructor: 'Rachel Green',
@@ -510,7 +511,7 @@ class GuidedMeditationService {
         title: 'Journey to Peaceful Sleep',
         description:
             'Gentle meditation to help you unwind and prepare for restful sleep.',
-        type: MeditationType.sleep,
+        type: guided_type.MeditationType.sleep,
         duration: const Duration(minutes: 25),
         difficulty: 'Beginner',
         instructor: 'David Park',
@@ -531,7 +532,7 @@ class GuidedMeditationService {
         title: 'Present Moment Awareness',
         description:
             'Develop mindfulness and presence through breath and body awareness.',
-        type: MeditationType.mindfulness,
+        type: guided_type.MeditationType.mindfulness,
         duration: const Duration(minutes: 16),
         difficulty: 'Intermediate',
         instructor: 'Anna Martinez',

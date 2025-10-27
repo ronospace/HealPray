@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:math';
+import 'dart:math' as math;
 
 import '../../../core/utils/logger.dart';
 import '../../../shared/services/analytics_service.dart';
@@ -442,7 +442,7 @@ class CrisisDetectionService {
 
   String _generateAlertId() {
     final timestamp = DateTime.now().millisecondsSinceEpoch;
-    final random = Random().nextInt(1000);
+    final random = math.Random().nextInt(1000);
     return 'crisis_alert_${timestamp}_$random';
   }
 }

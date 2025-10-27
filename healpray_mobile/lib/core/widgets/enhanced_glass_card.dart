@@ -83,13 +83,13 @@ class _EnhancedGlassCardState extends State<EnhancedGlassCard>
                   borderRadius: BorderRadius.circular(widget.borderRadius),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
+                      color: Colors.black.withValues(alpha: 0.1),
                       blurRadius: 20,
                       offset: const Offset(0, 10),
                       spreadRadius: -5,
                     ),
                     BoxShadow(
-                      color: Colors.white.withOpacity(0.1),
+                      color: Colors.white.withValues(alpha: 0.1),
                       blurRadius: 10,
                       offset: const Offset(0, -5),
                       spreadRadius: -5,
@@ -109,14 +109,14 @@ class _EnhancedGlassCardState extends State<EnhancedGlassCard>
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                           colors: [
-                            Colors.white.withOpacity(widget.opacity + 0.1),
-                            Colors.white.withOpacity(widget.opacity),
+                            Colors.white.withValues(alpha: widget.opacity + 0.1),
+                            Colors.white.withValues(alpha: widget.opacity),
                           ],
                         ),
                         borderRadius:
                             BorderRadius.circular(widget.borderRadius),
                         border: Border.all(
-                          color: Colors.white.withOpacity(0.3),
+                          color: Colors.white.withValues(alpha: 0.3),
                           width: 1.5,
                         ),
                       ),
@@ -137,7 +137,7 @@ class _EnhancedGlassCardState extends State<EnhancedGlassCard>
                                       end: Alignment.centerRight,
                                       colors: [
                                         Colors.transparent,
-                                        Colors.white.withOpacity(0.1),
+                                        Colors.white.withValues(alpha: 0.1),
                                         Colors.transparent,
                                       ],
                                       stops: const [0.0, 0.5, 1.0],

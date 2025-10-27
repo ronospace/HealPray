@@ -29,6 +29,7 @@ import 'features/splash/screens/splash_screen.dart';
 import 'features/community/screens/community_screen_placeholder.dart';
 import 'features/error/screens/error_screen.dart';
 import 'features/inspiration/screens/inspiration_screen.dart';
+import 'features/meditation/screens/meditation_list_screen.dart';
 
 /// Main HealPray application widget
 class HealPrayApp extends ConsumerStatefulWidget {
@@ -182,9 +183,16 @@ class _HealPrayAppState extends ConsumerState<HealPrayApp>
             
             // Inspiration
             GoRoute(
-              path: 'inspiration',
+              path: '/inspiration',
               name: 'inspiration',
               builder: (context, state) => const InspirationScreen(),
+            ),
+
+            // Guided Meditation
+            GoRoute(
+              path: '/meditation',
+              name: 'meditation',
+              builder: (context, state) => const MeditationListScreen(),
             ),
 
             // Settings
@@ -194,7 +202,7 @@ class _HealPrayAppState extends ConsumerState<HealPrayApp>
               builder: (context, state) => const SettingsScreen(),
               routes: [
                 GoRoute(
-                  path: '/notifications',
+                  path: 'notifications',
                   name: 'notification-settings',
                   builder: (context, state) =>
                       const NotificationSettingsScreen(),

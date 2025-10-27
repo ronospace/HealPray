@@ -190,7 +190,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
               Text(
                 '$greeting,',
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: Colors.white.withOpacity(0.9),
+                      color: Colors.white.withValues(alpha: 0.9),
                       fontWeight: FontWeight.w500,
                     ),
               ),
@@ -222,7 +222,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                 children: [
                   Icon(
                     Icons.notifications_outlined,
-                    color: Colors.white.withOpacity(0.9),
+                    color: Colors.white.withValues(alpha: 0.9),
                     size: 24,
                   ),
                   // Notification badge
@@ -255,14 +255,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                   shape: BoxShape.circle,
                   gradient: LinearGradient(
                     colors: [
-                      Colors.white.withOpacity(0.3),
-                      Colors.white.withOpacity(0.15),
+                      Colors.white.withValues(alpha: 0.3),
+                      Colors.white.withValues(alpha: 0.15),
                     ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
                   border: Border.all(
-                    color: Colors.white.withOpacity(0.5),
+                    color: Colors.white.withValues(alpha: 0.5),
                     width: 2,
                   ),
                 ),
@@ -417,7 +417,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.3),
+              color: Colors.white.withValues(alpha: 0.3),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Icon(
@@ -442,7 +442,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                 Text(
                   time,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.white.withOpacity(0.7),
+                        color: Colors.white.withValues(alpha: 0.7),
                       ),
                 ),
               ],
@@ -450,7 +450,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           ),
           Icon(
             Icons.arrow_forward_ios,
-            color: Colors.white.withOpacity(0.6),
+            color: Colors.white.withValues(alpha: 0.6),
             size: 14,
           ),
         ],

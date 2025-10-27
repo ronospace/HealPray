@@ -658,8 +658,16 @@ class _MeditationCompletionScreenState
 
   void _saveFeedbackAndFinish() async {
     try {
-      // TODO: Save rating and reflection to the session
-      // This would involve updating the completed session
+      // Save rating and reflection to the session
+      final meditationService = MeditationService.instance;
+      await meditationService.completeMeditationSession(
+        rating: _rating,
+        reflection: _reflectionController.text.trim().isNotEmpty
+            ? _reflectionController.text.trim()
+            : null,
+      );
+      
+      AppLogger.info('Meditation feedback saved: rating=$_rating');
 
       if (mounted) {
         Navigator.of(context).pushNamedAndRemoveUntil(
@@ -669,6 +677,15 @@ class _MeditationCompletionScreenState
       }
     } catch (e) {
       AppLogger.error('Failed to save meditation feedback', e);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to save feedback: $e'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
     }
   }
 }

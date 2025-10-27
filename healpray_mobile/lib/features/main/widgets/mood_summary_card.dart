@@ -25,7 +25,7 @@ class MoodSummaryCard extends StatelessWidget {
                 width: 32,
                 height: 32,
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.3),
+                  color: Colors.white.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: const Icon(
@@ -41,7 +41,7 @@ class MoodSummaryCard extends StatelessWidget {
                     : trend == 'declining'
                         ? Icons.trending_down
                         : Icons.trending_flat,
-                color: Colors.white.withOpacity(0.7),
+                color: Colors.white.withValues(alpha: 0.7),
                 size: 16,
               ),
             ],
@@ -62,7 +62,7 @@ class MoodSummaryCard extends StatelessWidget {
               Text(
                 '/10',
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: Colors.white.withOpacity(0.7),
+                      color: Colors.white.withValues(alpha: 0.7),
                       fontWeight: FontWeight.w500,
                     ),
               ),
@@ -72,7 +72,7 @@ class MoodSummaryCard extends StatelessWidget {
           Text(
             'Avg Mood',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.white.withOpacity(0.8),
+                  color: Colors.white.withValues(alpha: 0.8),
                   fontWeight: FontWeight.w500,
                 ),
           ),

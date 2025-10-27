@@ -44,19 +44,19 @@ class GlassCard extends StatelessWidget {
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                       colors: [
-                        Colors.white.withOpacity(opacity),
-                        Colors.white.withOpacity(opacity * 0.5),
+                        Colors.white.withValues(alpha: opacity),
+                        Colors.white.withValues(alpha: opacity * 0.5),
                       ],
                     ),
                 borderRadius: BorderRadius.circular(borderRadius),
                 border: border ??
                     Border.all(
-                      color: Colors.white.withOpacity(0.2),
+                      color: Colors.white.withValues(alpha: 0.2),
                       width: 1.5,
                     ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: Colors.black.withValues(alpha: 0.1),
                     blurRadius: 20,
                     spreadRadius: 0,
                     offset: const Offset(0, 10),
@@ -148,7 +148,7 @@ class _GradientCardState extends State<GradientCard>
                 borderRadius: BorderRadius.circular(widget.borderRadius),
                 boxShadow: [
                   BoxShadow(
-                    color: widget.gradientColors.first.withOpacity(0.3),
+                    color: widget.gradientColors.first.withValues(alpha: 0.3),
                     blurRadius: widget.elevation * 2,
                     spreadRadius: 0,
                     offset: Offset(0, widget.elevation),

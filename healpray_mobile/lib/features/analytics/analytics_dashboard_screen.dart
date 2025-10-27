@@ -95,7 +95,7 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
         color: Theme.of(context).cardColor,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             offset: const Offset(0, 2),
             blurRadius: 4,
           ),
@@ -300,7 +300,7 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             offset: const Offset(0, 2),
             blurRadius: 4,
           ),
@@ -416,7 +416,7 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: AppTheme.primaryColor.withOpacity(0.1),
+                        color: AppTheme.primaryColor.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
@@ -467,7 +467,10 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
   }
 
   Widget _buildDeviceInfoCard() {
-    final deviceInfo = _analyticsData['device_info'] as Map<String, dynamic>? ?? {};
+    final rawDeviceInfo = _analyticsData['device_info'];
+    final deviceInfo = rawDeviceInfo != null
+        ? Map<String, dynamic>.from(rawDeviceInfo as Map)
+        : <String, dynamic>{};
     
     return Card(
       child: Padding(
@@ -561,7 +564,7 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: AppTheme.primaryColor.withOpacity(0.1),
+                        color: AppTheme.primaryColor.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
@@ -638,7 +641,10 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
   }
 
   Widget _buildUserVariantsCard() {
-    final userVariants = _abTestData['user_variants'] as Map<String, dynamic>? ?? {};
+    final rawVariants = _abTestData['user_variants'];
+    final userVariants = rawVariants != null 
+        ? Map<String, dynamic>.from(rawVariants as Map) 
+        : <String, dynamic>{};
     
     return Card(
       child: Padding(
@@ -676,7 +682,7 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: Colors.blue.withOpacity(0.1),
+                        color: Colors.blue.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(

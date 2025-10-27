@@ -53,6 +53,21 @@ enum MeditationState {
   cancelled,
 }
 
+/// Meditation phase during a session
+@HiveType(typeId: 54)
+enum MeditationPhase {
+  @HiveField(0)
+  preparation,
+  @HiveField(1)
+  settling,
+  @HiveField(2)
+  main,
+  @HiveField(3)
+  integration,
+  @HiveField(4)
+  completion,
+}
+
 /// Data model for a meditation session
 @freezed
 @HiveType(typeId: 53)
@@ -78,6 +93,11 @@ class MeditationSession with _$MeditationSession {
     @HiveField(17) @Default(0) int rating, // 1-5 stars
     @HiveField(18) @Default({}) Map<String, dynamic> metadata,
     @HiveField(19) @Default(false) bool isCustom,
+    @HiveField(20) @Default(MeditationPhase.preparation) MeditationPhase currentPhase,
+    @HiveField(21) Duration? elapsedTime,
+    @HiveField(22) DateTime? endTime,
+    @HiveField(23) @Default(false) bool isActive,
+    @HiveField(24) @Default(0.0) double completionPercentage,
   }) = _MeditationSession;
 
   factory MeditationSession.fromJson(Map<String, dynamic> json) =>
@@ -102,11 +122,14 @@ extension MeditationSessionExtensions on MeditationSession {
   /// Get a readable duration string
   String get durationString {
     final minutes = durationInMinutes;
-    return '$minutesm';
+    return '$minutes min';
   }
 
-  /// Get completion percentage
-  double get completionPercentage {
+  /// Get target duration as Duration object
+  Duration get targetDuration => Duration(minutes: targetDurationMinutes);
+
+  /// Get completion percentage (computed version if not stored)
+  double get computedCompletionPercentage {
     if (targetDurationMinutes <= 0) return 0.0;
     final targetSeconds = targetDurationMinutes * 60;
     return (actualDurationSeconds / targetSeconds).clamp(0.0, 1.0);

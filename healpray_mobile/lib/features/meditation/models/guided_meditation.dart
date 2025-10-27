@@ -37,14 +37,14 @@ extension GuidedMeditationExtensions on GuidedMeditation {
   String get durationText {
     final minutes = duration.inMinutes;
     if (minutes < 60) {
-      return '$minutesmin';
+      return '$minutes min';
     } else {
       final hours = minutes ~/ 60;
       final remainingMinutes = minutes % 60;
       if (remainingMinutes == 0) {
-        return '$hoursh';
+        return '$hours h';
       } else {
-        return '$hoursh $remainingMinutesmin';
+        return '$hours h $remainingMinutes min';
       }
     }
   }

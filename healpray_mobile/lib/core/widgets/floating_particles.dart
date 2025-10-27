@@ -47,7 +47,7 @@ class _FloatingParticlesState extends State<FloatingParticles>
       size: widget.minSize +
           _random.nextDouble() * (widget.maxSize - widget.minSize),
       color: widget.colors[_random.nextInt(widget.colors.length)]
-          .withOpacity(0.3 + _random.nextDouble() * 0.4),
+          .withValues(alpha: 0.3 + _random.nextDouble() * 0.4),
       speedX: (_random.nextDouble() - 0.5) * 0.002,
       speedY: -0.001 - _random.nextDouble() * 0.002,
     );

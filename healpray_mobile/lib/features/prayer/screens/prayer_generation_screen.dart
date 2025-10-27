@@ -173,7 +173,7 @@ class _PrayerGenerationScreenState
                 hintText:
                     'Share what\'s on your heart or specific prayers needs...',
                 hintStyle: TextStyle(
-                  color: Colors.white.withOpacity(0.6),
+                  color: Colors.white.withValues(alpha: 0.6),
                 ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),

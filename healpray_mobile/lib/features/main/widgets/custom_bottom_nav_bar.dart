@@ -106,19 +106,19 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar>
           end: Alignment.bottomRight,
           colors: [
             Colors.white,
-            AppTheme.healingTeal.withOpacity(0.02),
+            AppTheme.healingTeal.withValues(alpha: 0.02),
           ],
         ),
         borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
         boxShadow: [
           BoxShadow(
-            color: AppTheme.healingTeal.withOpacity(0.1),
+            color: AppTheme.healingTeal.withValues(alpha: 0.1),
             blurRadius: 30,
             spreadRadius: 0,
             offset: const Offset(0, -5),
           ),
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             spreadRadius: 0,
             offset: const Offset(0, -2),
@@ -173,8 +173,8 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar>
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
                                 colors: [
-                                  AppTheme.healingTeal.withOpacity(0.15),
-                                  AppTheme.healingBlue.withOpacity(0.15),
+                                  AppTheme.healingTeal.withValues(alpha: 0.15),
+                                  AppTheme.healingBlue.withValues(alpha: 0.15),
                                 ],
                               )
                             : null,
@@ -182,7 +182,7 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar>
                         boxShadow: isSelected
                             ? [
                                 BoxShadow(
-                                  color: AppTheme.healingTeal.withOpacity(0.3),
+                                  color: AppTheme.healingTeal.withValues(alpha: 0.3),
                                   blurRadius: 12,
                                   spreadRadius: 0,
                                 ),
@@ -236,7 +236,7 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar>
                     boxShadow: isSelected
                         ? [
                             BoxShadow(
-                              color: AppTheme.healingTeal.withOpacity(0.5),
+                              color: AppTheme.healingTeal.withValues(alpha: 0.5),
                               blurRadius: 4,
                               spreadRadius: 1,
                             ),

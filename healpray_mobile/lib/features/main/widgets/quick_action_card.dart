@@ -73,30 +73,33 @@ class _QuickActionCardState extends State<QuickActionCard>
         builder: (context, child) {
           return Transform.scale(
             scale: _scaleAnimation.value,
-            child: EnhancedGlassCard(
-              enableShimmer: true,
-              shimmerBaseColor: widget.color.withOpacity(0.3),
-              shimmerHighlightColor: widget.color.withOpacity(0.6),
-              gradient: LinearGradient(
-                colors: [
-                  widget.color.withOpacity(0.7 + (_glowAnimation.value * 0.2)),
-                  widget.color.withOpacity(0.5 + (_glowAnimation.value * 0.2)),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    widget.color.withValues(alpha: 0.7 + (_glowAnimation.value * 0.2)),
+                    widget.color.withValues(alpha: 0.5 + (_glowAnimation.value * 0.2)),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(20),
               ),
-              child: Column(
+              child: EnhancedGlassCard(
+                enableShimmer: true,
+                padding: const EdgeInsets.all(16),
+                child: Column(
                 children: [
                   // Icon with glow effect
                   Container(
                     width: 52,
                     height: 52,
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.25 + (_glowAnimation.value * 0.15)),
+                      color: Colors.white.withValues(alpha: 0.25 + (_glowAnimation.value * 0.15)),
                       borderRadius: BorderRadius.circular(26),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.white.withOpacity(0.3 * _glowAnimation.value),
+                          color: Colors.white.withValues(alpha: 0.3 * _glowAnimation.value),
                           blurRadius: 12 * _glowAnimation.value,
                           spreadRadius: 2 * _glowAnimation.value,
                         ),
@@ -122,6 +125,7 @@ class _QuickActionCardState extends State<QuickActionCard>
                   ),
                 ],
               ),
+            ),
             ),
           );
         },

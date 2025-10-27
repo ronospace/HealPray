@@ -26,6 +26,7 @@ HealPray transforms daily spiritual practice through intelligent mood adaptation
 - 🧠 **AI-Powered Prayer Generation** - Personalized prayers based on your mood and spiritual needs
 - 📊 **Mood Tracking & Analytics** - Visual insights into your emotional and spiritual journey  
 - 🔔 **Smart Notifications** - Contextual prayers delivered at optimal times
+- 🧘 **Guided Meditation** - 9 meditation types including Mindfulness, Healing, Sleep, and Spiritual practices
 - 🎵 **Audio & Voice Experience** - Natural voice reading with ambient soundscapes
 - 💬 **Conversational AI Companion** - Empathetic support when you need it most
 - 🌐 **Community Features** - Anonymous prayer circles and shared reflections
@@ -320,6 +321,29 @@ We are committed to fostering an inclusive, respectful, and harassment-free envi
 This project is proprietary software owned by HealPray Technologies. Unauthorized copying, modification, or distribution is prohibited.
 
 For licensing inquiries, contact: licensing@healpray.app
+
+---
+
+## 🔄 **Recent Updates**
+
+### **v0.2.0** (Latest)
+- ✅ Fixed navigation routing issues (Settings → Notifications)
+- ✅ Fixed Settings screen title visibility on gradient background
+- ✅ Implemented Guided Meditation feature with 9 meditation types
+- ✅ Fixed type casting errors in Analytics Dashboard
+- ✅ Added meditation filtering by type (Mindfulness, Healing, Gratitude, etc.)
+- ✅ Improved UI consistency across all screens
+- 🚧 Prayer Journal feature (in development)
+- 🚧 Scripture Reading feature (in development)
+- 🚧 Community screen enhancements (in development)
+
+### **v0.1.0** (Initial Release)
+- 🎉 Core prayer generation functionality
+- 📊 Mood tracking and analytics
+- 💬 AI chat companion with Gemini integration
+- 🎨 Beautiful gradient UI with glassmorphism design
+- 🔔 Notification settings and preferences
+- 📈 Analytics dashboard with A/B testing
 
 ---
 

@@ -113,7 +113,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               _getContextDisplayName(_currentConversation!.context),
               style: TextStyle(
                 fontSize: 12,
-                color: Colors.white.withOpacity(0.7),
+                color: Colors.white.withValues(alpha: 0.7),
               ),
             ),
         ],

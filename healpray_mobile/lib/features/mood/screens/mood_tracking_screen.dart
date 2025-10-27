@@ -98,8 +98,8 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen>
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                AppTheme.healingTeal.withOpacity(0.7),
-                AppTheme.healingTeal.withOpacity(0.5),
+                AppTheme.healingTeal.withValues(alpha: 0.7),
+                AppTheme.healingTeal.withValues(alpha: 0.5),
               ],
             ),
           ),
@@ -277,7 +277,7 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen>
             width: 48,
             height: 48,
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
@@ -296,12 +296,12 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen>
           subtitle: Text(
             subtitle,
             style: TextStyle(
-              color: Colors.white.withOpacity(0.7),
+              color: Colors.white.withValues(alpha: 0.7),
             ),
           ),
           trailing: Icon(
             Icons.chevron_right,
-            color: Colors.white.withOpacity(0.7),
+            color: Colors.white.withValues(alpha: 0.7),
           ),
         ),
       ),

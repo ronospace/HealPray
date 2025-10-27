@@ -26,7 +26,7 @@ class DailyStreakCard extends StatelessWidget {
                 width: 32,
                 height: 32,
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.3),
+                  color: Colors.white.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: const Icon(
@@ -38,7 +38,7 @@ class DailyStreakCard extends StatelessWidget {
               const Spacer(),
               Icon(
                 Icons.trending_up,
-                color: Colors.white.withOpacity(0.7),
+                color: Colors.white.withValues(alpha: 0.7),
                 size: 16,
               ),
             ],
@@ -56,7 +56,7 @@ class DailyStreakCard extends StatelessWidget {
           Text(
             'Day Streak',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.white.withOpacity(0.8),
+                  color: Colors.white.withValues(alpha: 0.8),
                   fontWeight: FontWeight.w500,
                 ),
           ),

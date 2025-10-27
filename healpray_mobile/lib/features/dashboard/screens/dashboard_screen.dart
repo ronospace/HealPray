@@ -243,7 +243,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                 fontSize: 22,
                 shadows: [
                   Shadow(
-                    color: Colors.black.withOpacity(0.3),
+                    color: Colors.black.withValues(alpha: 0.3),
                     offset: const Offset(0, 2),
                     blurRadius: 4,
                   ),
@@ -254,15 +254,15 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.15),
+            color: Colors.white.withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withValues(alpha: 0.2),
               width: 1.5,
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
+                color: Colors.black.withValues(alpha: 0.1),
                 blurRadius: 20,
                 spreadRadius: 0,
                 offset: const Offset(0, 10),
@@ -279,7 +279,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                 subtitle: 'Started your day with gratitude',
                 time: 'Today, 7:30 AM',
               ),
-              Divider(height: 24, color: Colors.white.withOpacity(0.2)),
+              Divider(height: 24, color: Colors.white.withValues(alpha: 0.2)),
               _buildActivityItem(
                 context,
                 icon: Icons.sentiment_satisfied_alt,
@@ -288,7 +288,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                 subtitle: 'Feeling peaceful and hopeful',
                 time: 'Yesterday, 8:15 PM',
               ),
-              Divider(height: 24, color: Colors.white.withOpacity(0.2)),
+              Divider(height: 24, color: Colors.white.withValues(alpha: 0.2)),
               _buildActivityItem(
                 context,
                 icon: Icons.self_improvement,
@@ -343,7 +343,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
               Text(
                 subtitle,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.white.withOpacity(0.7),
+                      color: Colors.white.withValues(alpha: 0.7),
                     ),
               ),
             ],
@@ -352,7 +352,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
         Text(
           time,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Colors.white.withOpacity(0.6),
+                color: Colors.white.withValues(alpha: 0.6),
               ),
         ),
       ],
