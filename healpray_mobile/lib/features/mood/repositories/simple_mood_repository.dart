@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:hive_flutter/hive_flutter.dart';
 
 import '../models/simple_mood_entry.dart';
 import '../../../core/utils/logger.dart';
@@ -236,26 +237,51 @@ class SimpleMoodRepository {
     return Map.fromEntries(sortedEmotions);
   }
 
-  /// Load mood entries from storage
+  /// Load mood entries from Hive storage
   Future<void> loadFromStorage() async {
     try {
-      // TODO: Implement actual file-based persistence
-      // For now, this is a placeholder for future Hive implementation
-      AppLogger.debug('Loading mood entries from storage...');
+      final box = await Hive.openBox('mood_entries');
+      _moodEntries.clear();
+      
+      for (var key in box.keys) {
+        try {
+          final data = box.get(key);
+          if (data is Map) {
+            final entry = SimpleMoodEntry.fromJson(
+              Map<String, dynamic>.from(data),
+            );
+            _moodEntries.add(entry);
+          }
+        } catch (e) {
+          AppLogger.error('Error loading mood entry $key', e);
+        }
+      }
+      
+      // Sort by timestamp (most recent first)
+      _moodEntries.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+      
+      AppLogger.debug('Loaded ${_moodEntries.length} mood entries from Hive');
     } catch (e) {
-      AppLogger.error('Error loading mood entries', e);
+      AppLogger.error('Error loading mood entries from storage', e);
     }
   }
 
-  /// Persist mood entries to storage
+  /// Persist mood entries to Hive storage
   Future<void> _persistToStorage() async {
     try {
-      // TODO: Implement actual file-based persistence
-      // For now, this is a placeholder for future Hive implementation
-      AppLogger.debug(
-          'Persisting ${_moodEntries.length} mood entries to storage...');
+      final box = await Hive.openBox('mood_entries');
+      
+      // Clear existing data
+      await box.clear();
+      
+      // Save all entries
+      for (var entry in _moodEntries) {
+        await box.put(entry.id, entry.toJson());
+      }
+      
+      AppLogger.debug('Persisted ${_moodEntries.length} mood entries to Hive');
     } catch (e) {
-      AppLogger.error('Error persisting mood entries', e);
+      AppLogger.error('Error persisting mood entries to storage', e);
     }
   }
 
