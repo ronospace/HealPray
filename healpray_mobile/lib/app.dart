@@ -9,6 +9,9 @@ import 'core/utils/logger.dart';
 import 'shared/services/analytics_service.dart';
 import 'shared/services/notification_service.dart';
 import 'features/settings/screens/notification_settings_screen.dart';
+import 'features/settings/screens/privacy_policy_screen.dart';
+import 'features/settings/screens/data_security_screen.dart';
+import 'features/settings/screens/about_screen.dart';
 import 'features/auth/screens/welcome_screen.dart';
 import 'features/auth/screens/login_screen.dart';
 import 'features/auth/screens/register_screen.dart';
@@ -207,6 +210,21 @@ class _HealPrayAppState extends ConsumerState<HealPrayApp>
                   name: 'notification-settings',
                   builder: (context, state) =>
                       const NotificationSettingsScreen(),
+                ),
+                GoRoute(
+                  path: 'privacy-policy',
+                  name: 'privacy-policy',
+                  builder: (context, state) => const PrivacyPolicyScreen(),
+                ),
+                GoRoute(
+                  path: 'data-security',
+                  name: 'data-security',
+                  builder: (context, state) => const DataSecurityScreen(),
+                ),
+                GoRoute(
+                  path: 'about',
+                  name: 'about',
+                  builder: (context, state) => const AboutScreen(),
                 ),
               ],
             ),

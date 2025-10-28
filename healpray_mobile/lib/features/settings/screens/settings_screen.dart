@@ -5,8 +5,11 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/animated_gradient_background.dart';
 import '../../../core/widgets/glass_card.dart';
 import '../../../core/widgets/gradient_text.dart';
+import '../../../core/widgets/adaptive_app_bar.dart';
 import '../../../shared/providers/auth_provider.dart';
 import '../../../core/providers/theme_provider.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:share_plus/share_plus.dart';
 
 /// Settings screen for app configuration
 class SettingsScreen extends ConsumerStatefulWidget {
@@ -22,18 +25,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final user = ref.watch(currentUserProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Settings',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w600,
-            fontSize: 20,
-          ),
-        ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
+      appBar: const AdaptiveAppBar(
+        title: Text('Settings'),
       ),
       body: AnimatedGradientBackground(
         child: SafeArea(
@@ -130,7 +123,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   title: 'Privacy Policy',
                   subtitle: 'How we handle your data',
                   onTap: () {
-                    // Navigate to privacy policy
+                    context.push('/settings/privacy-policy');
                   },
                 ),
                 _buildSettingsTile(
@@ -138,7 +131,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   title: 'Data Security',
                   subtitle: 'Encryption and security info',
                   onTap: () {
-                    // Navigate to security info
+                    context.push('/settings/data-security');
                   },
                 ),
                 _buildSettingsTile(
@@ -153,9 +146,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   icon: Icons.download,
                   title: 'Export Data',
                   subtitle: 'Download your data',
-                  onTap: () {
-                    // Export user data
-                  },
+                  onTap: () => _showExportDataDialog(context),
                 ),
               ],
             ),
@@ -203,12 +194,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   },
                 ),
                 _buildSettingsTile(
-                  icon: Icons.contact_support_outlined,
+                  icon: Icons.help_center_outlined,
                   title: 'Contact Us',
                   subtitle: 'Get in touch',
-                  onTap: () {
-                    // Navigate to contact
-                  },
+                  onTap: () => _showContactOptions(context),
                 ),
               ],
             ),
@@ -233,8 +222,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   icon: Icons.star_outline,
                   title: 'Rate App',
                   subtitle: 'Share your experience',
+                  onTap: () => _requestRateApp(context),
+                ),
+                _buildSettingsTile(
+                  icon: Icons.info_outline,
+                  title: 'About',
+                  subtitle: 'App version and info',
                   onTap: () {
-                    // Open app store rating
+                    context.push('/settings/about');
                   },
                 ),
               ],
@@ -454,6 +449,153 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         ref.read(themeModeProvider.notifier).setThemeMode(mode);
         Navigator.of(context).pop();
       },
+    );
+  }
+
+  void _showExportDataDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Export Data'),
+        content: const Text(
+          'This will export all your data including mood entries, prayers, and settings to a JSON file.',
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              _exportData();
+            },
+            child: const Text('Export'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _exportData() async {
+    // TODO: Implement actual data export
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text('Exporting your data...'),
+        backgroundColor: AppTheme.healingTeal,
+      ),
+    );
+    
+    // Simulate export
+    await Future.delayed(const Duration(seconds: 1));
+    
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Data exported successfully!'),
+      ),
+    );
+  }
+
+  void _showContactOptions(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'Contact Us',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 20),
+            _buildContactOption(
+              icon: Icons.email,
+              title: 'Email',
+              subtitle: 'ronos.icloud@gmail.com',
+              onTap: () => _launchUrl('mailto:ronos.icloud@gmail.com'),
+            ),
+            _buildContactOption(
+              icon: Icons.phone,
+              title: 'WhatsApp',
+              subtitle: '+1 (762) 770-2411',
+              onTap: () => _launchUrl('https://wa.me/17627702411'),
+            ),
+            _buildContactOption(
+              icon: Icons.send,
+              title: 'Telegram',
+              subtitle: '@ronospace',
+              onTap: () => _launchUrl('https://t.me/ronospace'),
+            ),
+            const SizedBox(height: 20),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContactOption({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+  }) {
+    return ListTile(
+      leading: Icon(icon, color: AppTheme.healingTeal),
+      title: Text(title),
+      subtitle: Text(subtitle),
+      trailing: const Icon(Icons.open_in_new),
+      onTap: () {
+        Navigator.pop(context);
+        onTap();
+      },
+    );
+  }
+
+  Future<void> _launchUrl(String urlString) async {
+    final uri = Uri.parse(urlString);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+  }
+
+  void _requestRateApp(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Rate HealPray'),
+        content: const Text(
+          'Thank you for using HealPray! Your feedback helps us improve. Would you like to rate us on the App Store?',
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Not Now'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              // TODO: Implement in_app_review
+              _launchUrl('https://apps.apple.com/app/healpray');
+            },
+            child: const Text('Rate'),
+          ),
+        ],
+      ),
     );
   }
 

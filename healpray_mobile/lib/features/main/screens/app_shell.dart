@@ -24,6 +24,7 @@ class AppShell extends ConsumerStatefulWidget {
 
 class _AppShellState extends ConsumerState<AppShell> {
   late int _selectedIndex;
+  late PageController _pageController;
 
   final List<Widget> _pages = [
     const DashboardScreen(),
@@ -70,6 +71,13 @@ class _AppShellState extends ConsumerState<AppShell> {
   void initState() {
     super.initState();
     _selectedIndex = widget.initialIndex;
+    _pageController = PageController(initialPage: widget.initialIndex);
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
   }
 
   @override
@@ -78,8 +86,18 @@ class _AppShellState extends ConsumerState<AppShell> {
     final user = authState.user;
 
     return Scaffold(
-      body: IndexedStack(
-        index: _selectedIndex,
+      body: PageView(
+        controller: _pageController,
+        onPageChanged: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+          // Update route without navigation
+          final route = _navigationItems[index].route;
+          if (route != null) {
+            context.go(route);
+          }
+        },
         children: _pages,
       ),
       bottomNavigationBar: CustomBottomNavBar(
@@ -108,6 +126,13 @@ class _AppShellState extends ConsumerState<AppShell> {
     setState(() {
       _selectedIndex = index;
     });
+
+    // Animate to page
+    _pageController.animateToPage(
+      index,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
 
     // Navigate to the appropriate route
     final route = _navigationItems[index].route;
