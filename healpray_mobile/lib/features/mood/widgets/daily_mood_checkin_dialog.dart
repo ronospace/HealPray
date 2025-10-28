@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/glass_card.dart';
-import '../services/mood_service.dart';
 import '../models/mood_entry.dart';
+import '../models/emotion_type.dart';
+import '../models/mood_enums.dart';
+import '../services/mood_tracking_service.dart';
 
 /// Smart daily mood check-in dialog that appears on app launch
 class DailyMoodCheckInDialog extends ConsumerStatefulWidget {
@@ -299,20 +301,15 @@ class _DailyMoodCheckInDialogState
     });
 
     try {
-      final moodService = MoodService.instance;
-      await moodService.initialize();
+      final moodService = MoodTrackingService();
 
-      // Create mood entry
-      final entry = MoodEntry(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        score: _selectedMood,
-        timestamp: DateTime.now(),
-        emotions: [_getMoodLabel(_selectedMood)],
-        activities: [],
+      // Create mood entry with proper fields
+      final entry = await moodService.createMoodEntry(
+        emotions: _getMoodEmotions(_selectedMood),
+        intensity: _getMoodIntensity(_selectedMood),
+        triggers: [],
         notes: 'Daily check-in',
       );
-
-      await moodService.createMoodEntry(entry);
 
       if (mounted) {
         // Show success feedback
@@ -359,5 +356,21 @@ class _DailyMoodCheckInDialogState
       return 'Wonderful! Let\'s build on this positive energy! 🌟';
     }
     return 'Amazing! Your joy is a blessing to celebrate! 🎉';
+  }
+
+  List<EmotionType> _getMoodEmotions(int mood) {
+    if (mood <= 2) return [EmotionType.sad];
+    if (mood <= 4) return [EmotionType.anxious];
+    if (mood <= 6) return [EmotionType.content];
+    if (mood <= 8) return [EmotionType.hopeful];
+    return [EmotionType.joyful];
+  }
+
+  MoodIntensity _getMoodIntensity(int mood) {
+    if (mood <= 3) return MoodIntensity.veryLow;
+    if (mood <= 5) return MoodIntensity.low;
+    if (mood <= 7) return MoodIntensity.moderate;
+    if (mood <= 9) return MoodIntensity.high;
+    return MoodIntensity.veryHigh;
   }
 }
