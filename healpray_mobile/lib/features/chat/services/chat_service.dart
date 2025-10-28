@@ -5,6 +5,7 @@ import '../repositories/chat_repository.dart';
 import '../../mood/services/mood_service.dart';
 import '../../../core/config/app_config.dart';
 import '../../../core/utils/logger.dart';
+import 'enhanced_sophia_prompts.dart';
 
 /// Service for managing chat interactions and AI responses
 class ChatService {
@@ -193,28 +194,37 @@ class ChatService {
       final recentMessages =
           messages.takeLast(10).toList(); // Last 10 messages for context
 
-      // Get current mood context
+      // Get enhanced context
       final moodContext = await _getCurrentMoodContext();
+      final userProfile = await _getUserProfile();
+      final conversationHistoryList = _buildConversationHistoryList(recentMessages);
 
-      // Build conversation context
-      final systemPrompt = SpiritualGuidancePrompts.getSystemPrompt(
-        context,
-        moodData: moodContext,
+      // Use Enhanced Sophia AI prompts
+      final systemPrompt = EnhancedSophiaPrompts.getMasterSystemPrompt(
+        userProfile: userProfile,
+        recentMoods: moodContext,
+        conversationHistory: conversationHistoryList,
       );
+
+      // Detect conversation mode
+      final mode = _detectConversationMode(userMessage, moodContext);
+      final modePrompt = _getModeSpecificPrompt(mode);
 
       // Build conversation history
       final conversationHistory = _buildConversationHistory(recentMessages);
 
-      // Create full prompt
+      // Create full prompt with enhanced context
       final fullPrompt = '''
 $systemPrompt
+
+$modePrompt
 
 CONVERSATION HISTORY:
 $conversationHistory
 
 USER: $userMessage
 
-SPIRITUAL COMPANION: ''';
+SOPHIA: ''';
 
       // Generate response
       final response = await _aiModel!.generateContent([
@@ -336,16 +346,74 @@ SPIRITUAL COMPANION: ''';
     return null;
   }
 
+  /// Get user profile for personalization
+  Future<Map<String, dynamic>> _getUserProfile() async {
+    // TODO: Implement actual user profile retrieval from Hive/Firestore
+    return {
+      'name': 'Friend', // Default until profile is set
+      'denomination': null,
+      'prayerStyle': null,
+      'prayerFrequency': null,
+      'topics': [],
+      'emotionalPatterns': 'Observing',
+    };
+  }
+
+  /// Build conversation history list for enhanced prompts
+  List<String> _buildConversationHistoryList(List<ChatMessage> messages) {
+    return messages.map((message) {
+      final role = message.type == MessageType.user ? 'USER' : 'SOPHIA';
+      return '$role: ${message.content}';
+    }).toList();
+  }
+
   /// Build conversation history for AI context
   String _buildConversationHistory(List<ChatMessage> messages) {
     final history = StringBuffer();
 
     for (final message in messages) {
-      final role = message.type == MessageType.user ? 'USER' : 'ASSISTANT';
+      final role = message.type == MessageType.user ? 'USER' : 'SOPHIA';
       history.writeln('$role: ${message.content}');
     }
 
     return history.toString();
+  }
+
+  /// Detect conversation mode from message content
+  String _detectConversationMode(String message, Map<String, dynamic>? moodContext) {
+    final lowerMessage = message.toLowerCase();
+    final moodScore = moodContext?['score'] as int? ?? 5;
+
+    // Crisis detection
+    if (lowerMessage.contains(RegExp(r'\b(suicide|kill myself|want to die|end it all|no reason to live)\b'))) {
+      return 'crisis';
+    }
+
+    // Deep existential questions
+    if (lowerMessage.contains(RegExp(r'\b(meaning of life|why am i here|purpose|existence|destiny)\b'))) {
+      return 'deep';
+    }
+
+    // Celebration
+    if (lowerMessage.contains(RegExp(r'\b(amazing|wonderful|breakthrough|miracle|blessed|grateful)\b')) && moodScore >= 7) {
+      return 'celebration';
+    }
+
+    return 'general';
+  }
+
+  /// Get mode-specific prompt enhancement
+  String _getModeSpecificPrompt(String mode) {
+    switch (mode) {
+      case 'crisis':
+        return EnhancedSophiaPrompts.getEnhancedCrisisPrompt();
+      case 'deep':
+        return EnhancedSophiaPrompts.getDeepConversationPrompt();
+      case 'celebration':
+        return EnhancedSophiaPrompts.getCelebrationPrompt();
+      default:
+        return '';
+    }
   }
 
   /// Generate demo response when AI is not available
