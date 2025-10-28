@@ -6,6 +6,8 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/logger.dart';
 import '../../../shared/providers/auth_provider.dart';
 import '../widgets/custom_bottom_nav_bar.dart';
+import '../../mood/widgets/daily_mood_checkin_dialog.dart';
+import '../../mood/services/daily_checkin_service.dart';
 import '../../dashboard/screens/dashboard_screen.dart';
 import '../../mood/screens/mood_tracking_screen.dart';
 import '../../prayer/screens/prayer_screen.dart';
@@ -72,6 +74,30 @@ class _AppShellState extends ConsumerState<AppShell> {
     super.initState();
     _selectedIndex = widget.initialIndex;
     _pageController = PageController(initialPage: widget.initialIndex);
+    _checkAndShowDailyMoodCheckIn();
+  }
+
+  /// Check and show daily mood check-in if needed
+  Future<void> _checkAndShowDailyMoodCheckIn() async {
+    // Wait a bit for the UI to settle
+    await Future.delayed(const Duration(milliseconds: 500));
+    
+    if (!mounted) return;
+    
+    final shouldShow = await DailyCheckInService.shouldShowCheckIn();
+    
+    if (shouldShow && mounted) {
+      final result = await showDialog<dynamic>(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const DailyMoodCheckInDialog(),
+      );
+      
+      // If mood was submitted (not skipped), record the check-in
+      if (result != null) {
+        await DailyCheckInService.recordCheckIn();
+      }
+    }
   }
 
   @override
