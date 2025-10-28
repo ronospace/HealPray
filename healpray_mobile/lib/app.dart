@@ -30,6 +30,7 @@ import 'features/community/screens/community_screen_placeholder.dart';
 import 'features/error/screens/error_screen.dart';
 import 'features/inspiration/screens/inspiration_screen.dart';
 import 'features/meditation/screens/meditation_list_screen.dart';
+import 'core/providers/theme_provider.dart';
 
 /// Main HealPray application widget
 class HealPrayApp extends ConsumerStatefulWidget {
@@ -314,6 +315,8 @@ class _HealPrayAppState extends ConsumerState<HealPrayApp>
 
   @override
   Widget build(BuildContext context) {
+    final themeMode = ref.watch(themeModeProvider);
+    
     return MaterialApp.router(
       // App Metadata
       title: AppConfig.appName,
@@ -325,7 +328,7 @@ class _HealPrayAppState extends ConsumerState<HealPrayApp>
       // Theming
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.system, // Respect system setting
+      themeMode: themeMode, // Dynamic theme mode from provider
 
       // Localization
       localizationsDelegates: const [

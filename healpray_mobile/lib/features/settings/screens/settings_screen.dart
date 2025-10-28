@@ -6,6 +6,7 @@ import '../../../core/widgets/animated_gradient_background.dart';
 import '../../../core/widgets/glass_card.dart';
 import '../../../core/widgets/gradient_text.dart';
 import '../../../shared/providers/auth_provider.dart';
+import '../../../core/providers/theme_provider.dart';
 
 /// Settings screen for app configuration
 class SettingsScreen extends ConsumerStatefulWidget {
@@ -170,14 +171,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     // Navigate to spiritual preferences
                   },
                 ),
-                _buildSettingsTile(
-                  icon: Icons.palette_outlined,
-                  title: 'Theme Settings',
-                  subtitle: 'Appearance and colors',
-                  onTap: () {
-                    // Navigate to theme settings
-                  },
-                ),
+                _buildThemeModeTile(),
                 _buildSettingsTile(
                   icon: Icons.language,
                   title: 'Language',
@@ -375,6 +369,91 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 )
               : null),
       onTap: onTap,
+    );
+  }
+
+  Widget _buildThemeModeTile() {
+    final themeMode = ref.watch(themeModeProvider);
+    
+    return _buildSettingsTile(
+      icon: Icons.brightness_6_outlined,
+      title: 'Theme',
+      subtitle: _getThemeModeLabel(themeMode),
+      onTap: () => _showThemeModeDialog(context),
+    );
+  }
+
+  String _getThemeModeLabel(ThemeMode mode) {
+    switch (mode) {
+      case ThemeMode.light:
+        return 'Light mode';
+      case ThemeMode.dark:
+        return 'Dark mode';
+      case ThemeMode.system:
+        return 'System default';
+    }
+  }
+
+  void _showThemeModeDialog(BuildContext context) {
+    final currentMode = ref.read(themeModeProvider);
+    
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Choose Theme'),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildThemeModeOption(
+              mode: ThemeMode.system,
+              label: 'System Default',
+              icon: Icons.brightness_auto,
+              isSelected: currentMode == ThemeMode.system,
+            ),
+            _buildThemeModeOption(
+              mode: ThemeMode.light,
+              label: 'Light Mode',
+              icon: Icons.light_mode,
+              isSelected: currentMode == ThemeMode.light,
+            ),
+            _buildThemeModeOption(
+              mode: ThemeMode.dark,
+              label: 'Dark Mode',
+              icon: Icons.dark_mode,
+              isSelected: currentMode == ThemeMode.dark,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildThemeModeOption({
+    required ThemeMode mode,
+    required String label,
+    required IconData icon,
+    required bool isSelected,
+  }) {
+    return ListTile(
+      leading: Icon(icon, color: isSelected ? AppTheme.healingTeal : null),
+      title: Text(label),
+      trailing: isSelected
+          ? const Icon(Icons.check, color: AppTheme.healingTeal)
+          : null,
+      selected: isSelected,
+      onTap: () {
+        ref.read(themeModeProvider.notifier).setThemeMode(mode);
+        Navigator.of(context).pop();
+      },
     );
   }
 
