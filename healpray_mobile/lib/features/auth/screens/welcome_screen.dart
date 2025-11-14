@@ -195,42 +195,43 @@ class WelcomeScreen extends ConsumerWidget {
           ),
         ),
 
-        // Development mode quick sign-in (only shown in dev mode)
-        if (AppConfig.isDevelopment) ...[
-          const SizedBox(height: 8),
-          TextButton(
-            onPressed: () => _handleDevSignIn(ref),
-            style: TextButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              backgroundColor: Colors.orange.withValues(alpha: 0.2),
+        const SizedBox(height: 16),
+
+        // Demo Login button (for testers)
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: OutlinedButton(
+            onPressed: () => _handleDemoLogin(ref),
+            style: OutlinedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              side: BorderSide(
+                color: AppTheme.sunriseGold.withValues(alpha: 0.6),
+                width: 1.5,
+              ),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-                side: BorderSide(
-                  color: Colors.orange.withValues(alpha: 0.5),
-                  width: 1,
-                ),
+                borderRadius: BorderRadius.circular(12),
               ),
             ),
             child: Row(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(
-                  Icons.developer_mode,
-                  size: 16,
-                  color: Colors.orange.withValues(alpha: 0.8),
+                  Icons.science_outlined,
+                  size: 18,
+                  color: AppTheme.sunriseGold,
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 10),
                 Text(
-                  'Dev Sign-In',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.orange.withValues(alpha: 0.8),
+                  'Demo Login (For Testing)',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppTheme.sunriseGold,
                         fontWeight: FontWeight.w600,
                       ),
                 ),
               ],
             ),
           ),
-        ],
+        ),
 
         const SizedBox(height: 24),
 
@@ -311,11 +312,11 @@ class WelcomeScreen extends ConsumerWidget {
     await ref.read(authProvider.notifier).signInAnonymously();
   }
 
-  Future<void> _handleDevSignIn(WidgetRef ref) async {
-    // Quick development sign-in with a test email
+  Future<void> _handleDemoLogin(WidgetRef ref) async {
+    // Demo login for testers - uses pre-configured test account
     await ref.read(authProvider.notifier).signInWithEmail(
-          email: 'dev@healpray.com',
-          password: 'devtest123',
+          email: 'demo@healpray.com',
+          password: 'HealPray2025!',
         );
   }
 }

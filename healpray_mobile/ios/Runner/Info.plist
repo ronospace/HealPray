@@ -68,6 +68,10 @@
 	<string>HealPray writes mood and wellness data to Apple Health to maintain a comprehensive health profile.</string>
 	<key>NSUserNotificationsUsageDescription</key>
 	<string>HealPray sends prayer reminders, crisis support alerts, and spiritual encouragement notifications.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>HealPray uses your location to provide contextual spiritual content, find nearby spiritual communities, and send location-based prayer reminders even when the app is in the background.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>HealPray uses speech recognition to help you record voice prayers and interact with the Sophia AI companion through voice commands.</string>
 	
 	
 	<!-- Google AdMob App ID -->
