@@ -177,13 +177,37 @@ class _AboutScreenState extends State<AboutScreen> {
                     color: Colors.white.withValues(alpha: 0.8),
                   ),
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  '© 2025 HealPray Technologies',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.white.withValues(alpha: 0.6),
-                  ),
+                const SizedBox(height: 24),
+                
+                // ZyraFlow Branding
+                Column(
+                  children: [
+                    Text(
+                      'Developed and Maintained by',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.white.withValues(alpha: 0.7),
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    const Text(
+                      'ZyraFlow Inc.™',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      '© 2025 ZyraFlow Inc. All rights reserved.',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.white.withValues(alpha: 0.6),
+                      ),
+                    ),
+                  ],
                 ),
                 
                 const SizedBox(height: 40),

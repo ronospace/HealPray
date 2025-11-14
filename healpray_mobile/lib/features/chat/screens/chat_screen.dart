@@ -94,18 +94,18 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   }
 
   PreferredSizeWidget _buildAppBar() {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    
     return AppBar(
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          GradientText(
+          Text(
             _currentConversation?.title ?? 'Chat with Sophia',
-            gradient: const LinearGradient(
-              colors: [Colors.white, Color(0xFFE5F0FF)],
-            ),
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
+              color: isDarkMode ? Colors.white : Colors.black87,
             ),
           ),
           if (_currentConversation != null)
@@ -113,12 +113,16 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               _getContextDisplayName(_currentConversation!.context),
               style: TextStyle(
                 fontSize: 12,
-                color: Colors.white.withValues(alpha: 0.7),
+                color: isDarkMode 
+                    ? Colors.white.withValues(alpha: 0.7)
+                    : Colors.black54,
               ),
             ),
         ],
       ),
-      backgroundColor: Colors.transparent,
+      backgroundColor: isDarkMode 
+          ? Colors.black.withValues(alpha: 0.3)
+          : Colors.white.withValues(alpha: 0.9),
       elevation: 0,
       leading: IconButton(
         onPressed: () {
@@ -128,9 +132,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             context.go('/');
           }
         },
-        icon: const Icon(
+        icon: Icon(
           Icons.arrow_back_ios,
-          color: Colors.white,
+          color: isDarkMode ? Colors.white : Colors.black87,
         ),
       ),
       actions: [
@@ -139,11 +143,14 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               setState(() => _showContextSelector = !_showContextSelector),
           icon: Icon(
             _showContextSelector ? Icons.close : Icons.tune,
-            color: Colors.white,
+            color: isDarkMode ? Colors.white : Colors.black87,
           ),
         ),
         PopupMenuButton<String>(
-          icon: const Icon(Icons.more_vert, color: Colors.white),
+          icon: Icon(
+            Icons.more_vert,
+            color: isDarkMode ? Colors.white : Colors.black87,
+          ),
           onSelected: _handleMenuAction,
           itemBuilder: (context) => [
             const PopupMenuItem(

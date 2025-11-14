@@ -74,18 +74,20 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen>
 
   @override
   Widget build(BuildContext context) {
-    // final moodEntries = ref.watch(recentMoodEntriesProvider); // TODO: Implement provider
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final iconColor = isDarkMode ? Colors.white : Colors.black87;
+    final textColor = isDarkMode ? Colors.white : Colors.black87;
 
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: Icon(Icons.arrow_back, color: iconColor),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text(
+        title: Text(
           'Mood Tracking',
           style: TextStyle(
-            color: Colors.white,
+            color: textColor,
             fontWeight: FontWeight.w600,
             fontSize: 20,
           ),
@@ -97,9 +99,12 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen>
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [
-                AppTheme.healingTeal.withValues(alpha: 0.7),
-                AppTheme.healingTeal.withValues(alpha: 0.5),
+              colors: isDarkMode ? [
+                Colors.black.withValues(alpha: 0.3),
+                Colors.black.withValues(alpha: 0.1),
+              ] : [
+                Colors.white.withValues(alpha: 0.9),
+                Colors.white.withValues(alpha: 0.7),
               ],
             ),
           ),
@@ -108,9 +113,9 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen>
           IconButton(
             onPressed: () => context.push('/mood/calendar'),
             tooltip: 'View mood calendar',
-            icon: const Icon(
+            icon: Icon(
               Icons.calendar_month,
-              color: Colors.white,
+              color: iconColor,
               semanticLabel: 'Open mood calendar',
             ),
           ),
@@ -123,9 +128,9 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen>
               );
             },
             tooltip: 'View mood analytics',
-            icon: const Icon(
+            icon: Icon(
               Icons.analytics,
-              color: Colors.white,
+              color: iconColor,
               semanticLabel: 'Open mood analytics',
             ),
           ),

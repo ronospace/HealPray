@@ -28,7 +28,7 @@ import 'features/prayer/screens/prayer_screen.dart';
 import 'features/chat/screens/chat_screen.dart';
 import 'features/settings/screens/settings_screen.dart';
 import 'features/crisis/screens/crisis_support_screen.dart';
-import 'features/splash/screens/splash_screen.dart';
+import 'features/onboarding/screens/splash_screen.dart';
 import 'features/community/screens/community_screen_placeholder.dart';
 import 'features/error/screens/error_screen.dart';
 import 'features/inspiration/screens/inspiration_screen.dart';
@@ -71,6 +71,13 @@ class _HealPrayAppState extends ConsumerState<HealPrayApp>
           path: '/splash',
           name: 'splash',
           builder: (context, state) => const SplashScreen(),
+        ),
+        
+        // Profile Screen
+        GoRoute(
+          path: '/profile',
+          name: 'profile',
+          builder: (context, state) => const SettingsScreen(),
         ),
 
         // Onboarding Flow
@@ -238,25 +245,8 @@ class _HealPrayAppState extends ConsumerState<HealPrayApp>
   }
 
   String _getInitialRoute() {
-    // Skip onboarding in development if configured
-    if (AppConfig.skipOnboarding && AppConfig.isDevelopment) {
-      return '/';
-    }
-
-    // Firebase disabled in development mode - always go to auth
-    AppLogger.info('Skipping authentication check - Firebase disabled, redirecting to auth');
-    return '/auth';
-    
-    // Firebase Authentication Flow (Enable when Firebase is configured):
-    // This will check if user is signed in and redirect accordingly
-    // try {
-    //   final user = FirebaseAuth.instance.currentUser;
-    //   if (user == null) return '/auth';
-    //   // Check if onboarding completed, else return '/onboarding'
-    //   return '/';
-    // } catch (e) {
-    //   return '/auth';
-    // }
+    // Always start with splash screen
+    return '/splash';
   }
 
   Future<void> _initializeServices() async {
@@ -343,10 +333,12 @@ class _HealPrayAppState extends ConsumerState<HealPrayApp>
       // Routing
       routerConfig: _router,
 
-      // Theming
+      // Theming with smooth transitions
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: themeMode, // Dynamic theme mode from provider
+      themeAnimationDuration: const Duration(milliseconds: 300), // Smooth theme transitions
+      themeAnimationCurve: Curves.easeInOut,
 
       // Localization
       localizationsDelegates: const [

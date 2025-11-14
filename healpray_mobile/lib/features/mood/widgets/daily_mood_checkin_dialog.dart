@@ -296,6 +296,8 @@ class _DailyMoodCheckInDialogState
   }
 
   Future<void> _submitMood() async {
+    if (_isSubmitting) return;
+    
     setState(() {
       _isSubmitting = true;
     });
@@ -324,12 +326,18 @@ class _DailyMoodCheckInDialogState
 
         Navigator.of(context).pop(entry);
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      // Log detailed error information
+      debugPrint('Error saving mood check-in: $e');
+      debugPrint('Stack trace: $stackTrace');
+      
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Failed to save mood. Please try again.'),
+          SnackBar(
+            content: Text('Failed to save mood: ${e.toString()}'),
             backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+            duration: const Duration(seconds: 3),
           ),
         );
       }

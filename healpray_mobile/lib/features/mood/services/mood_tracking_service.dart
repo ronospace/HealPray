@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../../core/utils/logger.dart';
 import '../../../shared/services/firebase_service.dart';
@@ -13,8 +15,33 @@ import '../models/simple_mood_entry.dart';
 /// Service for managing mood tracking with Firestore integration
 class MoodTrackingService {
   static const String _collectionName = 'mood_entries';
+  static const String _hiveBoxName = 'mood_entries_local';
 
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseFirestore? _firestore;
+  final _uuid = const Uuid();
+  
+  MoodTrackingService() : _firestore = _getFirestoreInstance();
+  
+  /// Safely get Firestore instance, returns null if Firebase not initialized
+  static FirebaseFirestore? _getFirestoreInstance() {
+    try {
+      return FirebaseFirestore.instance;
+    } catch (e) {
+      AppLogger.warning('Firebase not initialized, using local storage');
+      return null;
+    }
+  }
+  
+  /// Check if Firebase is available
+  bool get _isFirebaseAvailable => _firestore != null;
+  
+  /// Get or create local Hive box for offline storage
+  Future<Box<Map>> _getLocalBox() async {
+    if (!Hive.isBoxOpen(_hiveBoxName)) {
+      return await Hive.openBox<Map>(_hiveBoxName);
+    }
+    return Hive.box<Map>(_hiveBoxName);
+  }
 
   /// Create a new mood entry
   Future<MoodEntry> createMoodEntry({
@@ -31,14 +58,12 @@ class MoodTrackingService {
     bool? isPrivate,
   }) async {
     try {
-      final userId = FirebaseService.currentUser?.uid;
-      if (userId == null) {
-        throw Exception('User must be authenticated to create mood entries');
-      }
-
+      final userId = _isFirebaseAvailable ? (FirebaseService.currentUser?.uid ?? 'local_user') : 'local_user';
       final now = DateTime.now();
+      final entryId = _uuid.v4();
+      
       final entry = MoodEntry(
-        id: '', // Will be set by Firestore
+        id: entryId,
         userId: userId,
         timestamp: now,
         emotions: emotions,
@@ -56,14 +81,21 @@ class MoodTrackingService {
         updatedAt: now,
       );
 
-      final docRef =
-          await _firestore.collection(_collectionName).add(entry.toFirestore());
-
-      AppLogger.info('Created mood entry: ${docRef.id}');
+      if (_isFirebaseAvailable) {
+        // Save to Firestore
+        final docRef = await _firestore!.collection(_collectionName).add(entry.toFirestore());
+        AppLogger.info('Created mood entry in Firestore: ${docRef.id}');
+        return entry.copyWith(id: docRef.id);
+      } else {
+        // Save to local Hive storage
+        final box = await _getLocalBox();
+        await box.put(entryId, entry.toJson());
+        AppLogger.info('Created mood entry locally: $entryId');
+      }
       
       // Track mood entry analytics
       final simpleMoodEntry = SimpleMoodEntry(
-        id: docRef.id,
+        id: entryId,
         score: _calculateMoodScore(emotions, intensity),
         emotions: emotions.map((e) => e.name).toList(),
         notes: notes,
@@ -79,7 +111,7 @@ class MoodTrackingService {
         entryMethod: 'manual',
       );
 
-      return entry.copyWith(id: docRef.id);
+      return entry;
     } catch (error, stackTrace) {
       AppLogger.error('Failed to create mood entry', error, stackTrace);
       rethrow;
@@ -91,12 +123,17 @@ class MoodTrackingService {
     try {
       final updatedEntry = entry.copyWithUpdatedAt();
 
-      await _firestore
-          .collection(_collectionName)
-          .doc(entry.id)
-          .update(updatedEntry.toFirestore());
-
-      AppLogger.info('Updated mood entry: ${entry.id}');
+      if (_isFirebaseAvailable) {
+        await _firestore!
+            .collection(_collectionName)
+            .doc(entry.id)
+            .update(updatedEntry.toFirestore());
+        AppLogger.info('Updated mood entry in Firestore: ${entry.id}');
+      } else {
+        final box = await _getLocalBox();
+        await box.put(entry.id, updatedEntry.toJson());
+        AppLogger.info('Updated mood entry locally: ${entry.id}');
+      }
 
       return updatedEntry;
     } catch (error, stackTrace) {
@@ -108,9 +145,14 @@ class MoodTrackingService {
   /// Delete a mood entry
   Future<void> deleteMoodEntry(String entryId) async {
     try {
-      await _firestore.collection(_collectionName).doc(entryId).delete();
-
-      AppLogger.info('Deleted mood entry: $entryId');
+      if (_isFirebaseAvailable) {
+        await _firestore!.collection(_collectionName).doc(entryId).delete();
+        AppLogger.info('Deleted mood entry from Firestore: $entryId');
+      } else {
+        final box = await _getLocalBox();
+        await box.delete(entryId);
+        AppLogger.info('Deleted mood entry locally: $entryId');
+      }
     } catch (error, stackTrace) {
       AppLogger.error('Failed to delete mood entry', error, stackTrace);
       rethrow;
@@ -120,12 +162,16 @@ class MoodTrackingService {
   /// Get mood entry by ID
   Future<MoodEntry?> getMoodEntry(String entryId) async {
     try {
-      final doc =
-          await _firestore.collection(_collectionName).doc(entryId).get();
-
-      if (!doc.exists) return null;
-
-      return MoodEntry.fromFirestore(doc);
+      if (_isFirebaseAvailable) {
+        final doc = await _firestore!.collection(_collectionName).doc(entryId).get();
+        if (!doc.exists) return null;
+        return MoodEntry.fromFirestore(doc);
+      } else {
+        final box = await _getLocalBox();
+        final data = box.get(entryId);
+        if (data == null) return null;
+        return MoodEntry.fromJson(Map<String, dynamic>.from(data));
+      }
     } catch (error, stackTrace) {
       AppLogger.error('Failed to get mood entry', error, stackTrace);
       rethrow;
@@ -139,36 +185,44 @@ class MoodTrackingService {
     DateTime? endDate,
   }) {
     try {
-      final userId = FirebaseService.currentUser?.uid;
-      if (userId == null) {
-        return Stream.value([]);
-      }
+      final userId = _isFirebaseAvailable ? (FirebaseService.currentUser?.uid ?? 'local_user') : 'local_user';
 
-      Query<Map<String, dynamic>> query = _firestore
-          .collection(_collectionName)
-          .where('userId', isEqualTo: userId)
-          .orderBy('timestamp', descending: true);
+      if (_isFirebaseAvailable) {
+        Query<Map<String, dynamic>> query = _firestore!
+            .collection(_collectionName)
+            .where('userId', isEqualTo: userId)
+            .orderBy('timestamp', descending: true);
 
-      // Apply date filters
-      if (startDate != null) {
-        query = query.where('timestamp',
-            isGreaterThanOrEqualTo: Timestamp.fromDate(startDate));
-      }
-      if (endDate != null) {
-        query = query.where('timestamp',
-            isLessThanOrEqualTo: Timestamp.fromDate(endDate));
-      }
+        // Apply date filters
+        if (startDate != null) {
+          query = query.where('timestamp',
+              isGreaterThanOrEqualTo: Timestamp.fromDate(startDate));
+        }
+        if (endDate != null) {
+          query = query.where('timestamp',
+              isLessThanOrEqualTo: Timestamp.fromDate(endDate));
+        }
 
-      // Apply limit
-      if (limit != null) {
-        query = query.limit(limit);
-      }
+        // Apply limit
+        if (limit != null) {
+          query = query.limit(limit);
+        }
 
-      return query.snapshots().map((snapshot) {
-        return snapshot.docs
-            .map((doc) => MoodEntry.fromFirestore(doc))
-            .toList();
-      });
+        return query.snapshots().map((snapshot) {
+          return snapshot.docs
+              .map((doc) => MoodEntry.fromFirestore(doc))
+              .toList();
+        });
+      } else {
+        // For local storage, return a stream that emits data from Hive
+        return Stream.periodic(const Duration(seconds: 1)).asyncMap((_) async {
+          return await getMoodEntries(
+            limit: limit,
+            startDate: startDate,
+            endDate: endDate,
+          );
+        });
+      }
     } catch (error, stackTrace) {
       AppLogger.error('Failed to get mood entries stream', error, stackTrace);
       return Stream.error(error);
@@ -182,33 +236,57 @@ class MoodTrackingService {
     DateTime? endDate,
   }) async {
     try {
-      final userId = FirebaseService.currentUser?.uid;
-      if (userId == null) {
-        return [];
-      }
+      final userId = _isFirebaseAvailable ? (FirebaseService.currentUser?.uid ?? 'local_user') : 'local_user';
 
-      Query<Map<String, dynamic>> query = _firestore
-          .collection(_collectionName)
-          .where('userId', isEqualTo: userId)
-          .orderBy('timestamp', descending: true);
+      if (_isFirebaseAvailable) {
+        Query<Map<String, dynamic>> query = _firestore!
+            .collection(_collectionName)
+            .where('userId', isEqualTo: userId)
+            .orderBy('timestamp', descending: true);
 
-      // Apply date filters
-      if (startDate != null) {
-        query = query.where('timestamp',
-            isGreaterThanOrEqualTo: Timestamp.fromDate(startDate));
-      }
-      if (endDate != null) {
-        query = query.where('timestamp',
-            isLessThanOrEqualTo: Timestamp.fromDate(endDate));
-      }
+        // Apply date filters
+        if (startDate != null) {
+          query = query.where('timestamp',
+              isGreaterThanOrEqualTo: Timestamp.fromDate(startDate));
+        }
+        if (endDate != null) {
+          query = query.where('timestamp',
+              isLessThanOrEqualTo: Timestamp.fromDate(endDate));
+        }
 
-      // Apply limit
-      if (limit != null) {
-        query = query.limit(limit);
-      }
+        // Apply limit
+        if (limit != null) {
+          query = query.limit(limit);
+        }
 
-      final snapshot = await query.get();
-      return snapshot.docs.map((doc) => MoodEntry.fromFirestore(doc)).toList();
+        final snapshot = await query.get();
+        return snapshot.docs.map((doc) => MoodEntry.fromFirestore(doc)).toList();
+      } else {
+        // Get from local storage
+        final box = await _getLocalBox();
+        var entries = box.values
+            .map((data) => MoodEntry.fromJson(Map<String, dynamic>.from(data)))
+            .where((entry) => entry.userId == userId)
+            .toList();
+        
+        // Sort by timestamp descending
+        entries.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+        
+        // Apply date filters
+        if (startDate != null) {
+          entries = entries.where((e) => e.timestamp.isAfter(startDate) || e.timestamp.isAtSameMomentAs(startDate)).toList();
+        }
+        if (endDate != null) {
+          entries = entries.where((e) => e.timestamp.isBefore(endDate) || e.timestamp.isAtSameMomentAs(endDate)).toList();
+        }
+        
+        // Apply limit
+        if (limit != null && entries.length > limit) {
+          entries = entries.sublist(0, limit);
+        }
+        
+        return entries;
+      }
     } catch (error, stackTrace) {
       AppLogger.error('Failed to get mood entries', error, stackTrace);
       rethrow;
@@ -244,7 +322,7 @@ class MoodTrackingService {
   /// Get current mood tracking streak
   Future<int> getCurrentStreak() async {
     try {
-      final userId = FirebaseService.currentUser?.uid;
+      final userId = _isFirebaseAvailable ? FirebaseService.currentUser?.uid : 'local_user';
       if (userId == null) return 0;
 
       // Get entries for the last 30 days
@@ -285,7 +363,7 @@ class MoodTrackingService {
   /// Get longest mood tracking streak
   Future<int> getLongestStreak() async {
     try {
-      final userId = FirebaseService.currentUser?.uid;
+      final userId = _isFirebaseAvailable ? FirebaseService.currentUser?.uid : 'local_user';
       if (userId == null) return 0;
 
       // Get all entries for the user
@@ -475,11 +553,6 @@ class MoodTrackingService {
   /// Get mood entries that indicate distress (for crisis support)
   Stream<List<MoodEntry>> getDistressEntriesStream() {
     try {
-      final userId = FirebaseService.currentUser?.uid;
-      if (userId == null) {
-        return Stream.value([]);
-      }
-
       // Get recent entries and filter for distress in the app
       return getMoodEntriesStream(limit: 50).map((entries) {
         return entries.where((entry) => entry.indicatesDistress).toList();

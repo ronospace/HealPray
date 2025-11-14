@@ -19,18 +19,24 @@ class _MeditationListScreenState extends State<MeditationListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDarkMode ? Colors.white : Colors.black87;
+    
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Guided Meditation',
           style: TextStyle(
-            color: Colors.white,
+            color: textColor,
             fontWeight: FontWeight.w600,
           ),
         ),
-        backgroundColor: Colors.transparent,
+        backgroundColor: isDarkMode 
+            ? Colors.black.withValues(alpha: 0.3)
+            : Colors.white.withValues(alpha: 0.9),
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
+        foregroundColor: textColor,
+        iconTheme: IconThemeData(color: textColor),
       ),
       body: AnimatedGradientBackground(
         child: SafeArea(

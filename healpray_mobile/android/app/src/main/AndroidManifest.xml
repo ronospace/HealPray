@@ -16,11 +16,6 @@
     <uses-permission android:name="android.permission.health.READ_STEPS" />
     <uses-permission android:name="android.permission.health.READ_SLEEP" />
     
-    <!-- Android 15+ 16KB page size support -->
-    <property
-        android:name="android.app.16k-pages"
-        android:value="true" />
-    
     <!-- Security attributes -->
     <application
         android:label="healpray"
@@ -28,6 +23,11 @@
         android:icon="@mipmap/ic_launcher"
         android:usesCleartextTraffic="false"
         android:allowBackup="false">
+        
+        <!-- Android 15+ 16KB page size support -->
+        <property
+            android:name="android.app.16k-pages"
+            android:value="true" />
         <activity
             android:name=".MainActivity"
             android:exported="true"

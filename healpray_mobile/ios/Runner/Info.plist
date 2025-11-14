@@ -69,12 +69,6 @@
 	<key>NSUserNotificationsUsageDescription</key>
 	<string>HealPray sends prayer reminders, crisis support alerts, and spiritual encouragement notifications.</string>
 	
-	<!-- Background Modes -->
-	<key>UIBackgroundModes</key>
-	<array>
-		<string>background-processing</string>
-		<string>background-fetch</string>
-	</array>
 	
 	<!-- Google AdMob App ID -->
 	<key>GADApplicationIdentifier</key>

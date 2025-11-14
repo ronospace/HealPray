@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/floating_particles.dart';
 import '../../../core/widgets/animated_gradient_background.dart';
+import '../../../core/widgets/theme_switcher_button.dart';
 import '../../../shared/providers/auth_provider.dart';
 import '../widgets/mood_tracking_card.dart';
 import '../widgets/prayer_streak_card.dart';
@@ -167,17 +168,26 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
   }
 
   Widget _buildSliverAppBar(BuildContext context, String displayName) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    
     return SliverAppBar(
       expandedHeight: 120,
       floating: false,
       pinned: true,
+      backgroundColor: isDarkMode 
+          ? Colors.black.withValues(alpha: 0.3)
+          : Colors.white.withValues(alpha: 0.9),
+      foregroundColor: isDarkMode ? Colors.white : Colors.black87,
       flexibleSpace: FlexibleSpaceBar(
         background: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [
+              colors: isDarkMode ? [
+                AppTheme.healingTeal.withValues(alpha: 0.4),
+                AppTheme.healingTeal.withValues(alpha: 0.2),
+              ] : [
                 AppTheme.healingTeal,
                 AppTheme.healingTeal.withValues(alpha: 0.8),
               ],
@@ -212,11 +222,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
         ),
       ),
       actions: [
+        const CompactThemeSwitcher(),
         IconButton(
           onPressed: () => context.push('/profile'),
           icon: const Icon(
             Icons.account_circle,
-            color: Colors.white,
             size: 28,
           ),
         ),
@@ -224,7 +234,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
           onPressed: () => context.push('/notifications'),
           icon: const Icon(
             Icons.notifications_outlined,
-            color: Colors.white,
           ),
         ),
       ],

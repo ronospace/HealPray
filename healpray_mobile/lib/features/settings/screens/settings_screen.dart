@@ -32,6 +32,34 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         child: SafeArea(
           child: ListView(
           children: [
+              // Theme Switcher - Prominent at top
+              GlassCard(
+                margin: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                child: Padding(
+                  padding: const EdgeInsets.all(4),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      _buildThemeButton(
+                        icon: Icons.brightness_auto,
+                        label: 'Auto',
+                        mode: ThemeMode.system,
+                      ),
+                      _buildThemeButton(
+                        icon: Icons.light_mode,
+                        label: 'Light',
+                        mode: ThemeMode.light,
+                      ),
+                      _buildThemeButton(
+                        icon: Icons.dark_mode,
+                        label: 'Dark',
+                        mode: ThemeMode.dark,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
               // Profile Section
               if (user != null) ...[
                 GlassCard(
@@ -364,6 +392,56 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 )
               : null),
       onTap: onTap,
+    );
+  }
+
+  Widget _buildThemeButton({
+    required IconData icon,
+    required String label,
+    required ThemeMode mode,
+  }) {
+    final currentMode = ref.watch(themeModeProvider);
+    final isSelected = currentMode == mode;
+    
+    return Expanded(
+      child: InkWell(
+        onTap: () => ref.read(themeModeProvider.notifier).setThemeMode(mode),
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+          decoration: BoxDecoration(
+            color: isSelected
+                ? Colors.white.withValues(alpha: 0.25)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(12),
+            border: isSelected
+                ? Border.all(
+                    color: Colors.white.withValues(alpha: 0.4),
+                    width: 2,
+                  )
+                : null,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                icon,
+                color: Colors.white,
+                size: 28,
+              ),
+              const SizedBox(height: 6),
+              Text(
+                label,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 12,
+                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 

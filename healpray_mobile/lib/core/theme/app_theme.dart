@@ -300,6 +300,13 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
+      // Smooth theme transitions
+      pageTransitionsTheme: const PageTransitionsTheme(
+        builders: {
+          TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+          TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+        },
+      ),
 
       // Color Scheme
       colorScheme: const ColorScheme.light(
@@ -333,16 +340,23 @@ class AppTheme {
       // Typography
       textTheme: _buildTextTheme(Brightness.light),
 
-      // App Bar Theme
-      appBarTheme: const AppBarTheme(
+      // App Bar Theme - Enhanced for better visibility
+      appBarTheme: AppBarTheme(
         elevation: 0,
-        backgroundColor: Colors.transparent,
+        scrolledUnderElevation: 2,
+        backgroundColor: pureWhite.withValues(alpha: 0.9),
         foregroundColor: midnightBlue,
         systemOverlayStyle: SystemUiOverlayStyle.dark,
-        titleTextStyle: TextStyle(
+        titleTextStyle: const TextStyle(
           fontFamily: 'Poppins',
           fontSize: 20,
           fontWeight: FontWeight.w600,
+          color: midnightBlue,
+        ),
+        iconTheme: const IconThemeData(
+          color: midnightBlue,
+        ),
+        actionsIconTheme: const IconThemeData(
           color: midnightBlue,
         ),
       ),
@@ -480,6 +494,13 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
+      // Smooth theme transitions
+      pageTransitionsTheme: const PageTransitionsTheme(
+        builders: {
+          TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+          TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+        },
+      ),
 
       // Color Scheme
       colorScheme: const ColorScheme.dark(
@@ -513,16 +534,23 @@ class AppTheme {
       // Typography
       textTheme: _buildTextTheme(Brightness.dark),
 
-      // App Bar Theme
-      appBarTheme: const AppBarTheme(
+      // App Bar Theme - Enhanced for better visibility
+      appBarTheme: AppBarTheme(
         elevation: 0,
-        backgroundColor: Colors.transparent,
-        foregroundColor: Color(0xFFE1E3E6),
+        scrolledUnderElevation: 2,
+        backgroundColor: Colors.black.withValues(alpha: 0.3),
+        foregroundColor: const Color(0xFFE1E3E6),
         systemOverlayStyle: SystemUiOverlayStyle.light,
-        titleTextStyle: TextStyle(
+        titleTextStyle: const TextStyle(
           fontFamily: 'Poppins',
           fontSize: 20,
           fontWeight: FontWeight.w600,
+          color: Color(0xFFE1E3E6),
+        ),
+        iconTheme: const IconThemeData(
+          color: Color(0xFFE1E3E6),
+        ),
+        actionsIconTheme: const IconThemeData(
           color: Color(0xFFE1E3E6),
         ),
       ),

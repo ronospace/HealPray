@@ -28,11 +28,15 @@ class AdaptiveAppBar extends StatelessWidget implements PreferredSizeWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    // Use semi-transparent background for better visibility
+    // Use semi-transparent background with better contrast for light mode
     final effectiveBackgroundColor = backgroundColor ??
         (isDark
             ? Colors.black.withValues(alpha: 0.3)
-            : Colors.white.withValues(alpha: 0.1));
+            : Colors.white.withValues(alpha: 0.9));
+
+    // Text and icon colors that adapt to theme
+    final textColor = isDark ? Colors.white : Colors.black87;
+    final iconColor = isDark ? Colors.white : Colors.black87;
 
     return Container(
       decoration: BoxDecoration(
@@ -53,21 +57,20 @@ class AdaptiveAppBar extends StatelessWidget implements PreferredSizeWidget {
         elevation: elevation,
         centerTitle: centerTitle,
         bottom: bottom,
-        // Always use white text with shadow for visibility on gradients
-        foregroundColor: Colors.white,
-        iconTheme: const IconThemeData(color: Colors.white),
+        foregroundColor: textColor,
+        iconTheme: IconThemeData(color: iconColor),
         titleTextStyle: TextStyle(
           fontFamily: 'Poppins',
           fontSize: 20,
           fontWeight: FontWeight.w600,
-          color: Colors.white,
-          shadows: [
+          color: textColor,
+          shadows: isDark ? [
             Shadow(
               color: Colors.black.withValues(alpha: 0.3),
               offset: const Offset(0, 1),
               blurRadius: 3,
             ),
-          ],
+          ] : null,
         ),
         systemOverlayStyle: isDark
             ? SystemUiOverlayStyle.light

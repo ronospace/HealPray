@@ -306,28 +306,33 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
           ),
         ],
       ),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(12),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Icon(
             metric.icon,
-            size: 32,
+            size: 28,
             color: metric.color,
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
           Text(
             metric.value,
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
               fontWeight: FontWeight.bold,
               color: metric.color,
             ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 2),
           Text(
             metric.title,
             style: Theme.of(context).textTheme.bodySmall,
             textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),
