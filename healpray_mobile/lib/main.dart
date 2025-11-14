@@ -3,12 +3,15 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 import 'core/config/app_config.dart';
 import 'core/utils/logger.dart';
 import 'core/services/advanced_analytics_service.dart';
 import 'core/services/ab_test_service.dart';
 import 'core/services/user_feedback_service.dart';
 import 'core/services/admob_service.dart';
+import 'shared/services/firebase_service.dart';
 import 'features/chat/models/chat_message.dart';
 import 'app.dart';
 
@@ -47,18 +50,14 @@ Future<void> _initializeApp() async {
     // Set system UI overlay style
     _configureSystemUI();
 
-    // Initialize Firebase (disabled for development)
+    // Initialize Firebase
     try {
-      AppLogger.info('⚠️ Firebase initialization skipped in development mode');
-      // Firebase will be enabled when:
-      // 1. Firebase project is properly configured with API keys in .env
-      // 2. google-services.json (Android) and GoogleService-Info.plist (iOS) are added
-      // 3. DefaultFirebaseOptions.currentPlatform is generated via flutterfire configure
-      // Uncomment below when ready:
-      // await Firebase.initializeApp(
-      //   options: DefaultFirebaseOptions.currentPlatform,
-      // );
-      // await FirebaseService.initialize();
+      AppLogger.info('🔥 Initializing Firebase...');
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+      await FirebaseService.initialize();
+      AppLogger.info('✅ Firebase initialized successfully');
     } catch (firebaseError) {
       AppLogger.warning(
           'Firebase initialization failed, running in offline mode: $firebaseError');
